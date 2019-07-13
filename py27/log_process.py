@@ -14,38 +14,37 @@ class Logger(object):
         'warning':logging.WARNING,
         'error':logging.ERROR,
         'crit':logging.CRITICAL
-    }#ÈÕÖ¾¼¶±ð¹ØÏµÓ³Éä
+    }#æ—¥å¿—çº§åˆ«å…³ç³»æ˜ å°„
 
     def __init__(self,filename,level='info',when='D',backCount=3,fmt='%(asctime)s - %(pathname)s[line:%(lineno)d] - %(levelname)s: %(message)s'):
         self.logger = logging.getLogger(filename)
-        format_str = logging.Formatter(fmt)#ÉèÖÃÈÕÖ¾¸ñÊ½
-        self.logger.setLevel(self.level_relations.get(level))#ÉèÖÃÈÕÖ¾¼¶±ð
-        sh = logging.StreamHandler()#ÍùÆÁÄ»ÉÏÊä³ö
-        sh.setFormatter(format_str) #ÉèÖÃÆÁÄ»ÉÏÏÔÊ¾µÄ¸ñÊ½
-        th = handlers.TimedRotatingFileHandler(filename=filename,when=when,backupCount=backCount,encoding='utf-8')#ÍùÎÄ¼þÀïÐ´Èë#Ö¸¶¨¼ä¸ôÊ±¼ä×Ô¶¯Éú³ÉÎÄ¼þµÄ´¦ÀíÆ÷
-        #ÊµÀý»¯TimedRotatingFileHandler
-        #intervalÊÇÊ±¼ä¼ä¸ô£¬backupCountÊÇ±¸·ÝÎÄ¼þµÄ¸öÊý£¬Èç¹û³¬¹ýÕâ¸ö¸öÊý£¬¾Í»á×Ô¶¯É¾³ý£¬whenÊÇ¼ä¸ôµÄÊ±¼äµ¥Î»£¬µ¥Î»ÓÐÒÔÏÂ¼¸ÖÖ£º
-        # S Ãë
-        # M ·Ö
-        # H Ð¡Ê±¡¢
-        # D Ìì¡¢
-        # W Ã¿ÐÇÆÚ£¨interval==0Ê±´ú±íÐÇÆÚÒ»£©
-        # midnight Ã¿ÌìÁè³¿
-        th.setFormatter(format_str)#ÉèÖÃÎÄ¼þÀïÐ´ÈëµÄ¸ñÊ½
-        self.logger.addHandler(sh) #°Ñ¶ÔÏó¼Óµ½loggerÀï
+        format_str = logging.Formatter(fmt)#è®¾ç½®æ—¥å¿—æ ¼å¼
+        self.logger.setLevel(self.level_relations.get(level))#è®¾ç½®æ—¥å¿—çº§åˆ«
+        sh = logging.StreamHandler()#å¾€å±å¹•ä¸Šè¾“å‡º
+        sh.setFormatter(format_str) #è®¾ç½®å±å¹•ä¸Šæ˜¾ç¤ºçš„æ ¼å¼
+        th = handlers.TimedRotatingFileHandler(filename=filename,when=when,backupCount=backCount,encoding='utf-8')#å¾€æ–‡ä»¶é‡Œå†™å…¥#æŒ‡å®šé—´éš”æ—¶é—´è‡ªåŠ¨ç”Ÿæˆæ–‡ä»¶çš„å¤„ç†å™¨
+        #å®žä¾‹åŒ–TimedRotatingFileHandler
+        #intervalæ˜¯æ—¶é—´é—´éš”ï¼ŒbackupCountæ˜¯å¤‡ä»½æ–‡ä»¶çš„ä¸ªæ•°ï¼Œå¦‚æžœè¶…è¿‡è¿™ä¸ªä¸ªæ•°ï¼Œå°±ä¼šè‡ªåŠ¨åˆ é™¤ï¼Œwhenæ˜¯é—´éš”çš„æ—¶é—´å•ä½ï¼Œå•ä½æœ‰ä»¥ä¸‹å‡ ç§ï¼š
+        # S ç§’
+        # M åˆ†
+        # H å°æ—¶ã€
+        # D å¤©ã€
+        # W æ¯æ˜ŸæœŸï¼ˆinterval==0æ—¶ä»£è¡¨æ˜ŸæœŸä¸€ï¼‰
+        # midnight æ¯å¤©å‡Œæ™¨
+        th.setFormatter(format_str)#è®¾ç½®æ–‡ä»¶é‡Œå†™å…¥çš„æ ¼å¼
+        self.logger.addHandler(sh) #æŠŠå¯¹è±¡åŠ åˆ°loggeré‡Œ
         self.logger.addHandler(th)
 
 
 
 def process_bar(i,length,time_init=None,start_time=None,end_time=None,custom_print=''):
     '''
-
-    :param i: µ±Ç°Ñ­»· i int
-    :param length: ×ÜÑ­»·³¤¶È int
-    :param time_init: ³õÊ¼Ê±¼ä time
-    :param start_time: Ã¿¸öÑ­»·¿ªÊ¼Ê±¼ä time
-    :param end_time: Ã¿¸öÑ­»·½áÊøÊ±¼ä time
-    :param custom_print: ×Ô¶¨Òåprint str
+    :param i: å½“å‰å¾ªçŽ¯ i int
+    :param length: æ€»å¾ªçŽ¯é•¿åº¦ int
+    :param time_init: åˆå§‹æ—¶é—´ time
+    :param start_time: æ¯ä¸ªå¾ªçŽ¯å¼€å§‹æ—¶é—´ time
+    :param end_time: æ¯ä¸ªå¾ªçŽ¯ç»“æŸæ—¶é—´ time
+    :param custom_print: è‡ªå®šä¹‰print str
     :return:
     '''
 
@@ -57,16 +56,16 @@ def process_bar(i,length,time_init=None,start_time=None,end_time=None,custom_pri
 
         done = int(50 * (i) / length)
         sys.stdout.write(
-            '\r%s '%changeTime(time_elapse)+ #ÊÅÈ¥Ê±¼ä
-            "[%s%s]" % ('=' * done + '>'+'%0.2f' % (100 * float(i) / length) + '%', '<'+'.' * (50 - done)) + #½ø¶ÈÌõ+°Ù·Ö±È
-            ' eta %s'%changeTime(eta)+#Ê£ÓàÊ±¼ä
+            '\r%s '%changeTime(time_elapse)+ #é€åŽ»æ—¶é—´
+            "[%s%s]" % ('=' * done + '>'+'%0.2f' % (100 * float(i) / length) + '%', '<'+'.' * (50 - done)) + #è¿›åº¦æ¡+ç™¾åˆ†æ¯”
+            ' eta %s'%changeTime(eta)+#å‰©ä½™æ—¶é—´
             '\t' +str(custom_print)
         )
         # sys.stdout.flush()
     else:
         done = int(50 * (i) / length)
         sys.stdout.write(
-            "\r[%s%s]" % ('=' * done + '>'+'%0.2f' % (100 * float(i) / length) + '%', '<'+'-' * (50 - done))+  # ½ø¶ÈÌõ+°Ù·Ö±È
+            "\r[%s%s]" % ('=' * done + '>'+'%0.2f' % (100 * float(i) / length) + '%', '<'+'-' * (50 - done))+  # è¿›åº¦æ¡+ç™¾åˆ†æ¯”
             '\t'+str(custom_print)
         )
         sys.stdout.flush()

@@ -13,14 +13,14 @@ this_root = os.getcwd()+'\\..\\'
 def mk_dir(dir):
     if not os.path.isdir(dir):
         os.makedirs(dir)
-# 10kV丹1丹常线
+# 10kV碌陇1碌陇鲁拢脧脽
 
 def dwg_to_shp(in_features, output_dir):
     arcpy.FeatureClassToShapefile_conversion(in_features, output_dir)
 
 
 def check():
-    fdir = this_root + u'190509\\民权线路cad\\dwg_to_shp\\'
+    fdir = this_root + u'190509\\脙帽脠篓脧脽脗路cad\\dwg_to_shp\\'
     flist = os.listdir(fdir)
     for folder in flist:
         file_count = len(os.listdir(fdir+folder))
@@ -30,14 +30,14 @@ def check():
 
 def run_dwg_to_shp():
     log = log_process.Logger('log.log')
-    fdir = this_root+u'190509\\35kV线路\\35kV线路\\'
+    fdir = this_root+u'190509\\35kV脧脽脗路\\35kV脧脽脗路\\'
     flist = os.listdir(fdir)
 
     init_time = time.time()
     flag = 0
     for f in flist:
         start = time.time()
-        out_dir = this_root+u'190509\\35kV线路\\dwg_to_shp\\'+f.split('.')[0]
+        out_dir = this_root+u'190509\\35kV脧脽脗路\\dwg_to_shp\\'+f.split('.')[0]
         if os.path.isdir(out_dir):
             flag += 1
             continue
@@ -61,6 +61,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
-
-

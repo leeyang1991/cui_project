@@ -22,7 +22,7 @@ def mk_dir(dir):
 
 
 def mapping(dir):
-    # ºáÊúÑ¡Ôñ
+    # æ¨ªç«–é€‰æ‹©
     f=open(dir+'\\'+'config.txt','r')
     line = f.readline()
     if line == 'heng':
@@ -32,7 +32,7 @@ def mapping(dir):
         mxd_file = this_root + 'mxd\\template_shu.mxd'
     else:
         mxd_file = None
-    # mxd_file = 'D:\\project13\\ĞÂÖÆ×÷shu.mxd'
+    # mxd_file = 'D:\\project13\\æ–°åˆ¶ä½œshu.mxd'
     mxd = arcpy.mapping.MapDocument(mxd_file)
     df0 = arcpy.mapping.ListDataFrames(mxd)[0]
 
@@ -45,7 +45,7 @@ def mapping(dir):
         try:
             lyr = arcpy.mapping.ListLayers(mxd, i, df0)[0]
             lyr.replaceDataSource(dir,workplace,output_mxd[i])
-            print '»æÖÆÍê³É'.decode('gbk') + i.decode('gbk')
+            print 'ç»˜åˆ¶å®Œæˆ'.decode('gbk') + i.decode('gbk')
         except:
             print 'no '+i.decode('gbk')
 
@@ -67,12 +67,10 @@ def mapping(dir):
 
 def main():
 
-    dir = this_root+'190509\\ÃñÈ¨ÏßÂ·cad\\dwg_to_shp\\10kVÂ³10¢òÂ³Î÷Ïß\\'
+    dir = this_root+'190509\\æ°‘æƒçº¿è·¯cad\\dwg_to_shp\\10kVé²10â…¡é²è¥¿çº¿\\'
     mapping(dir)
     pass
 
 
 if __name__ == '__main__':
     main()
-
-

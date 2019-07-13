@@ -18,9 +18,9 @@ def mk_dir(dir):
 
 
 def line_to_shp(inputlist,outSHPfn):
-    ############ÖØÒª#################
+    ############é‡è¦#################
     gdal.SetConfigOption("SHAPE_ENCODING", "GBK")
-    ############ÖØÒª#################
+    ############é‡è¦#################
     # start,end,outSHPfn,val1,val2,val3,val4,val5
     # _,_,_,_=start[1],start[0],end[0],end[1]
 
@@ -75,9 +75,9 @@ def line_to_shp(inputlist,outSHPfn):
 
 def point_to_shp(inputlist,outSHPfn):
     # gdal.SetConfigOption("GDAL_FILENAME_IS_UTF8", "YES")
-    ############ÖØÒª#################
+    ############é‡è¦#################
     gdal.SetConfigOption("SHAPE_ENCODING", "GBK")
-    ############ÖØÒª#################
+    ############é‡è¦#################
     fieldType = ogr.OFTString
     # fieldType.set
     # Create the output shapefile
@@ -124,9 +124,9 @@ def point_to_shp(inputlist,outSHPfn):
 
 def gen_naizhang_ganta_excel():
 
-    f_excel = this_root+'190509\\ÃñÈ¨ÏßÂ·cad\\ÃñÈ¨Ì¨ÕË - ÒÔ´ËÎª×¼.xls'
+    f_excel = this_root+'190509\\æ°‘æƒçº¿è·¯cad\\æ°‘æƒå°è´¦ - ä»¥æ­¤ä¸ºå‡†.xls'
     bk = xlrd.open_workbook(f_excel)
-    sh = bk.sheet_by_name('¸ËËşÌ¨ÕË'.decode('gbk'))
+    sh = bk.sheet_by_name('æ†å¡”å°è´¦'.decode('gbk'))
     nrows = sh.nrows
     ganta = []
     ganta_num = []
@@ -134,7 +134,7 @@ def gen_naizhang_ganta_excel():
         ganta_attrib = sh.cell_value(i,4)
         ganta_name = sh.cell(i,0)
         ganta_num_i = sh.cell_value(i,1)
-        if ganta_attrib == 'ÄÍÕÅ'.decode('gbk'):
+        if ganta_attrib == 'è€å¼ '.decode('gbk'):
             ganta.append(ganta_name.value)
             ganta_num.append(ganta_num_i)
     ganta_dic = {}
@@ -164,9 +164,9 @@ def gen_naizhang_ganta_shp(daShapefile,out_shp):
 
 
 def gen_zhushang_bianyaqi_excel():
-    f_excel = this_root + '190509\\ÃñÈ¨ÏßÂ·cad\\ÃñÈ¨Ì¨ÕË - ÒÔ´ËÎª×¼.xls'
+    f_excel = this_root + '190509\\æ°‘æƒçº¿è·¯cad\\æ°‘æƒå°è´¦ - ä»¥æ­¤ä¸ºå‡†.xls'
     bk = xlrd.open_workbook(f_excel)
-    sh = bk.sheet_by_name('ÖùÉÏ±äÑ¹Æ÷'.decode('gbk'))
+    sh = bk.sheet_by_name('æŸ±ä¸Šå˜å‹å™¨'.decode('gbk'))
     nrows = sh.nrows
     gongbian = {}
     zhuanbian = {}
@@ -175,9 +175,9 @@ def gen_zhushang_bianyaqi_excel():
         bianyaqi_xinghao = sh.cell_value(i,3)
 
         bianyaqi_attrib = sh.cell_value(i,4)
-        if bianyaqi_attrib == '¹«±ä'.decode('gbk'):
+        if bianyaqi_attrib == 'å…¬å˜'.decode('gbk'):
             gongbian[bianyaqi_name] = bianyaqi_xinghao
-        elif bianyaqi_attrib == '×¨±ä'.decode('gbk'):
+        elif bianyaqi_attrib == 'ä¸“å˜'.decode('gbk'):
             zhuanbian[bianyaqi_name] = bianyaqi_xinghao
     return gongbian,zhuanbian
     pass
@@ -208,9 +208,9 @@ def gen_zhushang_bianyaqi_shp():
 
 
 def gen_xiangshi_biandianzhan_excel():
-    f_excel = this_root + '190509\\ÃñÈ¨ÏßÂ·cad\\ÃñÈ¨Ì¨ÕË - ÒÔ´ËÎª×¼.xls'
+    f_excel = this_root + '190509\\æ°‘æƒçº¿è·¯cad\\æ°‘æƒå°è´¦ - ä»¥æ­¤ä¸ºå‡†.xls'
     bk = xlrd.open_workbook(f_excel)
-    sh = bk.sheet_by_name('ÏäÊ½±äµçÕ¾'.decode('gbk'))
+    sh = bk.sheet_by_name('ç®±å¼å˜ç”µç«™'.decode('gbk'))
     nrows = sh.nrows
     biandianzhan = {}
     for i in range(nrows):
@@ -249,9 +249,9 @@ def gen_xiangshi_biandianzhan_shp(daShapefile,out_shp):
 
 
 def gen_duanluqi_excel():
-    f_excel = this_root + '190509\\ÃñÈ¨ÏßÂ·cad\\ÃñÈ¨Ì¨ÕË - ÒÔ´ËÎª×¼.xls'
+    f_excel = this_root + '190509\\æ°‘æƒçº¿è·¯cad\\æ°‘æƒå°è´¦ - ä»¥æ­¤ä¸ºå‡†.xls'
     bk = xlrd.open_workbook(f_excel)
-    sh = bk.sheet_by_name('¶ÏÂ·Æ÷'.decode('gbk'))
+    sh = bk.sheet_by_name('æ–­è·¯å™¨'.decode('gbk'))
     nrows = sh.nrows
     rongduanqi = {}
     for i in range(nrows):
@@ -280,7 +280,7 @@ def gen_duanluqi_shp(daShapefile,out_shp):
         if name_gbk in rongduanqi:
             out_list_biandianzhan.append([x, y, name_gbk, rongduanqi[name_gbk],''])
 
-        # if 'ÈÛ¶ÏÆ÷'.decode('gbk') in name_gbk:
+        # if 'ç†”æ–­å™¨'.decode('gbk') in name_gbk:
         #     out_list_biandianzhan.append([x, y, name_gbk, '',''])
 
     point_to_shp(out_list_biandianzhan, out_shp)
@@ -290,9 +290,9 @@ def gen_duanluqi_shp(daShapefile,out_shp):
 
 
 def gen_gongbian_excel():
-    f_excel = this_root + '190509\\ÃñÈ¨ÏßÂ·cad\\ÃñÈ¨Ì¨ÕË - ÒÔ´ËÎª×¼.xls'
+    f_excel = this_root + '190509\\æ°‘æƒçº¿è·¯cad\\æ°‘æƒå°è´¦ - ä»¥æ­¤ä¸ºå‡†.xls'
     bk = xlrd.open_workbook(f_excel)
-    sh = bk.sheet_by_name('ÖùÉÏ±äÑ¹Æ÷'.decode('gbk'))
+    sh = bk.sheet_by_name('æŸ±ä¸Šå˜å‹å™¨'.decode('gbk'))
     nrows = sh.nrows
     gongbian = {}
     for i in range(nrows):
@@ -335,9 +335,9 @@ def gen_gongbian_shp(daShapefile,out_shp):
 
 
 def gen_zhuanbian_excel():
-    f_excel = this_root + '190509\\ÃñÈ¨ÏßÂ·cad\\ÃñÈ¨Ì¨ÕË - ÒÔ´ËÎª×¼.xls'
+    f_excel = this_root + '190509\\æ°‘æƒçº¿è·¯cad\\æ°‘æƒå°è´¦ - ä»¥æ­¤ä¸ºå‡†.xls'
     bk = xlrd.open_workbook(f_excel)
-    sh = bk.sheet_by_name('×¨±ä'.decode('gbk'))
+    sh = bk.sheet_by_name('ä¸“å˜'.decode('gbk'))
     nrows = sh.nrows
     zhuanbian = {}
     for i in range(nrows):
@@ -390,28 +390,28 @@ def gen_zhuanbian_shp(daShapefile,out_shp):
 
 def sort_excel():
     '''
-    Éú³ÉÀëÉ¢µÄline shp
-    1¡¢Éú³Éshp dic
-    ¸ù¾İËùÓĞµÄdwg to shp£¬Éú³ÉµçÏß¸ËµÄ×ø±ê£¬´æÈë×Öµä
-    2¡¢´ò¿ªexcel£¬reÉ¸Ñ¡ºº×Ö£¬½«ºº×Ö×÷Îª×Öµä¼üÖµ£¬Éú³ÉµçÏß¸Ë×Öµä£¬½«Éè±¸Ãû³Æ£¬ËùÊôÏßÂ·µÈÊôĞÔ¼ÓÈë×Öµä
-    3¡¢xian_dic 1-100ÅÅĞò Éú³É xian_dic_sort
-    4¡¢¸ù¾İxian_dic_sortÉú³Éshp
-    5¡¢ÏÂÒ»²½ºÏ³Éshp£¨¹¦ÄÜ²»ÔÚ´Ëº¯Êı£©
+    ç”Ÿæˆç¦»æ•£çš„line shp
+    1ã€ç”Ÿæˆshp dic
+    æ ¹æ®æ‰€æœ‰çš„dwg to shpï¼Œç”Ÿæˆç”µçº¿æ†çš„åæ ‡ï¼Œå­˜å…¥å­—å…¸
+    2ã€æ‰“å¼€excelï¼Œreç­›é€‰æ±‰å­—ï¼Œå°†æ±‰å­—ä½œä¸ºå­—å…¸é”®å€¼ï¼Œç”Ÿæˆç”µçº¿æ†å­—å…¸ï¼Œå°†è®¾å¤‡åç§°ï¼Œæ‰€å±çº¿è·¯ç­‰å±æ€§åŠ å…¥å­—å…¸
+    3ã€xian_dic 1-100æ’åº ç”Ÿæˆ xian_dic_sort
+    4ã€æ ¹æ®xian_dic_sortç”Ÿæˆshp
+    5ã€ä¸‹ä¸€æ­¥åˆæˆshpï¼ˆåŠŸèƒ½ä¸åœ¨æ­¤å‡½æ•°ï¼‰
     :return:
     '''
-    npy = this_root + '190509\\ÃñÈ¨ÏßÂ·cad\\shp_dic.npy'
+    npy = this_root + '190509\\æ°‘æƒçº¿è·¯cad\\shp_dic.npy'
     shp_dic = np.load(npy).item()
     shp_dic = dict(shp_dic)
 
 
-    f_excel = this_root + '190509\\ÃñÈ¨ÏßÂ·cad\\ÃñÈ¨Ì¨ÕË - ÒÔ´ËÎª×¼.xls'
+    f_excel = this_root + '190509\\æ°‘æƒçº¿è·¯cad\\æ°‘æƒå°è´¦ - ä»¥æ­¤ä¸ºå‡†.xls'
     bk = xlrd.open_workbook(f_excel)
     sh = bk.sheet_by_index(0)
     nrows = sh.nrows
-    #  É¸Ñ¡ºº×Ö
+    #  ç­›é€‰æ±‰å­—
     xx = u"([\u4e00-\u9fff]+)"
     pattern = re.compile(xx)
-    # ½¨Á¢×Öµä
+    # å»ºç«‹å­—å…¸
     xian_list = []
     for i in range(nrows):
         shebei_name = sh.cell_value(i, 0)
@@ -424,7 +424,7 @@ def sort_excel():
         xian_dic[x] = []
         xian_dic_sort[x] = []
 
-    # ¶Áexcel ĞÅÏ¢
+    # è¯»excel ä¿¡æ¯
     for i in range(nrows):
         shebei_name = sh.cell_value(i, 0)
         suoshu_xianlu = sh.cell_value(i,2)
@@ -440,9 +440,9 @@ def sort_excel():
         # line_list = []
         for i in range(len(xian_dic[key])):
             for j in range(len(xian_dic[key])):
-                if u'Ïß'+str(i+1)+u'ºÅ¸Ë' in xian_dic[key][j][0] or \
-                    u'Ö§' + str(i+1) + u'ºÅ¸Ë' in xian_dic[key][j][0] or \
-                        u'Ïß' + str(i+1) + u'¸ËËş' in xian_dic[key][j][0]:
+                if u'çº¿'+str(i+1)+u'å·æ†' in xian_dic[key][j][0] or \
+                    u'æ”¯' + str(i+1) + u'å·æ†' in xian_dic[key][j][0] or \
+                        u'çº¿' + str(i+1) + u'æ†å¡”' in xian_dic[key][j][0]:
 
                     try:
                         a = shp_dic[xian_dic[key][j][0]]
@@ -480,7 +480,7 @@ def sort_excel():
         # print(key.encode('utf-8'))
         # for i in inlist:
         #     print(i)
-        dwg_dir = this_root+u'190509\\ÃñÈ¨ÏßÂ·cad\\dwg_to_shp\\'+val2.decode('utf-8')+'\\annotation\\'
+        dwg_dir = this_root+u'190509\\æ°‘æƒçº¿è·¯cad\\dwg_to_shp\\'+val2.decode('utf-8')+'\\annotation\\'
         mk_dir(dwg_dir)
         dwg_dir = dwg_dir.encode('utf-8')
         # print(dwg_dir)
@@ -499,7 +499,7 @@ def sort_excel():
 
 def gen_shp_dic():
 
-    fdir = this_root+u'190509\\ÃñÈ¨ÏßÂ·cad\\dwg_to_shp\\'
+    fdir = this_root+u'190509\\æ°‘æƒçº¿è·¯cad\\dwg_to_shp\\'
     flist = os.listdir(fdir)
     shp_dic = {}
 
@@ -528,16 +528,16 @@ def gen_shp_dic():
         log_process.process_bar(flag,len(flist),time_init,time_start,time_end)
         flag+=1
     print('saving shp dic...')
-    np.save(this_root+'190509\\ÃñÈ¨ÏßÂ·cad\\shp_dic',shp_dic)
+    np.save(this_root+'190509\\æ°‘æƒçº¿è·¯cad\\shp_dic',shp_dic)
         # exit()
 
 
 def foo():
     '''
-    ¿´shp_dic×ÖµäÀïÊÇÉ¶
+    çœ‹shp_dicå­—å…¸é‡Œæ˜¯å•¥
     :return:
     '''
-    npy = this_root+'190509\\ÃñÈ¨ÏßÂ·cad\\shp_dic.npy'
+    npy = this_root+'190509\\æ°‘æƒçº¿è·¯cad\\shp_dic.npy'
     shp_dic = np.load(npy).item()
     shp_dic = dict(shp_dic)
     # print(len(shp_dic))
@@ -550,12 +550,12 @@ def foo():
 def gen_line_annotation():
     '''
     composite shp
-    ½«xian_dic_sortÉú³ÉµÄshpºÏ³ÉÎª1¸öshp
-    ×÷Îªannotation
+    å°†xian_dic_sortç”Ÿæˆçš„shpåˆæˆä¸º1ä¸ªshp
+    ä½œä¸ºannotation
     :return:
     '''
     gdal.SetConfigOption("SHAPE_ENCODING", "GBK")
-    fdir = this_root + '\\190509\\ÃñÈ¨ÏßÂ·cad\\dwg_to_shp\\'
+    fdir = this_root + '\\190509\\æ°‘æƒçº¿è·¯cad\\dwg_to_shp\\'
     flist = os.listdir(fdir)
     time_init = time.time()
     time_i = 0
@@ -599,7 +599,7 @@ def gen_line_annotation():
 
 
 def delete_shp():
-    fdir = this_root+'\\190509\\ÃñÈ¨ÏßÂ·cad\\dwg_to_shp\\'
+    fdir = this_root+'\\190509\\æ°‘æƒçº¿è·¯cad\\dwg_to_shp\\'
     flist = os.listdir(fdir)
     for folder in flist:
         try:
@@ -616,8 +616,8 @@ def delete_shp():
 
 def gen_zoom_layer(daShapefile,out_shp):
     '''
-    Éú³Ézoom layer shp
-    Éú³ÉºáÊúconfig
+    ç”Ÿæˆzoom layer shp
+    ç”Ÿæˆæ¨ªç«–config
     :param daShapefile:
     :param out_shp:
     :return:
@@ -654,7 +654,7 @@ def gen_zoom_layer(daShapefile,out_shp):
 
 
 
-    # ºáÊúconfig
+    # æ¨ªç«–config
     x_range = xmax-xmin
     y_range = ymax-ymin
 
@@ -674,7 +674,7 @@ def gen_zoom_layer(daShapefile,out_shp):
 
 
 def main():
-    fdir = this_root+'190509\\ÃñÈ¨ÏßÂ·cad\\dwg_to_shp\\'
+    fdir = this_root+'190509\\æ°‘æƒçº¿è·¯cad\\dwg_to_shp\\'
     flist = os.listdir(fdir)
     for folder in flist:
         shp_dir = fdir+folder+'\\'
