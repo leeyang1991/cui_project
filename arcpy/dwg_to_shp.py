@@ -13,14 +13,13 @@ this_root = os.getcwd()+'\\..\\'
 def mk_dir(dir):
     if not os.path.isdir(dir):
         os.makedirs(dir)
-# 10kVµ¤1µ¤³£Ïß
 
 def dwg_to_shp(in_features, output_dir):
     arcpy.FeatureClassToShapefile_conversion(in_features, output_dir)
 
 
 def check():
-    fdir = this_root + u'190509\\ÃñÈ¨ÏßÂ·cad\\dwg_to_shp\\'
+    fdir = this_root + u'190714\\张桥\\dwg_to_shp\\'
     flist = os.listdir(fdir)
     for folder in flist:
         file_count = len(os.listdir(fdir+folder))
@@ -30,14 +29,14 @@ def check():
 
 def run_dwg_to_shp():
     log = log_process.Logger('log.log')
-    fdir = this_root+u'190509\\35kVÏßÂ·\\35kVÏßÂ·\\'
+    fdir = this_root+u'190714\\张桥\\张桥\\'
     flist = os.listdir(fdir)
 
     init_time = time.time()
     flag = 0
     for f in flist:
         start = time.time()
-        out_dir = this_root+u'190509\\35kVÏßÂ·\\dwg_to_shp\\'+f.split('.')[0]
+        out_dir = this_root+u'190714\\张桥\\dwg_to_shp\\'+f.split('.')[0]
         if os.path.isdir(out_dir):
             flag += 1
             continue

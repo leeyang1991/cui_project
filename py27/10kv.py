@@ -2,7 +2,8 @@
 
 from osgeo import ogr
 import os
-this_root = os.getcwd()+'\\..\\'
+# this_root = os.getcwd()+'\\..\\'
+this_root = 'd:\\cui\\'
 import gdal
 import xlrd
 import time
