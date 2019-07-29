@@ -1,11 +1,12 @@
-# coding=utf-8
+# coding=gbk
 
 import arcpy
 import os
 import log_process
 import time
 
-this_root = os.getcwd()+'\\..\\'
+# this_root = os.getcwd()+'\\..\\'
+this_root = 'e:\\cui\\'
 
 # in_features_point = this_root+'new_test_data\\123.dwg\\Annotation'
 # in_features_line = this_root+'new_test_data\\123.dwg\\Polyline'
@@ -19,7 +20,7 @@ def dwg_to_shp(in_features, output_dir):
 
 
 def check():
-    fdir = this_root + u'190714\\寮犳ˉ\\dwg_to_shp\\'
+    fdir = this_root + '190714\\dwg_to_shp\\'
     flist = os.listdir(fdir)
     for folder in flist:
         file_count = len(os.listdir(fdir+folder))
@@ -29,25 +30,30 @@ def check():
 
 def run_dwg_to_shp():
     log = log_process.Logger('log.log')
-    fdir = this_root+u'190714\\寮犳ˉ\\寮犳ˉ\\'
+    fdir = this_root+'190725\\单线图数据\\'
     flist = os.listdir(fdir)
 
     init_time = time.time()
     flag = 0
     for f in flist:
         start = time.time()
-        out_dir = this_root+u'190714\\寮犳ˉ\\dwg_to_shp\\'+f.split('.')[0]
+        out_dir = this_root+'190725\\dwg_to_shp\\'+f.split('.')[0]
+        # print(f)
+        # print(out_dir)
+        # exit()
         if os.path.isdir(out_dir):
             flag += 1
             continue
         mk_dir(out_dir)
-        try:
-            dwg_to_shp(fdir+f+'\\Annotation',out_dir)
-            dwg_to_shp(fdir+f+'\\Polyline',out_dir)
-            log.logger.info('\\Annotation')
-            log.logger.info('\\Polyline')
-        except Exception as e:
-            log.logger.error(e)
+        # try:
+        print(out_dir)
+        # exit()
+        dwg_to_shp(fdir+f+'\\Annotation',out_dir)
+        dwg_to_shp(fdir+f+'\\Polyline',out_dir)
+        log.logger.info('\\Annotation')
+        log.logger.info('\\Polyline')
+        # except Exception as e:
+        # log.logger.error(e)
         end = time.time()
         log_process.process_bar(flag,len(flist),init_time,start,end,str(flag+1)+'/'+str(len(flist))+'\n')
         flag += 1
@@ -55,7 +61,16 @@ def run_dwg_to_shp():
     # dwg_to_shp(in_features_line,this_root)
 
 
+def rename():
+    # 去除#号
+    fdir = this_root + '190714\\张桥\\'
+    flist = os.listdir(fdir)
+    for f in flist:
+        f_new = f.replace('#','_')
+        os.rename(fdir+f,fdir+f_new)
+
 def main():
+    # rename()
     run_dwg_to_shp()
 
 if __name__ == '__main__':

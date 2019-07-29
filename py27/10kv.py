@@ -389,7 +389,7 @@ def gen_zhuanbian_shp(daShapefile,out_shp):
 
 
 
-def sort_excel():
+def line_annotation():
     '''
     生成离散的line shp
     1、生成shp dic

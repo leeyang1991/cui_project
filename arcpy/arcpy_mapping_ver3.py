@@ -4,7 +4,7 @@ import arcpy
 import time
 import codecs
 
-this_root = os.getcwd()+'\\..\\'
+this_root = 'E:\\cui\\'
 
 output_mxd = {'zhuanbian':'zhuanbian',
               'naizhang_ganta':'naizhang_ganta',
