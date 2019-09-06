@@ -423,25 +423,79 @@ def gen_biandianzhan_excel():
 
 def gen_biandianzhan_shp(daShapefile,out_shp):
     biandianzhan = gen_biandianzhan_excel()
+    str_num = []
+    for key in biandianzhan:
+        # print key,len(key)
+        str_num.append(len(key))
+    # print(min(str_num))
+    # print(max(str_num))
+    # exit()
     driver = ogr.GetDriverByName("ESRI Shapefile")
     dataSource = driver.Open(daShapefile, 0)
     layer = dataSource.GetLayer()
     # ganta = gen_naizhang_ganta_excel()
     out_list_biandianzhan = []
 
+    name_list = []
+    xy_list = []
     for feature in layer:
         geom = feature.GetGeometryRef()
         x = geom.GetX()
         y = geom.GetY()
+        xy_list.append([x,y])
         name = feature.GetField("RefName")
         name_gbk = name.decode('utf-8')
-        # print(name_gbk)
+
+        name_list.append(name_gbk)
+    # print(xy_list)
+    out_dic = {}
+    for i in range(len(name_list)):
+        sum_str = ''
+        selected_num = []
+        for j in range(max(str_num)):
+            try:
+                sum_str += name_list[i+j]
+                selected_num.append(i+j)
+                # print(sum_str)
+                if sum_str in biandianzhan:
+                    # print(sum_str)
+                    selected_x = []
+                    selected_y = []
+                    for k in selected_num:
+                        selected_x.append(xy_list[k][0])
+                        selected_y.append(xy_list[k][1])
+                    x = np.mean(selected_x)
+                    y = np.mean(selected_y)
+                    out_dic[sum_str] = []
+                    out_list_biandianzhan.append([x,y,sum_str,'',''])
+                str_num_ = len(sum_str)
+                if str_num_ > max(str_num):
+                    break
+            except:
+                pass
+    for i in out_list_biandianzhan:
+        name = i[2]
+        out_dic[name].append([i[0],i[1]])
+
+    out_list_biandianzhan = []
+    for name in out_dic:
+        # print(name)
+        x = []
+        y = []
+        for xy in out_dic[name]:
+            x.append(xy[0])
+            y.append(xy[1])
+        x_mean = np.mean(x)
+        y_mean = np.mean(y)
+        out_list_biandianzhan.append([x_mean,y_mean,name,'',''])
+        # print(x_mean)
+        # print(y_mean)
         # for i in zhuanbian:
         #     print(i)
         # exit()
         # continue
-        if name_gbk in biandianzhan:
-            out_list_biandianzhan.append([x, y, name_gbk, biandianzhan[name_gbk],''])
+        # if name_gbk in biandianzhan:
+        #     out_list_biandianzhan.append([x, y, name_gbk, biandianzhan[name_gbk],''])
     #
     point_to_shp(out_list_biandianzhan, out_shp)
     # pass

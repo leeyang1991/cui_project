@@ -1,4 +1,4 @@
-# coding=utf-8
+# coding=gbk
 import os
 import arcpy
 import time
@@ -11,7 +11,7 @@ output_mxd = {'zhuanbian':'zhuanbian',
               'xiangshi_biandianzhan':'xiangshi_biandianzhan',
               'duanluqi':'duanluqi',
               'gongbian':'gongbian',
-              'dwg_Polyline':'***********',
+              # 'dwg_Polyline':'***********',
               'line_annotation':'line_annotation',
               'zoom_layer':'zoom_layer'
                }
@@ -22,22 +22,25 @@ def mk_dir(dir):
 
 
 def mapping(dir):
-    # æ¨ªç«–é€‰æ‹©
+    # ºáÊúÑ¡Ôñ
     f=open(dir+'\\'+'config.txt','r')
     line = f.readline()
     if line == 'heng':
         # mxd_file = 'D:\\project13\\heng_ver5.mxd'
-        mxd_file = this_root+'mxd\\template_heng.mxd'
+        # mxd_file = this_root+'mxd\\template_heng.mxd'
+        mxd_file = r'E:\cui\190905\template_heng.mxd'
     elif line == 'shu':
-        mxd_file = this_root + 'mxd\\template_shu.mxd'
+        # mxd_file = this_root + 'mxd\\template_shu.mxd'
+        mxd_file = r'E:\cui\190905\template_shu.mxd'
     else:
         mxd_file = None
-    # mxd_file = 'D:\\project13\\æ–°åˆ¶ä½œshu.mxd'
+    # mxd_file = 'D:\\project13\\ĞÂÖÆ×÷shu.mxd'
     mxd = arcpy.mapping.MapDocument(mxd_file)
     df0 = arcpy.mapping.ListDataFrames(mxd)[0]
 
     workplace = 'SHAPEFILE_WORKSPACE'
     output_mxd['dwg_Polyline'] = (dir.split('\\')[-2]+'_dwg_Polyline').decode('gbk')
+    # print(output_mxd['dwg_Polyline'])
     # print (dir.split('\\')[-2]+'_dwg_Polyline').decode('gbk')
     # exit()
     for i in output_mxd:
@@ -45,7 +48,7 @@ def mapping(dir):
         try:
             lyr = arcpy.mapping.ListLayers(mxd, i, df0)[0]
             lyr.replaceDataSource(dir,workplace,output_mxd[i])
-            print 'ç»˜åˆ¶å®Œæˆ'.decode('gbk') + i.decode('gbk')
+            print '»æÖÆÍê³É'.decode('gbk') + i.decode('gbk')
         except:
             print 'no '+i.decode('gbk')
 
@@ -67,8 +70,16 @@ def mapping(dir):
 
 def main():
 
-    dir = this_root+'190509\\æ°‘æƒçº¿è·¯cad\\dwg_to_shp\\10kVé²10â…¡é²è¥¿çº¿\\'
-    mapping(dir)
+    # dir = this_root+'190509\\ÃñÈ¨ÏßÂ·cad\\dwg_to_shp\\10kVÂ³10¢òÂ³Î÷Ïß\\'
+    # dir = 'E:\\cui\\190905\\dwg_to_shp\\½¯1½¯½¯Ïß\\'
+    # mapping(dir)
+    dirs = 'E:\\cui\\190905\\dwg_to_shp\\'
+    dir_list = os.listdir(dirs)
+    for dir in dir_list:
+        # dir = dirs+'\\'+dir.decode('gbk')+'\\'
+        dir = dirs+'\\'+dir+'\\'
+        print(dir)
+        mapping(dir)
     pass
 
 

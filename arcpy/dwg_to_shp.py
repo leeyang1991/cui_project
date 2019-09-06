@@ -30,14 +30,14 @@ def check():
 
 def run_dwg_to_shp():
     log = log_process.Logger('log.log')
-    fdir = this_root+'190725\\单线图数据\\'
+    fdir = this_root+'190905\\永城\\'
     flist = os.listdir(fdir)
 
     init_time = time.time()
     flag = 0
     for f in flist:
         start = time.time()
-        out_dir = this_root+'190725\\dwg_to_shp\\'+f.split('.')[0]
+        out_dir = this_root+'190905\\dwg_to_shp\\'+f.split('.')[0]
         # print(f)
         # print(out_dir)
         # exit()
@@ -63,7 +63,7 @@ def run_dwg_to_shp():
 
 def rename():
     # 去除#号
-    fdir = this_root + '190714\\张桥\\'
+    fdir = this_root + '190905\\永城\\'
     flist = os.listdir(fdir)
     for f in flist:
         f_new = f.replace('#','_')
