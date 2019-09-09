@@ -6,14 +6,15 @@ import codecs
 
 this_root = 'E:\\cui\\'
 
-output_mxd = {'zhuanbian':'zhuanbian',
-              'naizhang_ganta':'naizhang_ganta',
+output_mxd = {'柱上用户变压器':'zhuanbian',
+              '耐张杆塔':'naizhang_ganta',
               'xiangshi_biandianzhan':'xiangshi_biandianzhan',
-              'duanluqi':'duanluqi',
-              'gongbian':'gongbian',
+              '断路器':'duanluqi',
+              '柱上变压器':'gongbian',
               # 'dwg_Polyline':'***********',
               'line_annotation':'line_annotation',
-              'zoom_layer':'zoom_layer'
+              'zoom_layer':'zoom_layer',
+              '电站':'biandianzhan'
                }
 
 def mk_dir(dir):
@@ -35,14 +36,23 @@ def mapping(dir):
     else:
         mxd_file = None
     # mxd_file = 'D:\\project13\\新制作shu.mxd'
+    title = ''
+    # print(dir)
+    # exit()
+
     mxd = arcpy.mapping.MapDocument(mxd_file)
     df0 = arcpy.mapping.ListDataFrames(mxd)[0]
 
     workplace = 'SHAPEFILE_WORKSPACE'
-    output_mxd['dwg_Polyline'] = (dir.split('\\')[-2]+'_dwg_Polyline').decode('gbk')
-    # print(output_mxd['dwg_Polyline'])
-    # print (dir.split('\\')[-2]+'_dwg_Polyline').decode('gbk')
-    # exit()
+    output_mxd['导线'] = (dir.split('\\')[-2]+'_dwg_Polyline').decode('gbk')
+    title = output_mxd['导线'].split('_')[0]+' 线路沿布图'.decode('gbk')
+
+    for textElement in arcpy.mapping.ListLayoutElements(mxd, "TEXT_ELEMENT"):
+        if textElement.name == 'title':
+            textElement.text = (title)
+
+
+
     for i in output_mxd:
 
         try:

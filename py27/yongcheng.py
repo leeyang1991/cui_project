@@ -798,7 +798,267 @@ def delete_shp():
 
 
 
+class Merge:
+    def __init__(self):
+        pass
 
+    def merge_annotation_shp(self,shp_type):
+        '''
+        composite shp
+        将xian_dic_sort生成的shp合成为1个shp
+        作为annotation
+        :return:
+        '''
+        gdal.SetConfigOption("SHAPE_ENCODING", "GBK")
+        # fdir = this_root + '\\190725\\dwg_to_shp\\'
+        fdir = r'E:\cui\190905\dwg_to_shp\\'
+        flist = os.listdir(fdir)
+        time_init = time.time()
+        time_i = 0
+        inlist = []
+        for folder in flist:
+            # print(folder.decode('gbk'))
+            # exit()
+            time_start = time.time()
+            # print(folder.decode('gbk'))
+            shp_dir = fdir+folder+'\\'
+
+            shp_list = os.listdir(shp_dir)
+
+            for shp in shp_list:
+                # print(shp.decode('gbk'))
+                # print(shp_type+'.shp')
+                # exit()
+                if shp.endswith(shp_type+'.shp'):
+                    # print(shp.decode('gbk'))
+                    # print(1)
+                    # exit()
+                    daShapefile = shp_dir + shp
+                    print(daShapefile.decode('gbk'))
+                    driver = ogr.GetDriverByName("ESRI Shapefile")
+                    dataSource = driver.Open(daShapefile.decode('gbk'), 0)
+                    layer = dataSource.GetLayer()
+                    # inlist_i = []
+                    for feature in layer:
+                        geom = feature.GetGeometryRef()
+                        # geom.
+                        Points = geom.GetPoints()
+                        # val1 = feature.GetField("val1")
+                        # val2 = feature.GetField("val2")
+                        # val3 = feature.GetField("val3")
+                        # print(Points)
+                        # exit()
+                        if Points:
+                            # print(Points)
+                            # exit()
+                            for i in range(len(Points)):
+                                # if i == len(Points)-1:
+                                #     break
+                                inlist.append([Points[i][0],Points[i][1],'','','','',''])
+                            # print(Points)
+                            # print(inlist_i)
+                        # exit()
+                        # exit()
+                        # val1 = feature.GetField("val1")
+                        # val2 = feature.GetField("val2")
+                        # val3 = feature.GetField("val3")
+                        # val4 = feature.GetField("val4")
+                        # inlist.append([Points[0],Points[1],val1,val2,val3,val4,''])
+
+            time_end = time.time()
+            time_i += 1
+            log_process.process_bar(time_i,len(flist),time_init,time_start,time_end)
+        # output_fn = this_root + '190725\\shp\\'+shp_type+'_merge.shp'.decode('gbk').encode('utf-8')
+        output_fn = r'E:\cui\190905\merge.shp'
+        print('exporting line shp...')
+        # print(inlist)
+        # exit()
+        point_to_shp(inlist, output_fn)
+
+        pass
+
+
+
+
+    def merge_line_annotation_shp(self):
+        '''
+        composite shp
+        将xian_dic_sort生成的shp合成为1个shp
+        作为annotation
+        :return:
+        '''
+        gdal.SetConfigOption("SHAPE_ENCODING", "GBK")
+        # fdir = this_root + '\\190714\\dwg_to_shp\\'
+        fdir = r'E:\cui\190905\dwg_to_shp\shao\\'
+        output_fn = r'E:\cui\190905\dwg_to_shp\shao_merge\line_annotation.shp'
+        flist = os.listdir(fdir)
+        time_init = time.time()
+        time_i = 0
+        inlist = []
+        for folder in flist:
+            # print(folder.decode('gbk'))
+            # exit()
+            time_start = time.time()
+            # print(folder.decode('gbk'))
+            shp_dir = fdir+folder+'\\annotation\\'
+
+            try:
+                shp_list = os.listdir(shp_dir)
+            except:
+                continue
+
+            for shp in shp_list:
+                # print(shp.decode('gbk'))
+                # exit()
+                if shp.endswith('annotation.shp'):
+
+                    # print(shp.decode('gbk'))
+                    # exit()
+                    daShapefile = shp_dir + shp
+                    print(daShapefile.decode('gbk'))
+                    # print(daShapefile.decode('gbk'))
+                    driver = ogr.GetDriverByName("ESRI Shapefile")
+                    dataSource = driver.Open(daShapefile.decode('gbk'), 0)
+                    layer = dataSource.GetLayer()
+                    # inlist_i = []
+                    for feature in layer:
+                        geom = feature.GetGeometryRef()
+                        val1 = feature.GetField("val1")
+                        val2 = feature.GetField("val2")
+                        val3 = feature.GetField("val3")
+                        val4 = feature.GetField("val4")
+                        Points = geom.GetPoints()
+                        if Points:
+                            for i in range(len(Points)):
+                                if i == len(Points)-1:
+                                    break
+                                inlist.append([Points[i],Points[i+1],val1,val2,val3,val4,''])
+                            # print(Points)
+                            # print(inlist_i)
+                        # exit()
+                        # exit()
+
+                        # inlist.append([Points[0],Points[1],val1,val2,val3,val4,''])
+
+            time_end = time.time()
+            time_i += 1
+            log_process.process_bar(time_i,len(flist),time_init,time_start,time_end)
+
+        print('exporting line shp...')
+        line_to_shp(inlist, output_fn)
+
+        pass
+
+
+    def merge_point_layer_shp(self,shp_type):
+        '''
+
+        :return:
+        '''
+        gdal.SetConfigOption("SHAPE_ENCODING", "GBK")
+        fdir = r'E:\cui\190905\dwg_to_shp\shao\\'
+        out_dir = r'E:\cui\190905\dwg_to_shp\shao_merge\\'
+        flist = os.listdir(fdir)
+        time_init = time.time()
+        time_i = 0
+        inlist = []
+        for folder in flist:
+            # print(folder.decode('gbk'))
+            # exit()
+            time_start = time.time()
+            # print(folder.decode('gbk'))
+            shp_dir = fdir+folder+'\\'
+
+            shp_list = os.listdir(shp_dir)
+
+            for shp in shp_list:
+                # print(shp.decode('gbk'))
+                # exit()
+                if shp.endswith(shp_type+'.shp'):
+                    # print(shp.decode('gbk'))
+                    # exit()
+                    daShapefile = shp_dir + shp
+                    # print(daShapefile.decode('gbk'))
+                    driver = ogr.GetDriverByName("ESRI Shapefile")
+                    dataSource = driver.Open(daShapefile.decode('gbk'), 0)
+                    layer = dataSource.GetLayer()
+                    # inlist_i = []
+                    for feature in layer:
+                        geom = feature.GetGeometryRef()
+                        # geom.
+                        Points = geom.GetPoints()
+                        val1 = feature.GetField("val1")
+                        val2 = feature.GetField("val2")
+                        val3 = feature.GetField("val3")
+                        # print(Points)
+                        # exit()
+                        if Points:
+                            # print(Points)
+                            # exit()
+                            for i in range(len(Points)):
+                                # if i == len(Points)-1:
+                                #     break
+                                inlist.append([Points[i][0],Points[i][1],val1,val2,val3,'',''])
+                            # print(Points)
+                            # print(inlist_i)
+                        # exit()
+                        # exit()
+                        # val1 = feature.GetField("val1")
+                        # val2 = feature.GetField("val2")
+                        # val3 = feature.GetField("val3")
+                        # val4 = feature.GetField("val4")
+                        # inlist.append([Points[0],Points[1],val1,val2,val3,val4,''])
+
+            time_end = time.time()
+            time_i += 1
+            log_process.process_bar(time_i,len(flist),time_init,time_start,time_end)
+        output_fn = out_dir+shp_type+'_merge.shp'.decode('gbk').encode('utf-8')
+        print('exporting line shp...')
+        # print(inlist)
+        # exit()
+        point_to_shp(inlist, output_fn)
+
+        pass
+
+
+
+    def merge_daoxian(self):
+
+        fdir = r'E:\cui\190905\dwg_to_shp\shao\\'
+        output_fn = r'E:\cui\190905\dwg_to_shp\shao_merge\daoxian.shp'
+        inlist = []
+        for folder in os.listdir(fdir):
+            for f in os.listdir(fdir+folder):
+                if f.endswith('_dwg_Polyline.shp'):
+                    print(f.decode('gbk'))
+                    # print(shp.decode('gbk'))
+                    # exit()
+                    daShapefile = fdir+folder+'\\' + f
+                    print(daShapefile.decode('gbk'))
+                    # print(daShapefile.decode('gbk'))
+                    driver = ogr.GetDriverByName("ESRI Shapefile")
+                    dataSource = driver.Open(daShapefile.decode('gbk'), 0)
+                    layer = dataSource.GetLayer()
+                    # inlist_i = []
+                    for feature in layer:
+                        geom = feature.GetGeometryRef()
+                        # val1 = feature.GetField("val1")
+                        # val2 = feature.GetField("val2")
+                        # val3 = feature.GetField("val3")
+                        # val4 = feature.GetField("val4")
+                        Points = geom.GetPoints()
+                        if Points:
+                            for i in range(len(Points)):
+                                if i == len(Points) - 1:
+                                    break
+                                inlist.append([Points[i], Points[i + 1], '', '', '', '', ''])
+
+
+        print('exporting line shp...')
+        # print(inlist)
+        # exit()
+        # print(inlist)
+        line_to_shp(inlist, output_fn)
 def main():
     fdir = this_root+'190905\\dwg_to_shp\\'
     flist = os.listdir(fdir)
@@ -817,9 +1077,10 @@ def main():
                 genlayer.gen_gongbian_shp(fname.encode('utf-8'),(shp_dir+'gongbian.shp').decode('gbk').encode('utf-8'))
                 genlayer.gen_zhuanbian_shp(fname.encode('utf-8'),(shp_dir+'zhuanbian.shp').decode('gbk').encode('utf-8'))
                 genlayer.gen_zoom_layer(fname.encode('utf-8'),(shp_dir+'zoom_layer.shp').decode('gbk').encode('utf-8'))
-
+                genlayer.gen_biandianzhan_shp(fname.encode('utf-8'),(shp_dir+'biandianzhan.shp').decode('gbk').encode('utf-8'))
 
         # exit()
+
 
 
 if __name__ == '__main__':
@@ -829,5 +1090,13 @@ if __name__ == '__main__':
     #2 gen line annotation
     # line_annotation()
     #3 gen_line_annotation
-    gen_line_annotation()
+    # gen_line_annotation()
     # main()
+    # merge_point_shp('Annotation')
+    shptypes = ['biandianzhan','duanluqi','gongbian','zhuanbian','naizhang_ganta','zoom_layer']
+    M = Merge()
+    # M.merge_daoxian()
+    M.merge_line_annotation_shp()
+    # for shp_type in shptypes:
+    #     M.merge_point_layer_shp(shp_type)
+    # pass
