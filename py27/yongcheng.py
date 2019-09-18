@@ -11,6 +11,8 @@ import re
 import numpy as np
 import log_process
 from matplotlib import pyplot as plt
+import simple_tkinter as sg
+import codecs
 
 #
 # f_excel = this_root+'190905/台账数据.xlsx'
@@ -130,12 +132,15 @@ def point_to_shp(inputlist,outSHPfn):
 
 class GenLayer:
 
-    def __init__(self):
-        fdir = 'E:\\cui\\190905\\'
-        flist = os.listdir(fdir)
-        for f in flist:
-            if f.endswith('xls'):
-                self.f_excel = fdir + f
+    def __init__(self,f_excel):
+        # fdir = 'E:\\cui\\190905\\'
+        # flist = os.listdir(fdir)
+        # for f in flist:
+        #     if f.endswith('xls'):
+        #         self.f_excel = fdir + f
+        # self.f_excel = this_root+'最新模板.xls'.decode('gbk')
+        self.f_excel = f_excel
+        print(self.f_excel)
         pass
 
     def gen_naizhang_ganta_excel(self):
@@ -495,6 +500,70 @@ class GenLayer:
         point_to_shp(out_list_biandianzhan, out_shp)
         # pass
 
+
+    def gen_line_annotation_excel(self):
+        # f_excel = this_root + u'190714\\张桥所线路设备明细.xls'
+        bk = xlrd.open_workbook(self.f_excel)
+        sh = bk.sheet_by_name('导线'.decode('gbk'))
+        nrows = sh.nrows
+        line_annotation = {}
+        for i in range(nrows):
+            if i + 1 == nrows:
+                continue
+            line_name = sh.cell_value(i + 1, 0)
+            line_start = sh.cell_value(i + 1, 2)
+            line_end = sh.cell_value(i + 1, 3)
+            zhixianmingcheng = sh.cell_value(i + 1, 4)
+            zhixianxinghao = sh.cell_value(i + 1, 5)
+            line_annotation[line_name] = [line_start,line_end,zhixianmingcheng,zhixianxinghao]
+
+        return line_annotation
+        pass
+
+
+    def gen_line_annotation_shp(self,daShapefile,out_shp):
+        # print(1)
+        line_annotation = self.gen_line_annotation_excel()
+        driver = ogr.GetDriverByName("ESRI Shapefile")
+        dataSource = driver.Open(daShapefile, 0)
+        layer = dataSource.GetLayer()
+        # ganta = gen_naizhang_ganta_excel()
+        # out_list = []
+        # for name in line_annotation:
+        #     for feature in layer:
+        shp_pos_dic = {}
+        for feature in layer:
+            geom = feature.GetGeometryRef()
+            x = geom.GetX()
+            y = geom.GetY()
+            name = feature.GetField("RefName")
+            name_gbk = name.decode('utf-8')
+            shp_pos_dic[name_gbk] = [x,y]
+
+        in_list = []
+        for name in line_annotation:
+            start = line_annotation[name][0]
+            end = line_annotation[name][1]
+            zhixianmingcheng = line_annotation[name][2]
+            zhixianxinghao = line_annotation[name][3]
+
+            # print(start)
+            try:
+                point1 = shp_pos_dic[start]
+                point2 = shp_pos_dic[end]
+                in_list.append([point1,point2,name,'',zhixianmingcheng,zhixianxinghao,''])
+            except:
+                pass
+        line_to_shp(in_list, out_shp)
+        # for i in in_list:
+        #     print(i)
+            # if name_gbk in line_annotation:
+                # out_list.append([x, y, line_annotation[name_gbk][0], ''])
+
+                # out_list.append([start, end, val1, val2, val3, val4, ''])
+
+        pass
+
     def gen_zoom_layer(self,daShapefile, out_shp):
         '''
         生成zoom layer shp
@@ -538,7 +607,7 @@ class GenLayer:
 
         # print(x_range)
         # print(y_range)
-        file_name = '\\'.join(daShapefile.split('\\')[:-1]) + '\\config.txt'
+        file_name = '/'.join(daShapefile.split('/')[:-1]) + '\\config.txt'
         # print(file_name.decode('utf-8'))
         fw = open(file_name.decode('utf-8'), 'w')
         if x_range > y_range:
@@ -1059,29 +1128,75 @@ class Merge:
         # exit()
         # print(inlist)
         line_to_shp(inlist, output_fn)
-def main():
-    fdir = this_root+'190905\\dwg_to_shp\\'
+def main(fdir,f_excel):
+    # fdir = this_root+'190905\\dwg_to_shp\\jiang\\'
     flist = os.listdir(fdir)
-    genlayer = GenLayer()
+    genlayer = GenLayer(f_excel)
     for folder in flist:
-        shp_dir = fdir+folder+'\\'
+        shp_dir = fdir+folder+'/'
         shp_list = os.listdir(shp_dir)
         for shp in shp_list:
             if shp.endswith('Annotation.shp'):
-                fname = (shp_dir+shp).decode('gbk')
+                fname = (shp_dir+shp)
                 print(fname)
                 # print((shp_dir+'naizhang_ganta.shp').decode('gbk'))
-                genlayer.gen_naizhang_ganta_shp(fname.encode('utf-8'),(shp_dir+'naizhang_ganta.shp').decode('gbk').encode('utf-8'))
+                genlayer.gen_naizhang_ganta_shp(fname.encode('utf-8'),(shp_dir+'naizhang_ganta.shp').encode('utf-8'))
+                genlayer.gen_line_annotation_shp(fname.encode('utf-8'),(shp_dir+'line_annotation1.shp').encode('utf-8'))
                 # gen_xiangshi_biandianzhan_shp(fname.encode('utf-8'),(shp_dir+'xiangshi_biandianzhan.shp').decode('gbk').encode('utf-8'))
-                genlayer.gen_duanluqi_shp(fname.encode('utf-8'),(shp_dir+'duanluqi.shp').decode('gbk').encode('utf-8'))
-                genlayer.gen_gongbian_shp(fname.encode('utf-8'),(shp_dir+'gongbian.shp').decode('gbk').encode('utf-8'))
-                genlayer.gen_zhuanbian_shp(fname.encode('utf-8'),(shp_dir+'zhuanbian.shp').decode('gbk').encode('utf-8'))
-                genlayer.gen_zoom_layer(fname.encode('utf-8'),(shp_dir+'zoom_layer.shp').decode('gbk').encode('utf-8'))
-                genlayer.gen_biandianzhan_shp(fname.encode('utf-8'),(shp_dir+'biandianzhan.shp').decode('gbk').encode('utf-8'))
+                genlayer.gen_duanluqi_shp(fname.encode('utf-8'),(shp_dir+'duanluqi.shp').encode('utf-8'))
+                genlayer.gen_gongbian_shp(fname.encode('utf-8'),(shp_dir+'gongbian.shp').encode('utf-8'))
+                genlayer.gen_zhuanbian_shp(fname.encode('utf-8'),(shp_dir+'zhuanbian.shp').encode('utf-8'))
+                genlayer.gen_zoom_layer(fname.encode('utf-8'),(shp_dir+'zoom_layer.shp').encode('utf-8'))
+                genlayer.gen_biandianzhan_shp(fname.encode('utf-8'),(shp_dir+'biandianzhan.shp').encode('utf-8'))
 
         # exit()
 
+def gui():
+    Font = ('SimHei', 12)
+    if os.path.isfile(os.getcwd() + '\\config.cfg'):
+        config_r = open(os.getcwd() + '\\config.cfg', 'r')
+        lines = config_r.readlines()
+        param_dic = {}
+        for line in lines:
+            line = line.split('\n')
+            para = line[0].split('=')[0]
+            val = line[0].split('=')[1]
+            param_dic[para] = val
+        # if 'fdir' in param_dic:
+        try:
+            sg_input_dir = sg.Input(param_dic['fdir'].decode('gbk'))
+            sg_input_excel = sg.Input(param_dic['f_excel'].decode('gbk'))
+        except:
+            sg_input_excel = sg.Input('')
+            sg_input_dir = sg.Input('')
+    else:
+        sg_input_excel = sg.Input('')
+        sg_input_dir = sg.Input('')
+    layout1 = [[sg.Text('输入台账Excel'.decode('gbk'))],
+               [sg_input_excel, sg.FileBrowse()],
+               [sg.Text('定义目录文件'.decode('gbk'))],
+               [sg_input_dir, sg.FolderBrowse()],
+               [sg.OK()] ]
+    window1 = sg.Window('生成图层'.decode('gbk')).Layout(layout1)
 
+    while 1:
+
+        event1, values1 = window1.Read()
+        if event1 is None:
+            break
+        # print(values1)
+        f_excel = values1[0]
+        fdir = values1[1]
+        print(fdir)
+        print(f_excel)
+        config = codecs.open(os.getcwd() + '\\' + 'config.cfg', 'w')
+        config.write('fdir=' + fdir.encode('gbk') + '\n')
+        config.write('f_excel=' + f_excel.encode('gbk') + '\n')
+        config.close()
+
+        main(fdir+'/',f_excel)
+        sg.Popup('图层生成完毕！\n按OK结束'.decode('gbk'))
+        exit()
 
 if __name__ == '__main__':
 
@@ -1093,10 +1208,11 @@ if __name__ == '__main__':
     # gen_line_annotation()
     # main()
     # merge_point_shp('Annotation')
-    shptypes = ['biandianzhan','duanluqi','gongbian','zhuanbian','naizhang_ganta','zoom_layer']
-    M = Merge()
+    # shptypes = ['biandianzhan','duanluqi','gongbian','zhuanbian','naizhang_ganta','zoom_layer']
+    # M = Merge()
     # M.merge_daoxian()
-    M.merge_line_annotation_shp()
+    # M.merge_line_annotation_shp()
     # for shp_type in shptypes:
     #     M.merge_point_layer_shp(shp_type)
-    # pass
+    gui()
+    pass
