@@ -4,6 +4,7 @@ import arcpy
 import os
 import log_process
 import time
+import sys
 
 # this_root = os.getcwd()+'\\..\\'
 this_root = 'e:\\cui\\'
@@ -28,16 +29,16 @@ def check():
             print(folder)
     pass
 
-def run_dwg_to_shp():
+def run_dwg_to_shp(fdir,out_dir_):
     log = log_process.Logger('log.log')
-    fdir = this_root+'190905\\сюЁг\\'
+    # fdir = this_root+'190905\\сюЁг\\'
     flist = os.listdir(fdir)
 
     init_time = time.time()
     flag = 0
     for f in flist:
         start = time.time()
-        out_dir = this_root+'190905\\dwg_to_shp\\'+f.split('.')[0]
+        out_dir = out_dir_+f.split('.')[0]
         # print(f)
         # print(out_dir)
         # exit()
@@ -46,7 +47,7 @@ def run_dwg_to_shp():
             continue
         mk_dir(out_dir)
         # try:
-        print(out_dir)
+        print(out_dir.decode('gbk'))
         # exit()
         dwg_to_shp(fdir+f+'\\Annotation',out_dir)
         dwg_to_shp(fdir+f+'\\Polyline',out_dir)
@@ -71,7 +72,9 @@ def rename():
 
 def main():
     # rename()
-    run_dwg_to_shp()
+    fdir = sys.argv[1]+'\\'
+    out_dir = sys.argv[2]+'\\'
+    run_dwg_to_shp(fdir,out_dir)
 
 if __name__ == '__main__':
     main()

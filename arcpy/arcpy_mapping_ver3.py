@@ -3,7 +3,9 @@ import os
 import arcpy
 import time
 import codecs
-
+import sys
+argvs = sys.argv
+# print(argvs)
 this_root = 'E:\\cui\\'
 
 output_mxd = {'柱上用户变压器':'zhuanbian',
@@ -12,7 +14,7 @@ output_mxd = {'柱上用户变压器':'zhuanbian',
               '断路器':'duanluqi',
               '柱上变压器':'gongbian',
               # 'dwg_Polyline':'***********',
-              'line_annotation':'line_annotation',
+              'line_annotation':'line_annotation1',
               'zoom_layer':'zoom_layer',
               '电站':'biandianzhan'
                }
@@ -22,17 +24,19 @@ def mk_dir(dir):
         os.makedirs(dir)
 
 
-def mapping(dir):
+def mapping(dir,out_pic_dir):
     # 横竖选择
     f=open(dir+'\\'+'config.txt','r')
     line = f.readline()
     if line == 'heng':
         # mxd_file = 'D:\\project13\\heng_ver5.mxd'
         # mxd_file = this_root+'mxd\\template_heng.mxd'
-        mxd_file = r'E:\cui\190905\template_heng.mxd'
+        # mxd_file = r'E:\cui\190905\template_heng.mxd'
+        mxd_file = sys.argv[3]
     elif line == 'shu':
         # mxd_file = this_root + 'mxd\\template_shu.mxd'
-        mxd_file = r'E:\cui\190905\template_shu.mxd'
+        # mxd_file = r'E:\cui\190905\template_shu.mxd'
+        mxd_file = sys.argv[4]
     else:
         mxd_file = None
     # mxd_file = 'D:\\project13\\新制作shu.mxd'
@@ -72,8 +76,9 @@ def mapping(dir):
         os.remove(dir+'\\mxd.mxd')
     mxd.saveACopy(dir+'\\mxd.mxd','9.2')
     mk_dir(this_root+'output_pic\\')
-    outjpeg = this_root+'output_pic\\'+dir.split('\\')[-2]
-
+    # outjpeg = this_root+'output_pic\\'+dir.split('\\')[-2]
+    outjpeg = out_pic_dir+'\\'+dir.split('\\')[-2]
+    # print(outjpeg)
     arcpy.mapping.ExportToJPEG(mxd,outjpeg,data_frame='PAGE_LAYOUT',df_export_width=mxd.pageSize.width,df_export_height=mxd.pageSize.height,color_mode='24-BIT_TRUE_COLOR',resolution=300,jpeg_quality=100)
     print 'done'
 
@@ -83,14 +88,23 @@ def main():
     # dir = this_root+'190509\\民权线路cad\\dwg_to_shp\\10kV鲁10Ⅱ鲁西线\\'
     # dir = 'E:\\cui\\190905\\dwg_to_shp\\蒋1蒋蒋线\\'
     # mapping(dir)
-    dirs = 'E:\\cui\\190905\\dwg_to_shp\\'
+    # dirs = 'E:\\cui\\190905\\dwg_to_shp\\'
+    # for i in sys.argv:
+    #     print(i)
+    # exit()
+    dirs = sys.argv[1]
+    out_pic_dir = sys.argv[2]
+    # print(dirs)
+    # print(out_pic_dir)
+    # print(dirs)
     dir_list = os.listdir(dirs)
     for dir in dir_list:
         # dir = dirs+'\\'+dir.decode('gbk')+'\\'
         dir = dirs+'\\'+dir+'\\'
-        print(dir)
-        mapping(dir)
-    pass
+        print(dir.decode('gbk'))
+        mapping(dir,out_pic_dir)
+    # print(sys.argv)
+    # pass
 
 
 if __name__ == '__main__':

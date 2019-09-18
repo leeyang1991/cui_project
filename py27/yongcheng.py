@@ -3,7 +3,7 @@
 from osgeo import ogr
 import os
 # this_root = os.getcwd()+'\\..\\'
-this_root = 'E:\\cui\\'
+# this_root = 'E:\\cui\\'
 import gdal
 import xlrd
 import time
@@ -1128,6 +1128,8 @@ class Merge:
         # exit()
         # print(inlist)
         line_to_shp(inlist, output_fn)
+
+
 def main(fdir,f_excel):
     # fdir = this_root+'190905\\dwg_to_shp\\jiang\\'
     flist = os.listdir(fdir)
