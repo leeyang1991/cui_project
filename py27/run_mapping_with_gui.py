@@ -49,7 +49,7 @@ def dwg_to_shp():
         [sg.OK()]
     ]
 
-    window1 = sg.Window('dwg转shp'.decode('gbk')).Layout(layout1)
+    window1 = sg.Window('dwg转shp'.decode('gbk'),font=("Helvetica", 20)).Layout(layout1)
     while 1:
 
         event1, values1 = window1.Read()
@@ -128,7 +128,7 @@ def mapping():
             [sg_out_pic_dir, sg.FolderBrowse()],
             [sg.OK()]
     ]
-    window1 = sg.Window('arcpy制图'.decode('gbk')).Layout(layout1)
+    window1 = sg.Window('arcpy制图'.decode('gbk'),font=("Helvetica", 20)).Layout(layout1)
 
     while 1:
 
@@ -197,7 +197,7 @@ def gen_layer():
                [sg.Text('定义目录文件'.decode('gbk'))],
                [sg_input_dir, sg.FolderBrowse()],
                [sg.OK()] ]
-    window1 = sg.Window('生成图层'.decode('gbk')).Layout(layout1)
+    window1 = sg.Window('生成图层'.decode('gbk'),font=("Helvetica", 20)).Layout(layout1)
 
     while 1:
 
