@@ -13,7 +13,7 @@ import log_process
 from matplotlib import pyplot as plt
 
 
-f_excel = this_root + u'190725\\台账数据.xls'
+f_excel = u'E:\\cui\\190919\\湖南0919台账(1).xls'
 
 def mk_dir(dir):
     if not os.path.isdir(dir):
@@ -164,6 +164,73 @@ def gen_naizhang_ganta_shp(daShapefile,out_shp):
         if name_gbk in ganta:
             out_list.append([x,y,name_gbk,ganta[name_gbk],''])
     point_to_shp(out_list,out_shp)
+
+
+
+def gen_line_annotation_excel():
+    # f_excel = this_root + u'190714\\张桥所线路设备明细.xls'
+    bk = xlrd.open_workbook(f_excel)
+    sh = bk.sheet_by_name(u'导线')
+    nrows = sh.nrows
+    line_annotation = {}
+    for i in range(nrows):
+        if i + 1 == nrows:
+            continue
+        line_name = sh.cell_value(i + 1, 0)
+        line_start = sh.cell_value(i + 1, 2)
+        line_end = sh.cell_value(i + 1, 3)
+        zhixianmingcheng = sh.cell_value(i + 1, 4)
+        zhixianxinghao = sh.cell_value(i + 1, 5)
+        line_annotation[line_name] = [line_start,line_end,zhixianmingcheng,zhixianxinghao]
+
+    return line_annotation
+    pass
+
+
+def gen_line_annotation_shp(daShapefile,out_shp):
+    # print(1)
+    line_annotation = gen_line_annotation_excel()
+    driver = ogr.GetDriverByName("ESRI Shapefile")
+    dataSource = driver.Open(daShapefile, 0)
+    layer = dataSource.GetLayer()
+    # ganta = gen_naizhang_ganta_excel()
+    # out_list = []
+    # for name in line_annotation:
+    #     for feature in layer:
+    shp_pos_dic = {}
+    for feature in layer:
+        geom = feature.GetGeometryRef()
+        x = geom.GetX()
+        y = geom.GetY()
+        name = feature.GetField("RefName")
+        name_gbk = name.decode('utf-8')
+        shp_pos_dic[name_gbk] = [x,y]
+
+    in_list = []
+    for name in line_annotation:
+        start = line_annotation[name][0]
+        end = line_annotation[name][1]
+        zhixianmingcheng = line_annotation[name][2]
+        zhixianxinghao = line_annotation[name][3]
+
+        # print(start)
+        try:
+            point1 = shp_pos_dic[start]
+            point2 = shp_pos_dic[end]
+            in_list.append([point1,point2,name,'',zhixianmingcheng,zhixianxinghao,''])
+        except:
+            pass
+    line_to_shp(in_list, out_shp)
+    for i in in_list:
+        print(i)
+    # exit()
+        # if name_gbk in line_annotation:
+            # out_list.append([x, y, line_annotation[name_gbk][0], ''])
+
+            # out_list.append([start, end, val1, val2, val3, val4, ''])
+
+    pass
+
 
 
 
@@ -353,7 +420,7 @@ def gen_zhuanbian_excel():
             continue
         bianyaqi_name = sh.cell_value(i+1, 1)
         bianyaqi_yonghu = sh.cell_value(i+1, 1)
-        bianyaqi_rongliang = str(int(sh.cell_value(i+1, 2)))
+        # bianyaqi_rongliang = str(int(sh.cell_value(i+1, 2)))
         bianyaqi_xinghao = sh.cell_value(i+1, 3)
         val1 = bianyaqi_yonghu
 
@@ -939,7 +1006,7 @@ def merge_line_shp():
 
 
 def main():
-    fdir = 'E:\\cui\\190725\\dwg_to_shp\\'
+    fdir = 'E:\\cui\\190919\\dwg_to_shp\\'
     flist = os.listdir(fdir)
     for folder in flist:
         shp_dir = fdir+folder+'\\'
@@ -949,13 +1016,15 @@ def main():
                 fname = (shp_dir+shp).decode('gbk')
                 print(fname)
 
-                # gen_naizhang_ganta_shp(fname.encode('utf-8'),(shp_dir+'naizhang_ganta.shp').decode('gbk').encode('utf-8'))
+                gen_naizhang_ganta_shp(fname.encode('utf-8'),(shp_dir+'naizhang_ganta.shp').decode('gbk').encode('utf-8'))
                 # gen_xiangshi_biandianzhan_shp(fname.encode('utf-8'),(shp_dir+'xiangshi_biandianzhan.shp').decode('gbk').encode('utf-8'))
-                # gen_duanluqi_shp(fname.encode('utf-8'),(shp_dir+'duanluqi.shp').decode('gbk').encode('utf-8'))
-                # gen_gongbian_shp(fname.encode('utf-8'),(shp_dir+'gongbian.shp').decode('gbk').encode('utf-8'))
+                gen_duanluqi_shp(fname.encode('utf-8'),(shp_dir+'duanluqi.shp').decode('gbk').encode('utf-8'))
+                gen_gongbian_shp(fname.encode('utf-8'),(shp_dir+'gongbian.shp').decode('gbk').encode('utf-8'))
                 # gen_zhuanbian_shp(fname.encode('utf-8'),(shp_dir+'zhuanbian.shp').decode('gbk').encode('utf-8'))
+                gen_line_annotation_shp(fname.encode('utf-8'),
+                                                 (shp_dir + 'line_annotation1.shp').decode('gbk').encode('utf-8'))
                 gen_biandianzhan_shp(fname.encode('utf-8'),(shp_dir+'biandianzhan.shp').decode('gbk').encode('utf-8'))
-                # gen_zoom_layer(fname.encode('utf-8'),(shp_dir+'zoom_layer.shp').decode('gbk').encode('utf-8'))
+                gen_zoom_layer(fname.encode('utf-8'),(shp_dir+'zoom_layer.shp').decode('gbk').encode('utf-8'))
 
 
         # exit()

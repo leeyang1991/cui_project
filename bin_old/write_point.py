@@ -11,6 +11,8 @@ ogr.RegisterAll()
 
 
 def point_to_shp(inputlist,outSHPfn):
+    # print(outSHPfn)
+    # exit()
     fieldType = ogr.OFTString
     # Create the output shapefile
     shpDriver = ogr.GetDriverByName("ESRI Shapefile")

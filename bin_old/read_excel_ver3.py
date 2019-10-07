@@ -7,7 +7,7 @@ from collections import defaultdict
 
 class ReadExcel:
 
-    def __init__(self,fname1,fname2,fname3,fname4):
+    def __init__(self,fname1,fname2,fname4):
         '''
         :param fname1: D:\project13\input\data\北村农改台区\北村农改台区.xls
         :param fname2: D:\project13\input\data\北村农改台区\台账\计量箱与电能表的关系.xls
@@ -18,11 +18,11 @@ class ReadExcel:
         self.username = "城关1所智能表明细"
         self.fname1 = fname1
         self.fname2 = fname2
-        self.fname3 = fname3
+        # self.fname3 = fname3
         self.fname4 = fname4
         self.bk1 = xlrd.open_workbook(self.fname1)
         self.bk2 = xlrd.open_workbook(self.fname2)
-        self.bk3 = xlrd.open_workbook(self.fname3)
+        # self.bk3 = xlrd.open_workbook(self.fname3)
         self.bk4 = xlrd.open_workbook(self.fname4)
         self.write_new_excel()
 
@@ -147,16 +147,17 @@ class ReadExcel:
     def user_name(self):
         # D:\project13\input\邢口所用户名称.xls字典
         # sh = self.bk3.sheet_by_name(self.username.decode('gbk'))
-        sh = self.bk3.sheet_by_index(0)
+        # sh = self.bk3.sheet_by_index(0)
+        sh = self.bk2.sheet_by_index(0)
         nrows = sh.nrows
         dianbiao_code = []
         user_name = []
         for i in range(nrows):
             if i == nrows - 2:
                 break
-            dianbiao_code.append(sh.cell_value(i+2,6))
+            dianbiao_code.append(sh.cell_value(i+2,3))
             # dianbiao_code.append(sh.cell_value(i+2,9))
-            user_name.append(sh.cell_value(i+2,4))
+            user_name.append(sh.cell_value(i+2,6))
             # user_name.append(sh.cell_value(i+2,1))
 
         user_name_dic = {}
@@ -175,18 +176,22 @@ class ReadExcel:
         bk_w = xlwt.Workbook()
         sheet1 = bk_w.add_sheet('sheet 1')
         for i in range(nrows):
-            if nrows - 2 == i:
+            if nrows - 3 == i:
                 break
-            jiliangxiang = (sh.cell_value(i+2,1))
-            dianbiao = (sh.cell_value(i+2,3))
-            sheet1.write(i+2,1,jiliangxiang)
-            sheet1.write(i+2,3,dianbiao)
+            jiliangxiang = sh.cell_value(i+3,1)
+            dianbiao = sh.cell_value(i+3,3)
+            # print(user_name_dic[dianbiao])
             try:
-                sheet1.write(i+2,6,user_name_dic[dianbiao])
+                if len(user_name_dic[dianbiao])>0:
+                    sheet1.write(i+2,6,user_name_dic[dianbiao])
+                    sheet1.write(i + 2, 1, jiliangxiang)
+                    sheet1.write(i + 2, 3, dianbiao)
             except:
-                sheet1.write(i+2,6,'')
+                # sheet1.write(i+2,6,'')
+                pass
         # fname2 = 'D:\project13\input\data\北村农改台区\台账\计量箱与电能表的关系.xls'
         bk_w.save((self.fname2+'_new.xls'))
+        # exit()
 
 
     def full_and_spare_and_transparent_jiliangxiang(self):
@@ -205,11 +210,14 @@ class ReadExcel:
                 jiliangxiang_code.append(sh.cell_value(i+2,1))
                 name_list.append(sh.cell_value(i+2,6))
         #获取列表中重复元素的索引
+        # print(jiliangxiang_code)
+        # exit()
         s = jiliangxiang_code
         d = defaultdict(list)
         for k,va in [(v,i) for i,v in enumerate(s)]:
             d[k].append(va)
-
+        # print(d)
+        # exit()
         dianbiao_dic = {}
         temp_list=[]
         for i in set(jiliangxiang_code):
@@ -221,10 +229,15 @@ class ReadExcel:
             except:
                 pass
 
-
+        # for i in dianbiao_dic:
+        #     print(i,dianbiao_dic[i])
+        # exit()
         red = []
         black = []
         for i in d:
+            # print(d[i])
+            # print(jiliangxiang_dic[i][3])
+            # print('*')
             try:
                 if len(d[i]) < jiliangxiang_dic[i][3]:
                     red.append([i,jiliangxiang_dic[i][0],jiliangxiang_dic[i][1],jiliangxiang_dic[i][2]])
@@ -252,12 +265,13 @@ class ReadExcel:
             if i == nrows - 1:
                 break
             PMS.append(sh.cell_value(i+1,1))
-            taiqu_code.append(sh.cell_value(i+1,2))
-            taiqu_name.append(sh.cell_value(i+1,3))
+            # taiqu_code.append(sh.cell_value(i+1,2))
+            taiqu_code.append('')
+            taiqu_name.append(sh.cell_value(i+1,0))
             bianyaqi_type.append(sh.cell_value(i+1,4))
             bianyaqi_content.append(int(sh.cell_value(i+1,5)))
             prime_line_type.append(sh.cell_value(i+1,6))
-            branch_line_type.append('')
+            branch_line_type.append(sh.cell_value(i+1,7))
         info_dic = {}
         for i in range(len(PMS)):
             info_dic[i] = [PMS[i],taiqu_code[i],taiqu_name[i],bianyaqi_type[i],bianyaqi_content[i],prime_line_type[i],branch_line_type[i]]
@@ -292,9 +306,12 @@ class ReadExcel:
 
     def dianlan(self):
         try:
-            sh = self.bk1.sheet_by_name("35.低压电缆段（可选）".decode('gbk'))
+            try:
+                sh = self.bk1.sheet_by_name("35.低压电缆段（可选）".decode('gbk'))
+            except:
+                sh = self.bk1.sheet_by_name("35.低压电缆段".decode('gbk'))
         except:
-            sh = self.bk1.sheet_by_name("35.低压电缆段".decode('gbk'))
+            return None
         nrows = sh.nrows
         lon_list = []
         lat_list = []
@@ -339,7 +356,10 @@ class ReadExcel:
         return p1_list,p2_list
 
     def fenzhiiang(self):
-        sh = self.bk1.sheet_by_name("34.低压电缆分支箱".decode('gbk'))
+        try:
+            sh = self.bk1.sheet_by_name("34.低压电缆分支箱".decode('gbk'))
+        except:
+            return None
         nrows = sh.nrows
         coor_dic = {}
         for i in range(nrows):
@@ -357,15 +377,15 @@ class ReadExcel:
 
 
 if __name__ == '__main__':
-    fname1 = 'D:\project13\input\data\金城19#东关大堤北\金城19#东关大堤北.xls'
-    fname2 = 'D:\project13\input\data\金城19#东关大堤北\台账\计量箱与电能表的关系.xls'
-    fname3 = 'D:\project13\input\城1所.xlsx'
-    fname4 = 'D:\project13\input\图例信息.xlsx'
+    fname1 = r'E:\cui\191007\1007第一批出图\1007第一批出图\翠翠--板木\第一批\0418-大李庄502-刘小强 张晓伟\大李庄502.xls'
+    fname2 = r'E:\cui\191007\1007第一批出图\1007第一批出图\翠翠--板木\第一批\0418-大李庄502-刘小强 张晓伟\台账\计量箱与电能表的关系.xls'
+    # fname3 = 'D:\project13\input\城1所.xlsx'
+    fname4 = r'E:\cui\191007\1007第一批出图\1007第一批出图\图例.xlsx'
 
-    r = ReadExcel(fname1,fname2,fname3,fname4)
-    # print r.full_and_spare_and_transparent_jiliangxiang()[0]
-    # print r.full_and_spare_and_transparent_jiliangxiang()[1]
-    # print r.full_and_spare_and_transparent_jiliangxiang()[2]
-    # print r.count_intalled_jiliangxiang()
-    # print r.count_total_jiliangxiang()
-    r.dianlan()
+    r = ReadExcel(fname1,fname2,fname4)
+    print r.full_and_spare_and_transparent_jiliangxiang()[0]
+    print r.full_and_spare_and_transparent_jiliangxiang()[1]
+    print r.full_and_spare_and_transparent_jiliangxiang()[2]
+    print r.count_intalled_jiliangxiang()
+    print r.count_total_jiliangxiang()
+    # r.dianlan()

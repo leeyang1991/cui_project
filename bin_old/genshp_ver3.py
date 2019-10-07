@@ -4,31 +4,43 @@ import read_excel_ver3
 import write_point as wp
 import write_line as wl
 import time
+import sys
+
+args = sys.argv
 
 
-fname3 = 'D:\\project13\\input\\城内.xlsx'
-fname4 = 'D:\\project13\\input\\图例信息.xls'
+# fname3 = 'D:\\project13\\input\\城内.xlsx'
+# fname4 = r'E:\cui\191007\1007第一批出图\1007第一批出图\图例.xlsx'
+# this_root = r'E:\cui\191007\1007第一批出图\1007第一批出图\翠翠--板木\第一批\\'
+# out_dir = r''
 
-yonghujierudian = 1
+yonghujierudian = 0
 mapping_break_flag = 0
 
 
 #1生成变压器shp点
 def bianyaqi_shp(r,f_dir):
     bianyaqi_lon, bianyaqi_lat, bianyaqi_label = r.didianyapeidianxiang()
+    # print(bianyaqi_lon, bianyaqi_lat, bianyaqi_label)
     bianyaqi_label = bianyaqi_label
-    directory = 'D:/project13/output//'+f_dir
+    # print(f_dir)
+    # exit()
+    directory = f_dir
     if not os.path.isdir(directory):
         os.mkdir(directory)
-    fname = directory+'\\bianyaqi.shp'
-
+    fname = directory+'bianyaqi.shp'
+    # fname = fname.encode('gbk')
+    # print(directory)
+    # exit()
+    # print(bianyaqi_lon, bianyaqi_lat, bianyaqi_label)
     wp.point_to_shp([[bianyaqi_lon,bianyaqi_lat,str(bianyaqi_lon),str(bianyaqi_lat),bianyaqi_label,'','']],fname)
+    # wp.point_to_shp([[bianyaqi_lon,bianyaqi_lat,'','','','','']],fname)
 
 #2生成电线杆shp点
 def dianxiangan_dian_shp(r,f_dir):
     if r.dianxiangan():
         dianxiangan_lon, dianxiangan_lat, dianxiangan_name, dianxiangan_qianduan = r.dianxiangan()
-        directory = 'D:\\project13\\output\\\\'+f_dir
+        directory = f_dir
         dianxiangan_coor_dic = {}
         for i in range(len(dianxiangan_lon)):
             dianxiangan_coor_dic[i] = [dianxiangan_lon[i],dianxiangan_lat[i],dianxiangan_qianduan[i],dianxiangan_name[i]]
@@ -46,7 +58,7 @@ def dianxiangan_dian_shp(r,f_dir):
 def qiangzhijia_shp(r,f_dir):
     if r.diyaqiangzhijia():
         lon_list,lat_list,qianduan,_ = r.diyaqiangzhijia()
-        directory = 'D:\\project13\\output\\\\'+f_dir
+        directory = f_dir
         if not os.path.isdir(directory):
             os.mkdir(directory)
         qiangzhijia_coor_dic={}
@@ -64,7 +76,7 @@ def qiangzhijia_shp(r,f_dir):
 #4生成红色黑色透明计量箱
 def jiliangxiang_shp(r,f_dir):
     transparent, red, black = r.full_and_spare_and_transparent_jiliangxiang()
-    directory = 'D:\\project13\\output\\\\'+f_dir
+    directory = f_dir
     if not os.path.isdir(directory):
         os.mkdir(directory)
     fname_trans = directory+'\\transparent'
@@ -160,7 +172,7 @@ def dianxiangan_line_shp(r,f_dir):
     if dianxiangan_line(r):
         p1_list,p2_list,distance,total_distance = dianxiangan_line(r)
 
-        directory = 'D:\\project13\\output\\\\'+f_dir
+        directory = f_dir
         if not os.path.isdir(directory):
             os.mkdir(directory)
         fname = directory+'\\dianxiangan_line'
@@ -204,7 +216,7 @@ def qiangzhijia_line(r):
 def qiangzhijia_line_shp(r,f_dir):
     if qiangzhijia_line(r):
         p1_list,p2_list,total_distance,distancestr = qiangzhijia_line(r)
-        directory = 'D:\\project13\\output\\\\'+f_dir
+        directory = f_dir
         if not os.path.isdir(directory):
             os.mkdir(directory)
         fname = directory+'\\qiangzhijia_line.shp'
@@ -244,7 +256,7 @@ def qiangzhijia_line2_shp(r,f_dir):
         p1_list,p2_list,_,distancestr = qiangzhijia_line2(r)
         # print p1_list
         # print p2_list
-        directory = 'D:\\project13\\output\\\\'+f_dir
+        directory = f_dir
         if not os.path.isdir(directory):
             os.mkdir(directory)
         fname = directory+'\\qiangzhijia_line2.shp'
@@ -256,8 +268,10 @@ def qiangzhijia_line2_shp(r,f_dir):
 
 #7生成电缆线
 def dianlanxian_line_shp(r,f_dir):
+    if r.dianlan() == None:
+        return None
     p1_list, p2_list = r.dianlan()
-    directory = 'D:\\project13\\output\\\\'+f_dir
+    directory = f_dir
     if not os.path.isdir(directory):
         os.mkdir(directory)
     fname = directory+'\\dianlan.shp'
@@ -268,6 +282,8 @@ def dianlanxian_line_shp(r,f_dir):
     wl.line_to_shp(lines,fname)
 
 def dianlanian_line_distance(r):
+    if r.dianlan() == None:
+        return 0
     p1_list, p2_list = r.dianlan()
     distance = []
     for i in range(len(p1_list)):
@@ -278,7 +294,7 @@ def dianlanian_line_distance(r):
 #8生成分支箱
 def fenzhixiang_points(r,f_dir):
     coor_dic = r.fenzhiiang()
-    directory = 'D:\\project13\\output\\\\'+f_dir
+    directory = f_dir
     if not os.path.isdir(directory):
         os.mkdir(directory)
     fname = directory+'\\fenzhixiang'
@@ -306,7 +322,7 @@ def select_vertical_horizontal(r,f_dir):
             lon.append(lon_list[i])
             lat.append(lat_list[i])
     bianyaqi_lon,bianyaqi_lat,_ = r.didianyapeidianxiang()
-    directory = 'D:\\project13\\output\\'+f_dir
+    directory = f_dir
     if not os.path.isdir(directory):
         os.mkdir(directory)
     fname = directory+'\\extent_lyr.shp'
@@ -370,7 +386,7 @@ def gen_text_info(r,f_dir):
         if PMS_ID == info_dic[i][0]:
             taiqu_code,taiqu_name,bianyaqi_type,bianyaqi_content,prime_line_type,branch_line_type = info_dic[i][1],info_dic[i][2],info_dic[i][3],info_dic[i][4],info_dic[i][5],info_dic[i][6]
             import codecs
-            fw = codecs.open('D:\\project13\\output\\\\'+f_dir+'\\info.txt','w','utf-8')
+            fw = codecs.open(f_dir+'\\info.txt','w','utf-8')
             fw.write(taiqu_code+',')
             fw.write(taiqu_name+',')
             fw.write(str(bianyaqi_type)+',')
@@ -412,7 +428,7 @@ def yonghujierudian_line_shp(r,f_dir):
     if yonghujierudian_line(r):
         p1_list,p2_list = yonghujierudian_line(r)
 
-        directory = 'D:\\project13\\output\\\\'+f_dir
+        directory = f_dir
         if not os.path.isdir(directory):
             os.mkdir(directory)
         fname = directory+'\\yonghujierudian_line'
@@ -443,7 +459,7 @@ def yonghujierudian_jiliangxiang_line(r):
 def yonghujierudian_jiliangxiang_line_shp(r,f_dir):
     p1_list,p2_list = yonghujierudian_jiliangxiang_line(r)
 
-    directory = 'D:\\project13\\output\\\\'+f_dir
+    directory = f_dir
     if not os.path.isdir(directory):
         os.mkdir(directory)
     fname = directory+'\\yonghujierudian_jiliangxiang_line'
@@ -455,13 +471,15 @@ def yonghujierudian_jiliangxiang_line_shp(r,f_dir):
 
 
 
-def check_files():
-    root = 'D:/project13/input/data/'
+def check_files(root):
+    # root = this_root
     flist_root = os.listdir(root)
     fname1_list = []
     fname2_list = []
     for i in flist_root:
+        # fname1_list
         flist_dir = os.listdir(root+i)
+        fname2_list.append(root + i + '/台账' + '计量箱与电能表的关系.xls')
         for j in flist_dir:
             # print(j.decode('gbk'))
             # print(j.decode('gbk'))
@@ -471,14 +489,23 @@ def check_files():
             if '台账' not in j and 'CAD' not in j and '计量箱' not in j and (j.endswith('xls') or j.endswith('xlsx')):
                 fname1_list.append(root+i+'/'+j)
 
+            # print(j.decode('gbk'))
 
-            if j.decode('gbk') == '计量箱与电能表的关系.xls'.decode('gbk') or j.decode('gbk') == '计量箱与电能表的关系.xlsx'.decode('gbk'):
-                # print(j.decode('gbk'),1321321)
-                fname2_list.append(root + i + '/' + j)
+            # if j.decode('gbk') == '计量箱与电能表的关系.xls'.decode('gbk') or j.decode('gbk') == '计量箱与电能表的关系.xlsx'.decode('gbk'):
+            #     # print(j.decode('gbk'),1321321)
+            #     fname2_list.append(root + i + '/' + j)
+            # else:
 
-
-        # exit()
+    # fname2_list = set(fname2_list)
+    # print(fname1_list)
+    # print(fname2_list)
+    # for i in fname1_list:
+    #     print(i.decode('gbk'))
+    # for i in fname2_list:
+    #     print(i.decode('gbk'))
+    # exit()
     j = 0
+        # exit()
 
     for i in range(len(fname1_list)):
         j +=1
@@ -491,64 +518,121 @@ def check_files():
         print '---------------------'
         # exit()
         break_flag = 0
-        if fname1.split('/')[4] != fname2.split('/')[4]:
-            print fname1.decode('gbk').split('/')[4]
+        if fname1.split('/')[-2] != fname2.split('/')[-2]:
+            print fname1.decode('gbk').split('/')[-2]
             print 'error'
-            print fname2.decode('gbk').split('/')[4]
+            print fname2.decode('gbk').split('/')[-2]
             break_flag = 1
         if break_flag == 1:
+            time.sleep(1)
             raise IOError('this directory is invalid')
 
-def delete_output():
-    fdir = r'd:\\project13\\output\\'
+def delete_output(fdir):
+    # fdir = r'd:\\project13\\output\\'
+    fdir = fdir+'\\shp\\'
+    fdir = fdir.decode('gbk')
+    # print(fdir)
     if os.path.isdir(fdir):
-        folders = os.listdir(fdir)
-        for folder in folders:
-            file_list = os.listdir(fdir+folder)
-            for f in file_list:
-                os.remove(fdir+folder+'\\'+f)
-            os.removedirs(fdir+folder)
+        for f in os.listdir(fdir):
+            os.remove(fdir+f)
+    # if os.path.isdir(fdir):
+    #     folders = os.listdir(fdir)
+    #     for folder in folders:
+    #         file_list = os.listdir(fdir+folder)
+    #         # for f in file_list:
+    #         #     os.remove(fdir+folder+'\\'+f)
+    #         os.removedirs(fdir+folder)
 
 
 
-def main(fname1,fname2,fname3,fname4,output_dir):
+def main(fname1,fname2,fname4,output_dir):
     #创建输出文件夹
-    if not os.path.isdir('d:\\project13\\output_pic\\'):
-        os.mkdir('d:\\project13\\output_pic\\')
-    if not os.path.isdir('d:\\project13\\output\\'):
-        os.mkdir('d:\\project13\\output\\')
+    # if not os.path.isdir('d:\\project13\\output_pic\\'):
+    #     os.mkdir('d:\\project13\\output_pic\\')
+    # if not os.path.isdir('d:\\project13\\output\\'):
+    #     os.mkdir('d:\\project13\\output\\')
+    #
+    #
+    # for i in os.listdir('d:/project13/input/data/'):
+    #     if not os.path.isdir('d:/project13/output/'+i):
+    #         os.mkdir('d:\\project13\\output\\'+i)
+    #         # print i.decode('gbk')
 
 
-    for i in os.listdir('d:/project13/input/data/'):
-        if not os.path.isdir('d:/project13/output/'+i):
-            os.mkdir('d:\\project13\\output\\'+i)
-            # print i.decode('gbk')
+    print(fname1)
+    print(fname2)
+    print(fname4)
+    r = read_excel_ver3.ReadExcel(fname1,fname2,fname4)
+    # try:
+    # print(output_dir)
+    output_dir = output_dir.encode('gbk')
+    # exit()
+    try:
+        bianyaqi_shp(r,output_dir)
+        print '变压器绘制完成'.decode('gbk')
+    except:
+        print('无变压器'.decode('gbk'))
 
+    try:
+        dianxiangan_dian_shp(r,output_dir)
+        print '电线杆绘制完成'.decode('gbk')
+    except:
+        print('无电线杆'.decode('gbk'))
 
+    try:
+        qiangzhijia_shp(r,output_dir)
+        print '墙支架绘制完成'.decode('gbk')
+    except:
+        print '无墙支架'.decode('gbk')
 
-    r = read_excel_ver3.ReadExcel(fname1,fname2,fname3,fname4)
-    bianyaqi_shp(r,output_dir)
-    print '变压器绘制完成'.decode('gbk')
-    dianxiangan_dian_shp(r,output_dir)
-    print '电线杆绘制完成'.decode('gbk')
-    qiangzhijia_shp(r,output_dir)
-    print '墙支架绘制完成'.decode('gbk')
-    jiliangxiang_shp(r,output_dir)
-    print '计量箱绘制完成'.decode('gbk')
-    dianxiangan_line_shp(r,output_dir)
-    print '电线杆连线完成'.decode('gbk')
-    qiangzhijia_line_shp(r,output_dir)
-    print '墙支架与电线杆连线完成'.decode('gbk')
-    qiangzhijia_line2_shp(r,output_dir)
-    print '墙支架与墙支架连线完成'.decode('gbk')
-    select_vertical_horizontal(r,output_dir)
-    print 'extent layer绘制完成'.decode('gbk')
-    gen_text_info(r,output_dir)
-    print '信息文件生成完成'.decode('gbk')
-    dianlanxian_line_shp(r,output_dir)
-    print '电缆线连线完成'.decode('gbk')
-    fenzhixiang_points(r,output_dir)
-    print '分支箱绘制完成'.decode('gbk')
+    try:
+        jiliangxiang_shp(r,output_dir)
+        print '计量箱绘制完成'.decode('gbk')
+    except:
+        print '无计量箱'.decode('gbk')
+
+    try:
+        dianxiangan_line_shp(r,output_dir)
+        print '电线杆连线完成'.decode('gbk')
+    except:
+        print '无电线杆'.decode('gbk')
+
+    try:
+        qiangzhijia_line_shp(r,output_dir)
+        print '墙支架与电线杆连线完成'.decode('gbk')
+    except:
+        print '无墙支架'.decode('gbk')
+
+    try:
+        qiangzhijia_line2_shp(r,output_dir)
+        print '墙支架与墙支架连线完成'.decode('gbk')
+    except:
+        print '无墙支架'.decode('gbk')
+
+    try:
+        select_vertical_horizontal(r,output_dir)
+        print 'extent layer绘制完成'.decode('gbk')
+    except:
+        print 'extent layer error'.decode('gbk')
+
+    try:
+        gen_text_info(r,output_dir)
+        print '信息文件生成完成'.decode('gbk')
+    except:
+        print '图例信息匹配失败'.decode('gbk')
+
+    try:
+        dianlanxian_line_shp(r,output_dir)
+        print '电缆线连线完成'.decode('gbk')
+    except:
+        print '无电缆'.decode('gbk')
+
+    try:
+        fenzhixiang_points(r,output_dir)
+        print '分支箱绘制完成'.decode('gbk')
+    except:
+        print '无分支箱'.decode('gbk')
+
     if yonghujierudian:
         yonghujierudian_line_shp(r,output_dir)
         yonghujierudian_jiliangxiang_line_shp(r,output_dir)
@@ -559,19 +643,26 @@ def main(fname1,fname2,fname3,fname4,output_dir):
 
 
 
-if __name__ == '__main__':
-    delete_output()
-    check_files()
-    print 'files are all valid'
-    import time
+def gen_layer(root,fname4):
+    root = root+'/'
+
+    # check_files(root)
+    # exit()
+    # print 'files are all valid'
+
     start = time.time()
     #asdf
-    root = 'D:/project13/input/data/'
+    # root = this_root
     flist_root = os.listdir(root)
     fname1_list = []
     fname2_list = []
     for i in flist_root:
+        print(root+'/'+i)
+
+        delete_output(root+'\\'+i)
+        # exit()
         flist_dir = os.listdir(root+i)
+        fname2_list.append(root + i + '/台账/' + '计量箱与电能表的关系.xls')
         for j in flist_dir:
             # print(j.decode('gbk'))
             # print(j.decode('gbk'))
@@ -582,9 +673,9 @@ if __name__ == '__main__':
                 fname1_list.append(root+i+'/'+j)
 
 
-            if j.decode('gbk') == '计量箱与电能表的关系.xls'.decode('gbk') or j.decode('gbk') == '计量箱与电能表的关系.xlsx'.decode('gbk'):
+            # if j.decode('gbk') == '计量箱与电能表的关系.xls'.decode('gbk') or j.decode('gbk') == '计量箱与电能表的关系.xlsx'.decode('gbk'):
                 # print(j.decode('gbk'),1321321)
-                fname2_list.append(root + i + '/' + j)
+                # fname2_list.append(root + i + '/' + j)
     # print len(fname1_list)
     # print len(fname2_list)
     # for i in range(len(fname1_list)):
@@ -594,8 +685,11 @@ if __name__ == '__main__':
 
 
     j = 0
-    mapping_break_flag = 0
+
     total = len(fname1_list)
+    # for i in fname1_list:
+    #     print(i)
+    # exit()
     for i in range(len(fname1_list)):
         j +=1
         print j,'/',total
@@ -607,14 +701,14 @@ if __name__ == '__main__':
         print '---------------------'
 
         #检查已做文件夹，提高效率避免重复计算
-        try:
-            files_number = [44,41,42,32,26,35]
-            check_files_list = os.listdir('d:\\project13\\output\\'+flist_root[i])
-            if len(check_files_list) in files_number:
-                print flist_root[i].decode('gbk'),'已经制作'.decode('gbk')
-                continue
-        except:
-            pass
+        # try:
+        #     files_number = [44,41,42,32,26,35]
+        #     check_files_list = os.listdir('d:\\project13\\output\\'+flist_root[i])
+        #     if len(check_files_list) in files_number:
+        #         print flist_root[i].decode('gbk'),'已经制作'.decode('gbk')
+        #         continue
+        # except:
+        #     pass
 
 
         # debug
@@ -626,10 +720,25 @@ if __name__ == '__main__':
         #     or fname1 == 'D:/project13/input/data/瓦岗103/瓦岗103.xls':
         #
         #     continue
-        try:
-            main(fname1.decode('gbk'),fname2.decode('gbk'),fname3.decode('gbk'),fname4.decode('gbk'),flist_root[i])
-        except Exception as e:
-            print(e)
+        # try:
+        # print(fname2.decode('gbk'))
+        # print(fname1.decode('gbk'))
+        # print(fname2.decode('gbk'))
+        # print(fname4.decode('gbk'))
+        out_dir = root+flist_root[i]+'\\shp\\'
+        out_dir = out_dir.decode('gbk')
+        # exit()
+        print(out_dir)
+        # exit()
+        if not os.path.isdir(out_dir):
+            os.mkdir(out_dir)
+        # print(out_dir.decode('gbk'))
+        # print(flist_root[i])
+        # exit()
+        main(fname1.decode('gbk'),fname2.decode('gbk'),fname4.decode('gbk'),out_dir)
+        # exit()
+        # except Exception as e:
+        #     print(e)
 
 
 
@@ -649,6 +758,14 @@ if __name__ == '__main__':
 
 
     # if mapping_break_flag == 0:
-    os.system('C:\\Python27_for_arcgis\\ArcGIS10.2\\python.exe D:\\project13\\bin\\arcpy_mapping_ver3.py')
-    end = time.time()
-    print 'running duration',round((end-start),2)
+    # os.system('C:\\Python27_for_arcgis\\ArcGIS10.2\\python.exe D:\\project13\\bin\\arcpy_mapping_ver3.py')
+    # end = time.time()
+    # print 'running duration',round((end-start),2)
+
+
+if __name__ == '__main__':
+    for i in args:
+        print(i)
+    exit()
+    fname4 = r'E:\cui\191007\1007第一批出图\1007第一批出图\图例.xlsx'
+    # gen_layer(this_root,fname4)

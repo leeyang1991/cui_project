@@ -3,10 +3,13 @@ import os
 import arcpy
 import time
 import codecs
-
+import sys
+args = sys.argv
+# print(args)
+# exit()
 # root = 'D:\\project13\\output\\板木所\\S2017-03-22 1008马庄西变压器1\\'
 
-ver = 3
+# ver = 3
 
 output_mxd3 = {'transparent_jiliangxiang':'transparent',
               '变压器':'bianyaqi','低压墙支架':'qiangzhijia',
@@ -21,9 +24,7 @@ output_mxd3 = {'transparent_jiliangxiang':'transparent',
               '低压电缆':'dianlan',
               'yonghujierudian_line':'yonghujierudian_line',
               'yonghujierudian_jiliangxiang_line':'yonghujierudian_jiliangxiang_line'
-
               }
-
 
 output_mxd1 = {'transparent_jiliangxiang':'transparent_jiliangxiang',
               '变压器':'bianyaqi','低压墙支架':'qiangzhijia',
@@ -35,29 +36,19 @@ output_mxd1 = {'transparent_jiliangxiang':'transparent_jiliangxiang',
               'extent_lyr':'extent_lyr',
               'qiangzhijia_line2':'qiangzhijia_line2'}
 
-if ver == 1:
-    output_mxd = output_mxd1
-elif ver == 3:
-    output_mxd = output_mxd3
+output_mxd = output_mxd3
 
-
-# arcpy.env.workspace = r'D:\\project13\\output\\板木所\\S2017-03-22 1008马庄西变压器1\\'
-
-if not os.path.isdir('D:\\project13\\output'):
-    os.mkdir('D:\\project13\\output')
-if not os.path.isdir('D:\\project13\\output_pic'):
-    os.mkdir('D:\\project13\\output_pic')
-def mapping(dir):
-    if ver == 1:
-        dir = 'data\\'+dir
-    elif ver == 3:
-        dir = dir
-    f=open(r'D:\\project13\\output\\\\'+dir+'\\'+'select.txt','r')
+def mapping(dir,outjpgdir):
+    # if ver == 1:
+    #     dir = 'data\\'+dir
+    # elif ver == 3:
+    #     dir = dir
+    f=open(dir+'\\'+'select.txt','r')
     line = f.readline()
     if line == 'heng':
-        mxd_file = 'D:\\project13\\heng_ver5.mxd'
+        mxd_file = args[-2]
     elif line == 'shu':
-        mxd_file = 'D:\\project13\\shu_ver5.mxd'
+        mxd_file = args[-1]
     else:
         mxd_file = None
     # mxd_file = 'D:\\project13\\新制作shu.mxd'
@@ -66,8 +57,6 @@ def mapping(dir):
 
     workplace = 'SHAPEFILE_WORKSPACE'
 
-
-
     for i in output_mxd:
         print '绘制'.decode('gbk')+i.decode('gbk')
         lyr = arcpy.mapping.ListLayers(mxd,i,df0)[0]
@@ -75,22 +64,25 @@ def mapping(dir):
         # print lyr.name
         # print output_mxd[i],'output_mxd[i]'
         try:
-            lyr.replaceDataSource(r'D:\\project13\\output\\'+dir,workplace,output_mxd[i])
+            lyr.replaceDataSource(dir,workplace,output_mxd[i])
         except:
             print 'no '+i.decode('gbk')
 
     extent_lyr = arcpy.mapping.ListLayers(mxd,output_mxd['extent_lyr'],df0)[0]
     df0.extent = extent_lyr.getSelectedExtent()
 
-    info_text=codecs.open(r'D:\\project13\\output\\\\'+dir+'\\'+'info.txt','r')
-    info = info_text.readline()
-    info = info.split(',')
-    info1 = []
-    for i in info:
-        if i == '':
-            i = ' '
-        info1.append(i)
-    info = info1
+    try:
+        info_text=codecs.open(dir+'\\'+'info.txt','r')
+        info = info_text.readline()
+        info = info.split(',')
+        info1 = []
+        for i in info:
+            if i == '':
+                i = ' '
+            info1.append(i)
+        info = info1
+    except:
+        info = [' ']*100
     for textElement in arcpy.mapping.ListLayoutElements(mxd,'TEXT_ELEMENT'):
         try:
             if textElement.name == '台区编号'.decode('gbk'):
@@ -113,71 +105,38 @@ def mapping(dir):
                 textElement.text=(info[8].decode('gbk'))
         except Exception,e:
             print Exception,e
-    dir = dir.encode('gbk')
-    print 'saving mxd to',('D:\\project13\\output\\\\'+dir+'\\mxd.mxd').decode('gbk')
+    # dir = dir
+    print 'saving mxd to',(dir+'\\mxd.mxd').decode('gbk')
     dir = dir.decode('gbk')
-    if os.path.isfile('D:\\project13\\output\\\\'+dir+'\\mxd.mxd'):
-        os.remove('D:\\project13\\output\\\\'+dir+'\\mxd.mxd')
-    mxd.saveACopy('D:\\project13\\output\\\\'+dir+'\\mxd.mxd','9.2')
+    if os.path.isfile(dir+'\\mxd.mxd'):
+        os.remove(dir+'\\mxd.mxd')
+    mxd.saveACopy(dir+'\\mxd.mxd','9.2')
 
-    if ver == 3:
-        outjpeg = 'D:\\project13\\output_pic\\'+dir
-    elif ver == 1:
-        dir = dir.split('\\')[1]
-        print dir
-        outjpeg = 'D:\\project13\\output_pic\\'+dir
+    # if ver == 3:
+    if info[1] == ' ':
+        outjpeg = outjpgdir+dir.split('\\')[-2]
     else:
-        outjpeg = None
+        outjpeg = outjpgdir+info[1].decode('utf-8')
+
     arcpy.mapping.ExportToJPEG(mxd,outjpeg,data_frame='PAGE_LAYOUT',df_export_width=mxd.pageSize.width,df_export_height=mxd.pageSize.height,color_mode='8-BIT_GRAYSCALE',resolution=300,jpeg_quality=100)
     print 'done'
-# mapping()
-if ver == 1:
-    folder_list = os.listdir('D:\\project13\\output\\data\\')
-elif ver == 3:
-    folder_list = os.listdir('D:\\project13\\output\\')
-else:
-    folder_list = []
-# if os.path.isfile('../mapping_log.txt'):
-#     f = open('../log.txt','r')
-#     lines = f.readlines()
-#     f.close()
-#
-# else:
-#     lines = []
-# #
-# f = open('../mapping_log.txt','w')
-# f.write(''.join(lines))
 
-j = 0
-total = len(folder_list)
-for folder in folder_list:
 
-    j+=1
-    print j,'/',total
-    print folder.decode('gbk')
-    #
-    try:
-        mapping(folder.decode('gbk'))
-    except Exception,e:
-        print Exception,e
-        print 'error'
-        print 'error'
-        print 'error'
-        print 'error'
-        print 'error'
-        print folder.decode('gbk'),'绘制失败'.decode('gbk')
-        continue
 
-    #debug
-    # mapping(folder.decode('gbk'))
 
-    print (folder+' 绘制完成').decode('gbk')
-    print '-------------------------------------'
-    print '-------------------------------------'
-    # break
-    # except Exception,e:
-    # f.write('error\t'+time.asctime(time.localtime(time.time()))+'\t'+folder+'\t'+str(e)+'\n')
-    # print folder.decode('gbk')
-    # print Exception,e
+if __name__ == '__main__':
+    # dir = r'E:\cui\191007\1007第一批出图\1007第一批出图\翠翠--板木\第一批\0418-大李庄505-刘小强 张晓伟\shp\\'
+    # outjpg = r'E:\cui\191007\\'
+    # print('******')
+    fdir = args[1]
+    # for i in args:
+    #     print(i)
+    # print(fdir)
+    # exit()
+    out_pic_dir = args[2]+'\\'
+
+    for dir in os.listdir(fdir):
+        print(fdir+'\\'+dir).decode('gbk')
+        mapping(fdir+'\\'+dir+'\\shp', out_pic_dir)
 
 

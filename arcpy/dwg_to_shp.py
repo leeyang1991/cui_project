@@ -62,17 +62,19 @@ def run_dwg_to_shp(fdir,out_dir_):
     # dwg_to_shp(in_features_line,this_root)
 
 
-def rename():
+def rename(fdir):
     # È¥³ý#ºÅ
-    fdir = this_root + '190905\\ÓÀ³Ç\\'
+    # fdir = this_root + '190905\\ÓÀ³Ç\\'
     flist = os.listdir(fdir)
     for f in flist:
-        f_new = f.replace('#','_')
+        f_new = f.replace('#',' ')
+        # f_new = f_new.replace('_','.')
         os.rename(fdir+f,fdir+f_new)
 
 def main():
     # rename()
     fdir = sys.argv[1]+'\\'
+    rename(fdir)
     out_dir = sys.argv[2]+'\\'
     run_dwg_to_shp(fdir,out_dir)
 

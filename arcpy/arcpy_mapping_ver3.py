@@ -6,13 +6,13 @@ import codecs
 import sys
 argvs = sys.argv
 # print(argvs)
-this_root = 'E:\\cui\\'
+# this_root = 'E:\\cui\\'
 
 output_mxd = {'柱上用户变压器':'zhuanbian',
               '耐张杆塔':'naizhang_ganta',
               'xiangshi_biandianzhan':'xiangshi_biandianzhan',
               '断路器':'duanluqi',
-              '柱上变压器':'gongbian',
+              '柱上变压器':'zhushangbianyaqi',
               # 'dwg_Polyline':'***********',
               'line_annotation':'line_annotation1',
               'zoom_layer':'zoom_layer',
@@ -75,11 +75,12 @@ def mapping(dir,out_pic_dir):
     if os.path.isfile(dir+'\\mxd.mxd'):
         os.remove(dir+'\\mxd.mxd')
     mxd.saveACopy(dir+'\\mxd.mxd','9.2')
-    mk_dir(this_root+'output_pic\\')
+    mk_dir(out_pic_dir.decode('gbk')+'\\')
     # outjpeg = this_root+'output_pic\\'+dir.split('\\')[-2]
-    outjpeg = out_pic_dir+'\\'+dir.split('\\')[-2]
+    outjpeg = out_pic_dir.decode('gbk')+'\\'+dir.split('\\')[-2]
     # print(outjpeg)
     arcpy.mapping.ExportToJPEG(mxd,outjpeg,data_frame='PAGE_LAYOUT',df_export_width=mxd.pageSize.width,df_export_height=mxd.pageSize.height,color_mode='24-BIT_TRUE_COLOR',resolution=300,jpeg_quality=100)
+    # arcpy.mapping.ExportToAI(mxd,outjpeg+'.ai')
     print 'done'
 
 

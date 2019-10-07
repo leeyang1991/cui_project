@@ -184,48 +184,105 @@ class GenLayer:
 
 
 
-    def gen_zhushang_bianyaqi_excel(self):
-        # f_excel = this_root + '190509\\民权线路cad\\民权台账 - 以此为准.xls'
+    def gen_zhushangbianyaqi_excel(self):
+        # f_excel = this_root + u'190714\\张桥所线路设备明细.xls'
         bk = xlrd.open_workbook(self.f_excel)
-        sh = bk.sheet_by_name('柱上变压器'.decode('gbk'))
+        sh = bk.sheet_by_name(u'柱上变压器')
         nrows = sh.nrows
-        gongbian = {}
-        zhuanbian = {}
+        biandiamzhan = {}
+        xinghao_dic = {}
         for i in range(nrows):
-            bianyaqi_name = sh.cell_value(i,0)
-            bianyaqi_xinghao = sh.cell_value(i,3)
+            if i + 1 == nrows:
+                continue
+            biandiamzhan_name = sh.cell_value(i + 1, 0)
+            xinghao = sh.cell_value(i + 1, 4)
+            val1 = biandiamzhan_name
+            biandiamzhan[val1] = val1
+            xinghao_dic[val1] = xinghao
 
-            bianyaqi_attrib = sh.cell_value(i,4)
-            if bianyaqi_attrib == '公变'.decode('gbk'):
-                gongbian[bianyaqi_name] = bianyaqi_xinghao
-            elif bianyaqi_attrib == '专变'.decode('gbk'):
-                zhuanbian[bianyaqi_name] = bianyaqi_xinghao
-        return gongbian,zhuanbian
-        pass
+        return biandiamzhan,xinghao_dic
 
-
-    def gen_zhushang_bianyaqi_shp(self):
-        gongbian, zhuanbian = self.gen_zhushang_bianyaqi_excel()
-        daShapefile = this_root + '123_dwg_Annotation.shp'
+    def gen_zhushangbianyaqi_shp(self,daShapefile,out_shp):
+        biandianzhan,xinghao_dic = self.gen_zhushangbianyaqi_excel()
+        str_num = []
+        for key in biandianzhan:
+            # print key,len(key)
+            str_num.append(len(key))
+        # print(min(str_num))
+        # print(max(str_num))
+        # exit()
         driver = ogr.GetDriverByName("ESRI Shapefile")
         dataSource = driver.Open(daShapefile, 0)
         layer = dataSource.GetLayer()
         # ganta = gen_naizhang_ganta_excel()
-        out_list_gongbian = []
-        out_list_zhuanbian = []
+        out_list_biandianzhan = []
+
+        name_list = []
+        xy_list = []
         for feature in layer:
             geom = feature.GetGeometryRef()
             x = geom.GetX()
             y = geom.GetY()
+            xy_list.append([x,y])
             name = feature.GetField("RefName")
             name_gbk = name.decode('utf-8')
-            if name_gbk in gongbian:
-                out_list_gongbian.append([x, y, name_gbk, gongbian[name_gbk],''])
-            elif name_gbk in zhuanbian:
-                out_list_zhuanbian.append([x, y, name_gbk, zhuanbian[name_gbk],''])
-        point_to_shp(out_list_gongbian, 'gongbian.shp')
-        point_to_shp(out_list_zhuanbian, 'zhuanbian.shp')
-        pass
+
+            name_list.append(name_gbk)
+        # print(xy_list)
+        out_dic = {}
+        for i in range(len(name_list)):
+            sum_str = ''
+            selected_num = []
+            for j in range(max(str_num)):
+                try:
+                    sum_str += name_list[i+j]
+                    selected_num.append(i+j)
+                    # print(sum_str)
+                    if sum_str in biandianzhan:
+                        # print(sum_str)
+                        selected_x = []
+                        selected_y = []
+                        for k in selected_num:
+                            selected_x.append(xy_list[k][0])
+                            selected_y.append(xy_list[k][1])
+                        x = np.mean(selected_x)
+                        y = np.mean(selected_y)
+                        out_dic[sum_str] = []
+                        # print(xinghao_dic[sum_str])
+                        # exit()
+                        out_list_biandianzhan.append([x,y,sum_str,xinghao_dic[sum_str],''])
+                    str_num_ = len(sum_str)
+                    if str_num_ > max(str_num):
+                        break
+                except:
+                    pass
+        for i in out_list_biandianzhan:
+            name = i[2]
+            out_dic[name].append([i[0],i[1]])
+
+        out_list_biandianzhan = []
+        for name in out_dic:
+            # print(name)
+            x = []
+            y = []
+            for xy in out_dic[name]:
+                x.append(xy[0])
+                y.append(xy[1])
+            x_mean = np.mean(x)
+            y_mean = np.mean(y)
+            out_list_biandianzhan.append([x_mean,y_mean,name,xinghao_dic[name],''])
+            # print(x_mean)
+            # print(y_mean)
+            # for i in zhuanbian:
+            #     print(i)
+            # exit()
+            # continue
+            # if name_gbk in biandianzhan:
+            #     out_list_biandianzhan.append([x, y, name_gbk, biandianzhan[name_gbk],''])
+        #
+        point_to_shp(out_list_biandianzhan, out_shp)
+        # pass
+
 
 
     def gen_xiangshi_biandianzhan_excel(self):
@@ -1025,8 +1082,8 @@ class Merge:
         :return:
         '''
         gdal.SetConfigOption("SHAPE_ENCODING", "GBK")
-        fdir = r'E:\cui\190905\dwg_to_shp\shao\\'
-        out_dir = r'E:\cui\190905\dwg_to_shp\shao_merge\\'
+        fdir = r'E:\cui\190924\dwg_to_shp\\'
+        out_dir = r'E:\cui\190924\merge\\'
         flist = os.listdir(fdir)
         time_init = time.time()
         time_i = 0
@@ -1145,11 +1202,13 @@ def main(fdir,f_excel):
                 genlayer.gen_naizhang_ganta_shp(fname.encode('utf-8'),(shp_dir+'naizhang_ganta.shp').encode('utf-8'))
                 genlayer.gen_line_annotation_shp(fname.encode('utf-8'),(shp_dir+'line_annotation1.shp').encode('utf-8'))
                 # gen_xiangshi_biandianzhan_shp(fname.encode('utf-8'),(shp_dir+'xiangshi_biandianzhan.shp').decode('gbk').encode('utf-8'))
+                genlayer.gen_zhushangbianyaqi_shp(fname.encode('utf-8'), (shp_dir + 'zhushangbianyaqi.shp').encode('utf-8'))
                 genlayer.gen_duanluqi_shp(fname.encode('utf-8'),(shp_dir+'duanluqi.shp').encode('utf-8'))
                 genlayer.gen_gongbian_shp(fname.encode('utf-8'),(shp_dir+'gongbian.shp').encode('utf-8'))
                 genlayer.gen_zhuanbian_shp(fname.encode('utf-8'),(shp_dir+'zhuanbian.shp').encode('utf-8'))
                 genlayer.gen_zoom_layer(fname.encode('utf-8'),(shp_dir+'zoom_layer.shp').encode('utf-8'))
                 genlayer.gen_biandianzhan_shp(fname.encode('utf-8'),(shp_dir+'biandianzhan.shp').encode('utf-8'))
+
 
         # exit()
 
@@ -1216,5 +1275,5 @@ if __name__ == '__main__':
     # M.merge_line_annotation_shp()
     # for shp_type in shptypes:
     #     M.merge_point_layer_shp(shp_type)
-    gui()
+    # gui()
     pass
