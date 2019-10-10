@@ -219,6 +219,58 @@ def gen_layer():
         window1.Close()
         break
 
+def merge():
+    if os.path.isfile(os.getcwd() + '\\merge_config.cfg'):
+        config_r = open(os.getcwd() + '\\merge_config.cfg', 'r')
+        lines = config_r.readlines()
+        param_dic = {}
+        for line in lines:
+            line = line.split('\n')
+            para = line[0].split('=')[0]
+            val = line[0].split('=')[1]
+            param_dic[para] = val
+        # if 'fdir' in param_dic:
+        try:
+            sg_input_dir = sg.Input(param_dic['fdir'].decode('gbk'))
+            sg_input_out_dir = sg.Input(param_dic['out_dir'].decode('gbk'))
+        except:
+            sg_input_out_dir = sg.Input('')
+            sg_input_dir = sg.Input('')
+    else:
+        sg_input_out_dir = sg.Input('')
+        sg_input_dir = sg.Input('')
+    layout1 = [[sg.Text('输入需要合并的文件夹'.decode('gbk'))],
+               [sg_input_dir, sg.FolderBrowse()],
+               [sg.Text('输出目录'.decode('gbk'))],
+               [sg_input_out_dir, sg.FolderBrowse()],
+               [sg.OK()] ]
+    window1 = sg.Window('生成图层'.decode('gbk'),font=("Helvetica", 20)).Layout(layout1)
+
+    while 1:
+
+        event1, values1 = window1.Read()
+        if event1 is None:
+            break
+        # print(values1)
+        indir = values1[0]
+        outdir = values1[1]
+        print(indir)
+        print(outdir)
+        # exit()
+        config = codecs.open(os.getcwd() + '\\' + 'merge_config.cfg', 'w')
+        config.write('fdir=' + indir.encode('gbk') + '\n')
+        config.write('out_dir=' + outdir.encode('gbk') + '\n')
+        config.close()
+        indir = indir.encode('gbk')
+        outdir = outdir.encode('gbk')
+        yongcheng.Merge().merge_point_annotation_shp(indir,outdir)
+        yongcheng.Merge().merge_daoxian(indir,outdir)
+        # yongcheng.main(fdir+'/',f_excel)
+        sg.Popup('图层生成完毕！\n按OK结束'.decode('gbk'))
+        window1.Close()
+        break
+
+
 
 def main():
     # layout1 = [[sg.Text('1.dwg转shp'.decode('gbk'))],
@@ -228,6 +280,7 @@ def main():
     layout1 = [[sg.Radio('1.dwg转shp'.decode('gbk'), "RADIO1")],
               [sg.Radio('2.生成layer'.decode('gbk'), "RADIO1")],
               [sg.Radio('3.出图'.decode('gbk'), "RADIO1")],
+               [sg.Radio('4.合并图层'.decode('gbk'), "RADIO1")],
                [sg.OK()]
                ]
 
@@ -243,6 +296,8 @@ def main():
             gen_layer()
         if values1[2]:
             mapping()
+        if values1[3]:
+            merge()
         # window1.Close()
 if __name__ == '__main__':
     main()

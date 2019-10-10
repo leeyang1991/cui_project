@@ -314,6 +314,7 @@ def select_vertical_horizontal(r,f_dir):
     # transparent = transparent_jiliangxiang(r)
 
     transparent, red, black = r.full_and_spare_and_transparent_jiliangxiang()
+    dianbiao_dic, red, black = r.jiliangxiang()
     lon=[]
     lat=[]
     if r.dianxiangan():
@@ -327,6 +328,10 @@ def select_vertical_horizontal(r,f_dir):
         os.mkdir(directory)
     fname = directory+'\\extent_lyr.shp'
 
+
+    for i in dianbiao_dic:
+        lon.append(dianbiao_dic[i][0])
+        lat.append(dianbiao_dic[i][1])
     for i in transparent:
         lon.append(transparent[i][0])
         lat.append(transparent[i][1])

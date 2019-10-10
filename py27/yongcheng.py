@@ -18,6 +18,9 @@ import codecs
 # f_excel = this_root+'190905/台账数据.xlsx'
 # f_excel = 'E:\\cui\\190905\\台账数据.xls'.decode('gbk')
 
+############重要#################
+gdal.SetConfigOption("SHAPE_ENCODING", "GBK")
+############重要#################
 
 def mk_dir(dir):
     if not os.path.isdir(dir):
@@ -129,6 +132,59 @@ def point_to_shp(inputlist,outSHPfn):
 
 
 
+def point_to_shp1(inputlist,outSHPfn):
+    # for merge
+    # gdal.SetConfigOption("GDAL_FILENAME_IS_UTF8", "YES")
+    ############重要#################
+    gdal.SetConfigOption("SHAPE_ENCODING", "GBK")
+    ############重要#################
+    fieldType = ogr.OFTString
+    # fieldType.set
+    # Create the output shapefile
+    shpDriver = ogr.GetDriverByName("ESRI Shapefile")
+    if os.path.exists(outSHPfn):
+        shpDriver.DeleteDataSource(outSHPfn)
+    outDataSource = shpDriver.CreateDataSource(outSHPfn)
+    outLayer = outDataSource.CreateLayer(outSHPfn, geom_type=ogr.wkbPoint)
+
+
+    # create a field
+    idField1 = ogr.FieldDefn('RefName',fieldType)
+    idField2 = ogr.FieldDefn('val2', fieldType)
+    idField3 = ogr.FieldDefn('val3', fieldType)
+    # idField4 = ogr.FieldDefn('val4', fieldType)
+    # idField5 = ogr.FieldDefn('val5', fieldType)
+
+    outLayer.CreateField(idField1)
+    outLayer.CreateField(idField2)
+    outLayer.CreateField(idField3)
+    # outLayer.CreateField(idField4)
+    # outLayer.CreateField(idField5)
+
+    # Create the feature and set values
+
+    for i in range(len(inputlist)):
+        point = ogr.Geometry(ogr.wkbPoint)
+        point.AddPoint(inputlist[i][0],inputlist[i][1])
+
+        featureDefn = outLayer.GetLayerDefn()
+        outFeature = ogr.Feature(featureDefn)
+        outFeature.SetGeometry(point)
+        outFeature.SetField('RefName', inputlist[i][2])
+        outFeature.SetField('val2', inputlist[i][3])
+        outFeature.SetField('val3', inputlist[i][4])
+        # outFeature.SetField('val4', inputlist[i][5].encode('gbk'))
+        # outFeature.SetField('val5', inputlist[i][6].encode('gbk'))
+
+        outLayer.CreateFeature(outFeature)
+        outFeature.Destroy()
+    outFeature = None
+
+
+
+
+
+
 
 class GenLayer:
 
@@ -152,10 +208,12 @@ class GenLayer:
         ganta = []
         ganta_num = []
         for i in range(nrows):
-            ganta_attrib = sh.cell_value(i,4)
+            ganta_attrib = sh.cell_value(i,3)
             ganta_name = sh.cell(i,0)
             ganta_num_i = sh.cell_value(i,1)
+            # print(ganta_attrib=='耐张'.decode('gbk'))
             if ganta_attrib == '耐张'.decode('gbk'):
+                # print(1)
                 ganta.append(ganta_name.value)
                 ganta_num.append(ganta_num_i)
         ganta_dic = {}
@@ -167,6 +225,7 @@ class GenLayer:
     def gen_naizhang_ganta_shp(self,daShapefile,out_shp):
 
         # daShapefile = this_root+'123_dwg_Annotation.shp'
+
         driver = ogr.GetDriverByName("ESRI Shapefile")
         dataSource = driver.Open(daShapefile, 0)
         layer = dataSource.GetLayer()
@@ -177,8 +236,12 @@ class GenLayer:
             x = geom.GetX()
             y = geom.GetY()
             name = feature.GetField("RefName")
+            # print(name.decode('gb2312'))
             name_gbk = name.decode('utf-8')
+            # name_gbk = name_gbk.encode('utf-8')
+            # print(name_gbk)
             if name_gbk in ganta:
+                # print(1)
                 out_list.append([x,y,name_gbk,ganta[name_gbk],''])
         point_to_shp(out_list,out_shp)
 
@@ -191,19 +254,22 @@ class GenLayer:
         nrows = sh.nrows
         biandiamzhan = {}
         xinghao_dic = {}
+        refname = {}
         for i in range(nrows):
             if i + 1 == nrows:
                 continue
             biandiamzhan_name = sh.cell_value(i + 1, 0)
-            xinghao = sh.cell_value(i + 1, 4)
+            xinghao = sh.cell_value(i + 1, 3)
+            ref = sh.cell_value(i + 1, 4)
             val1 = biandiamzhan_name
             biandiamzhan[val1] = val1
             xinghao_dic[val1] = xinghao
+            refname[val1] = ref
 
-        return biandiamzhan,xinghao_dic
+        return biandiamzhan,xinghao_dic,refname
 
     def gen_zhushangbianyaqi_shp(self,daShapefile,out_shp):
-        biandianzhan,xinghao_dic = self.gen_zhushangbianyaqi_excel()
+        biandianzhan,xinghao_dic,refname = self.gen_zhushangbianyaqi_excel()
         str_num = []
         for key in biandianzhan:
             # print key,len(key)
@@ -270,7 +336,7 @@ class GenLayer:
                 y.append(xy[1])
             x_mean = np.mean(x)
             y_mean = np.mean(y)
-            out_list_biandianzhan.append([x_mean,y_mean,name,xinghao_dic[name],''])
+            out_list_biandianzhan.append([x_mean,y_mean,refname[name],xinghao_dic[name],''])
             # print(x_mean)
             # print(y_mean)
             # for i in zhuanbian:
@@ -427,9 +493,12 @@ class GenLayer:
             # bianyaqi_rongliang = int(float(unicode(bianyaqi_rongliang)))
             bianyaqi_rongliang = unicode(bianyaqi_rongliang)
             # print(bianyaqi_rongliang)
-            bianyaqi_rongliang = int(float(bianyaqi_rongliang))
-            bianyaqi_rongliang = str(bianyaqi_rongliang)
-            zhuanbian[bianyaqi_name] = bianyaqi_xinghao+' '+bianyaqi_rongliang
+            try:
+                bianyaqi_rongliang = int(float(bianyaqi_rongliang))
+                bianyaqi_rongliang = str(bianyaqi_rongliang)
+                zhuanbian[bianyaqi_name] = bianyaqi_xinghao+' '+bianyaqi_rongliang
+            except:
+                zhuanbian[bianyaqi_name] = bianyaqi_xinghao
 
         # for i in zhuanbian:
         #     print i,'\n',zhuanbian[i]
@@ -928,7 +997,7 @@ class Merge:
     def __init__(self):
         pass
 
-    def merge_annotation_shp(self,shp_type):
+    def merge_point_annotation_shp(self,indir,outdir):
         '''
         composite shp
         将xian_dic_sort生成的shp合成为1个shp
@@ -937,7 +1006,7 @@ class Merge:
         '''
         gdal.SetConfigOption("SHAPE_ENCODING", "GBK")
         # fdir = this_root + '\\190725\\dwg_to_shp\\'
-        fdir = r'E:\cui\190905\dwg_to_shp\\'
+        fdir = indir+'/'
         flist = os.listdir(fdir)
         time_init = time.time()
         time_i = 0
@@ -955,12 +1024,14 @@ class Merge:
                 # print(shp.decode('gbk'))
                 # print(shp_type+'.shp')
                 # exit()
-                if shp.endswith(shp_type+'.shp'):
+                if shp.endswith('Annotation'+'.shp'):
                     # print(shp.decode('gbk'))
                     # print(1)
                     # exit()
                     daShapefile = shp_dir + shp
-                    print(daShapefile.decode('gbk'))
+                    # daShapefile = daShapefile.encode('gbk')
+                    print(daShapefile)
+                    # print(daShapefile.decode('gbk'))
                     driver = ogr.GetDriverByName("ESRI Shapefile")
                     dataSource = driver.Open(daShapefile.decode('gbk'), 0)
                     layer = dataSource.GetLayer()
@@ -969,7 +1040,7 @@ class Merge:
                         geom = feature.GetGeometryRef()
                         # geom.
                         Points = geom.GetPoints()
-                        # val1 = feature.GetField("val1")
+                        val1 = feature.GetField("RefName")
                         # val2 = feature.GetField("val2")
                         # val3 = feature.GetField("val3")
                         # print(Points)
@@ -980,7 +1051,7 @@ class Merge:
                             for i in range(len(Points)):
                                 # if i == len(Points)-1:
                                 #     break
-                                inlist.append([Points[i][0],Points[i][1],'','','','',''])
+                                inlist.append([Points[i][0],Points[i][1],val1,'','','',''])
                             # print(Points)
                             # print(inlist_i)
                         # exit()
@@ -995,11 +1066,12 @@ class Merge:
             time_i += 1
             log_process.process_bar(time_i,len(flist),time_init,time_start,time_end)
         # output_fn = this_root + '190725\\shp\\'+shp_type+'_merge.shp'.decode('gbk').encode('utf-8')
-        output_fn = r'E:\cui\190905\merge.shp'
+        output_fn = outdir+'\\merge_dwg_Annotation.shp'
+        output_fn = output_fn.encode('gbk')
         print('exporting line shp...')
-        # print(inlist)
+        # print(output_fn)
         # exit()
-        point_to_shp(inlist, output_fn)
+        point_to_shp1(inlist, output_fn)
 
         pass
 
@@ -1148,10 +1220,10 @@ class Merge:
 
 
 
-    def merge_daoxian(self):
+    def merge_daoxian(self,indir,outdir):
 
-        fdir = r'E:\cui\190905\dwg_to_shp\shao\\'
-        output_fn = r'E:\cui\190905\dwg_to_shp\shao_merge\daoxian.shp'
+        fdir = indir+'\\'
+        output_fn = outdir+'\\merge_dwg_Polyline.shp'
         inlist = []
         for folder in os.listdir(fdir):
             for f in os.listdir(fdir+folder):

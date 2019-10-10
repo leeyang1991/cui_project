@@ -137,6 +137,9 @@ if __name__ == '__main__':
 
     for dir in os.listdir(fdir):
         print(fdir+'\\'+dir).decode('gbk')
-        mapping(fdir+'\\'+dir+'\\shp', out_pic_dir)
+        try:
+            mapping(fdir+'\\'+dir+'\\shp', out_pic_dir)
+        except Exception as e:
+            print(e)
 
 
