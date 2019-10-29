@@ -33,6 +33,8 @@ def gen_layer():
                [sg_input_excel, sg.FileBrowse()],
                [sg.Text('定义目录文件'.decode('gbk'))],
                [sg_input_dir, sg.FolderBrowse()],
+               [sg.Text('不带*的用户名文件（如果不需要此功能请留空）'.decode('gbk'))],
+               [sg.Input(''), sg.FileBrowse()],
                [sg.OK()] ]
     window1 = sg.Window('生成图层'.decode('gbk'),font=("Helvetica", 20)).Layout(layout1)
 
@@ -44,6 +46,10 @@ def gen_layer():
         # print(values1)
         f_excel = values1[0].encode('gbk')
         fdir = values1[1].encode('gbk')
+        additional_excel = values1[2].encode('gbk')
+
+        # print(additional_excel)
+        # exit()
         # print(fdir)
         # print(f_excel)
         config = codecs.open(os.getcwd() + '\\' + 'config.cfg', 'w')
@@ -51,7 +57,7 @@ def gen_layer():
         config.write('f_excel=' + f_excel + '\n')
         config.close()
 
-        genshp_ver3.gen_layer(fdir,f_excel)
+        genshp_ver3.gen_layer(fdir,f_excel,additional_excel)
         sg.Popup('图层生成完毕！\n按OK结束'.decode('gbk'))
         window1.Close()
         break
@@ -156,7 +162,7 @@ def main():
     layout1 = [
               [sg.Radio('1.生成layer'.decode('gbk'), "RADIO1")],
               [sg.Radio('2.出图'.decode('gbk'), "RADIO1")],
-               [sg.OK()]
+                             [sg.OK()]
                ]
 
     window1 = sg.Window('自动制图'.decode('gbk'),layout1,font=("Helvetica", 20))

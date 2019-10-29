@@ -5,6 +5,7 @@ import write_point as wp
 import write_line as wl
 import time
 import sys
+import xlrd
 
 args = sys.argv
 
@@ -550,7 +551,7 @@ def delete_output(fdir):
 
 
 
-def main(fname1,fname2,fname4,output_dir):
+def main(fname1,fname2,fname4,output_dir,bk_additional):
     #创建输出文件夹
     # if not os.path.isdir('d:\\project13\\output_pic\\'):
     #     os.mkdir('d:\\project13\\output_pic\\')
@@ -567,7 +568,8 @@ def main(fname1,fname2,fname4,output_dir):
     print(fname1)
     print(fname2)
     print(fname4)
-    r = read_excel_ver3.ReadExcel(fname1,fname2,fname4)
+    # bk_additional = xlrd
+    r = read_excel_ver3.ReadExcel(fname1,fname2,fname4,bk_additional)
     # try:
     # print(output_dir)
     output_dir = output_dir.encode('gbk')
@@ -617,16 +619,13 @@ def main(fname1,fname2,fname4,output_dir):
 
 
 
-def gen_layer(root,fname4):
+def gen_layer(root,fname4,additional=''):
+
     root = root+'/'
-
-    # check_files(root)
-    # exit()
-    # print 'files are all valid'
-
-    start = time.time()
-    #asdf
-    # root = this_root
+    if len(additional) > 0:
+        bk_additional = xlrd.open_workbook(additional)
+    else:
+        bk_additional = None
     flist_root = os.listdir(root)
     fname1_list = []
     fname2_list = []
@@ -645,18 +644,6 @@ def gen_layer(root,fname4):
             # print(j.decode('gbk') == '计量箱与电能表的关系.xls'.decode('gbk'))
             if '台账' not in j and 'CAD' not in j and '计量箱' not in j and (j.endswith('xls') or j.endswith('xlsx')):
                 fname1_list.append(root+i+'/'+j)
-
-
-            # if j.decode('gbk') == '计量箱与电能表的关系.xls'.decode('gbk') or j.decode('gbk') == '计量箱与电能表的关系.xlsx'.decode('gbk'):
-                # print(j.decode('gbk'),1321321)
-                # fname2_list.append(root + i + '/' + j)
-    # print len(fname1_list)
-    # print len(fname2_list)
-    # for i in range(len(fname1_list)):
-    #     print fname1_list[i].decode('gbk')
-    #     print fname2_list[i].decode('gbk')
-    #     print '-----------------------------'
-
 
     j = 0
 
@@ -692,13 +679,7 @@ def gen_layer(root,fname4):
         #     or fname1 == 'D:/project13/input/data/安桥101/GIS.xls'\
         #     or fname1 == 'D:/project13/input/data/张菜村综合1#/GIS.xls'\
         #     or fname1 == 'D:/project13/input/data/瓦岗103/瓦岗103.xls':
-        #
-        #     continue
-        # try:
-        # print(fname2.decode('gbk'))
-        # print(fname1.decode('gbk'))
-        # print(fname2.decode('gbk'))
-        # print(fname4.decode('gbk'))
+
         out_dir = root+flist_root[i]+'\\shp\\'
         out_dir = out_dir.decode('gbk')
         # exit()
@@ -709,7 +690,7 @@ def gen_layer(root,fname4):
         # print(out_dir.decode('gbk'))
         # print(flist_root[i])
         # exit()
-        main(fname1.decode('gbk'),fname2.decode('gbk'),fname4.decode('gbk'),out_dir)
+        main(fname1.decode('gbk'),fname2.decode('gbk'),fname4.decode('gbk'),out_dir,bk_additional)
         # exit()
         # except Exception as e:
         #     print(e)

@@ -72,7 +72,7 @@ def mapping(dir,outjpgdir):
     df0.extent = extent_lyr.getSelectedExtent()
 
     try:
-        info_text=codecs.open(dir+'\\'+'info.txt','r')
+        info_text=codecs.open(dir+'\\'+'info.txt','r',encoding='utf-8')
         info = info_text.readline()
         info = info.split(',')
         info1 = []
@@ -84,11 +84,11 @@ def mapping(dir,outjpgdir):
     except:
         info = [' ']*100
     for textElement in arcpy.mapping.ListLayoutElements(mxd,'TEXT_ELEMENT'):
-        try:
+        # try:
             if textElement.name == '台区编号'.decode('gbk'):
                 textElement.text=(info[0].decode('gbk'))
             if textElement.name == '台区名称'.decode('gbk'):
-                textElement.text=(info[1].decode('utf-8'))
+                textElement.text=(info[1])
             if textElement.name == '变压器型号'.decode('gbk'):
                 textElement.text=(info[2].decode('gbk'))
             if textElement.name == '变压器容量'.decode('gbk'):
@@ -103,8 +103,8 @@ def mapping(dir,outjpgdir):
                 textElement.text=(info[7].decode('gbk'))
             if textElement.name == '实际装表位数'.decode('gbk'):
                 textElement.text=(info[8].decode('gbk'))
-        except Exception,e:
-            print Exception,e
+        # except Exception,e:
+        #     print Exception,e
     # dir = dir
     print 'saving mxd to',(dir+'\\mxd.mxd').decode('gbk')
     dir = dir.decode('gbk')
@@ -116,7 +116,8 @@ def mapping(dir,outjpgdir):
     if info[1] == ' ':
         outjpeg = outjpgdir+dir.split('\\')[-2]
     else:
-        outjpeg = outjpgdir+info[1].decode('utf-8')
+        # print(info[1])
+        outjpeg = outjpgdir+info[1].encode('gbk')
 
     arcpy.mapping.ExportToJPEG(mxd,outjpeg,data_frame='PAGE_LAYOUT',df_export_width=mxd.pageSize.width,df_export_height=mxd.pageSize.height,color_mode='8-BIT_GRAYSCALE',resolution=300,jpeg_quality=100)
     print 'done'
@@ -137,9 +138,9 @@ if __name__ == '__main__':
 
     for dir in os.listdir(fdir):
         print(fdir+'\\'+dir).decode('gbk')
-        try:
-            mapping(fdir+'\\'+dir+'\\shp', out_pic_dir)
-        except Exception as e:
-            print(e)
+        # try:
+        mapping(fdir+'\\'+dir+'\\shp', out_pic_dir)
+        # except Exception as e:
+        #     print(e)
 
 
