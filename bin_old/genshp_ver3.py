@@ -314,7 +314,7 @@ def select_vertical_horizontal(r,f_dir):
     # transparent = transparent_jiliangxiang(r)
 
     transparent, red, black = r.full_and_spare_and_transparent_jiliangxiang()
-    dianbiao_dic, red, black = r.jiliangxiang()
+    dianbiao_dic = r.jiliangxiang()
     lon=[]
     lat=[]
     if r.dianxiangan():
@@ -572,71 +572,40 @@ def main(fname1,fname2,fname4,output_dir):
     # print(output_dir)
     output_dir = output_dir.encode('gbk')
     # exit()
-    try:
-        bianyaqi_shp(r,output_dir)
-        print '变压器绘制完成'.decode('gbk')
-    except:
-        print('无变压器'.decode('gbk'))
+# try:
+    bianyaqi_shp(r,output_dir)
+    print '变压器绘制完成'.decode('gbk')
 
-    try:
-        dianxiangan_dian_shp(r,output_dir)
-        print '电线杆绘制完成'.decode('gbk')
-    except:
-        print('无电线杆'.decode('gbk'))
+    dianxiangan_dian_shp(r,output_dir)
+    print '电线杆绘制完成'.decode('gbk')
 
-    try:
-        qiangzhijia_shp(r,output_dir)
-        print '墙支架绘制完成'.decode('gbk')
-    except:
-        print '无墙支架'.decode('gbk')
+    qiangzhijia_shp(r,output_dir)
+    print '墙支架绘制完成'.decode('gbk')
 
-    try:
-        jiliangxiang_shp(r,output_dir)
-        print '计量箱绘制完成'.decode('gbk')
-    except:
-        print '无计量箱'.decode('gbk')
+    jiliangxiang_shp(r,output_dir)
+    print '计量箱绘制完成'.decode('gbk')
 
-    try:
-        dianxiangan_line_shp(r,output_dir)
-        print '电线杆连线完成'.decode('gbk')
-    except:
-        print '无电线杆'.decode('gbk')
+    dianxiangan_line_shp(r,output_dir)
+    print '电线杆连线完成'.decode('gbk')
 
-    try:
-        qiangzhijia_line_shp(r,output_dir)
-        print '墙支架与电线杆连线完成'.decode('gbk')
-    except:
-        print '无墙支架'.decode('gbk')
+    qiangzhijia_line_shp(r,output_dir)
+    print '墙支架与电线杆连线完成'.decode('gbk')
 
-    try:
-        qiangzhijia_line2_shp(r,output_dir)
-        print '墙支架与墙支架连线完成'.decode('gbk')
-    except:
-        print '无墙支架'.decode('gbk')
+    qiangzhijia_line2_shp(r,output_dir)
+    print '墙支架与墙支架连线完成'.decode('gbk')
 
-    try:
-        select_vertical_horizontal(r,output_dir)
-        print 'extent layer绘制完成'.decode('gbk')
-    except:
-        print 'extent layer error'.decode('gbk')
+    select_vertical_horizontal(r,output_dir)
+    print 'extent layer绘制完成'.decode('gbk')
 
-    try:
-        gen_text_info(r,output_dir)
-        print '信息文件生成完成'.decode('gbk')
-    except:
-        print '图例信息匹配失败'.decode('gbk')
+    gen_text_info(r,output_dir)
+    print '信息文件生成完成'.decode('gbk')
 
-    try:
-        dianlanxian_line_shp(r,output_dir)
-        print '电缆线连线完成'.decode('gbk')
-    except:
-        print '无电缆'.decode('gbk')
+    dianlanxian_line_shp(r,output_dir)
+    print '电缆线连线完成'.decode('gbk')
 
-    try:
-        fenzhixiang_points(r,output_dir)
-        print '分支箱绘制完成'.decode('gbk')
-    except:
-        print '无分支箱'.decode('gbk')
+    fenzhixiang_points(r,output_dir)
+    print '分支箱绘制完成'.decode('gbk')
+
 
     if yonghujierudian:
         yonghujierudian_line_shp(r,output_dir)
