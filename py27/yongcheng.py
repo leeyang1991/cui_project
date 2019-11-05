@@ -746,6 +746,45 @@ class GenLayer:
         pass
 
 
+    def gen_mapinfo_excel(self):
+        bk = xlrd.open_workbook(self.f_excel)
+        sh = bk.sheet_by_name('Í¼Àý'.decode('gbk'))
+        nrows = sh.nrows
+        info_dic = {}
+        for i in range(nrows):
+            if i + 1 == nrows:
+                continue
+            shebeimingcheng = sh.cell_value(i + 1, 2)
+            qidiandianzhan = sh.cell_value(i + 1, 3)
+            weihubanzu = sh.cell_value(i + 1, 4)
+            xianluzongchangdu = sh.cell_value(i + 1, 5)
+            jiakong = sh.cell_value(i + 1, 6)
+            dianlan = sh.cell_value(i + 1, 7)
+            gongbian = sh.cell_value(i + 1, 8)
+            zhuanbian = sh.cell_value(i + 1, 9)
+            duanluqi = sh.cell_value(i + 1, 10)
+            info_dic[shebeimingcheng] = [shebeimingcheng,qidiandianzhan,weihubanzu,
+                                         xianluzongchangdu,
+                                         jiakong,dianlan,gongbian,zhuanbian,duanluqi]
+        return info_dic
+        pass
+
+    def gen_mapinfo(self,folder,out_txt):
+        info_dic = self.gen_mapinfo_excel()
+
+        if folder in info_dic:
+            f = codecs.open(out_txt, 'w',encoding='utf-8')
+            info = info_dic[folder]
+            info_list = []
+            for i in info:
+                try:
+                    i = str(i)
+                except:
+                    i = i
+                info_list.append(i)
+            f.write(','.join(info_list))
+            f.close()
+        # exit()
 
 class LineAnnotation:
 
@@ -957,7 +996,7 @@ class LineAnnotation:
             # exit()
         pass
 
-        # exit()
+
 
 
 def foo():
@@ -1280,7 +1319,7 @@ def main(fdir,f_excel):
                 genlayer.gen_zhuanbian_shp(fname.encode('utf-8'),(shp_dir+'zhuanbian.shp').encode('utf-8'))
                 genlayer.gen_zoom_layer(fname.encode('utf-8'),(shp_dir+'zoom_layer.shp').encode('utf-8'))
                 genlayer.gen_biandianzhan_shp(fname.encode('utf-8'),(shp_dir+'biandianzhan.shp').encode('utf-8'))
-
+                genlayer.gen_mapinfo(folder,shp_dir+'info.txt')
 
         # exit()
 

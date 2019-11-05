@@ -51,9 +51,35 @@ def mapping(dir,out_pic_dir):
     output_mxd['导线'] = (dir.split('\\')[-2]+'_dwg_Polyline').decode('gbk')
     title = output_mxd['导线'].split('_')[0]+' 线路沿布图'.decode('gbk')
 
+    text_f = open(dir+'\\'+'info.txt','r')
+    line = text_f.readline()
+    shebeimingcheng, qidiandianzhan, weihubanzu,\
+    xianluzongchangdu,jiakong, dianlan, gongbian, \
+    zhuanbian, duanluqi = line.split(',')
+
     for textElement in arcpy.mapping.ListLayoutElements(mxd, "TEXT_ELEMENT"):
         if textElement.name == 'title':
             textElement.text = (title)
+        elif textElement.name == 'shebeimingcheng':
+            textElement.text = (shebeimingcheng)
+        elif textElement.name == 'qidiandianzhan':
+            textElement.text = (qidiandianzhan)
+        elif textElement.name == 'weihubanzu':
+            textElement.text = (weihubanzu)
+        elif textElement.name == 'xianluzongchangdu':
+            textElement.text = (xianluzongchangdu)
+        elif textElement.name == 'jiakongxianluchangdu':
+            textElement.text = (jiakong)
+        elif textElement.name == 'dianlanxianluchangdu':
+            textElement.text = (dianlan)
+        elif textElement.name == 'gongbianshuliang':
+            textElement.text = (gongbian)
+        elif textElement.name == 'zhuanbianshuliang':
+            textElement.text = (zhuanbian)
+        elif textElement.name == 'duanluqi':
+            textElement.text = (duanluqi)
+        else:
+            pass
 
 
 
