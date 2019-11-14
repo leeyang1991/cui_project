@@ -13,6 +13,7 @@ import log_process
 from matplotlib import pyplot as plt
 import simple_tkinter as sg
 import codecs
+import coordinate_transformation as cs
 
 #
 # f_excel = this_root+'190905/台账数据.xlsx'
@@ -1298,28 +1299,156 @@ class Merge:
         line_to_shp(inlist, output_fn)
 
 
+
+class Cordinate_Transformation:
+
+    def __init__(self,indir):
+        # 直接转换annotation
+        self.indir = indir
+        gdal.SetConfigOption("SHAPE_ENCODING", "GBK")
+        pass
+
+
+    def transform(self,x,y):
+        [newx, newy] = cs.wgs84_to_bd09(x, y)
+        newx = newx - (116.271585 - 116.272903)
+        newy = newy - (34.119071 - 34.117548)
+        return newx,newy
+
+
+    def point(self):
+        # gdal.SetConfigOption("SHAPE_ENCODING", "GBK")
+        # fdir = this_root + '\\190725\\dwg_to_shp\\'
+        fdir = self.indir
+        flist = os.listdir(fdir)
+        time_init = time.time()
+        time_i = 0
+        # inlist = []
+        for folder in flist:
+            # print(folder.decode('gbk'))
+            # exit()
+            time_start = time.time()
+            # print(folder.decode('gbk'))
+            shp_dir = fdir + folder + '\\'
+
+            shp_list = os.listdir(shp_dir)
+            inlist = []
+            for shp in shp_list:
+                # print(shp.decode('gbk'))
+                # print(shp_type+'.shp')
+                # exit()
+                if shp.endswith('Annotation' + '.shp'):
+                    # print(shp.decode('gbk'))
+                    # print(1)
+                    # exit()
+                    daShapefile = shp_dir + shp
+                    # daShapefile = daShapefile.encode('gbk')
+                    print(daShapefile)
+                    # print(daShapefile.decode('gbk'))
+                    driver = ogr.GetDriverByName("ESRI Shapefile")
+                    dataSource = driver.Open(daShapefile, 0)
+                    layer = dataSource.GetLayer()
+                    # inlist_i = []
+                    for feature in layer:
+                        geom = feature.GetGeometryRef()
+                        # geom.
+                        Points = geom.GetPoints()
+                        val1 = feature.GetField("RefName")
+                        # val2 = feature.GetField("val2")
+                        # val3 = feature.GetField("val3")
+                        # print(Points)
+                        # exit()
+                        if Points:
+                            # print(Points)
+                            # exit()
+                            for i in range(len(Points)):
+                                # if i == len(Points)-1:
+                                #     break
+                                x = Points[i][0]
+                                y = Points[i][1]
+                                newx, newy = self.transform(x,y)
+                                inlist.append([newx,newy, val1, '', '', '', ''])
+
+            time_end = time.time()
+            time_i += 1
+            log_process.process_bar(time_i, len(flist), time_init, time_start, time_end)
+            ##
+            output_fn = shp_dir + '\\dwg_Annotation_Transformed.shp'
+            output_fn = output_fn.encode('utf-8')
+            # output_fn = output_fn.encode('gbk')
+            # for i in inlist:
+            #     print(i)
+            # print('exporting line shp...')
+            # print(output_fn)
+            # exit()
+            point_to_shp1(inlist, output_fn)
+
+    def line(self):
+        fdir = self.indir
+        flist = os.listdir(fdir)
+        time_init = time.time()
+        time_i = 0
+
+        for folder in flist:
+            inlist = []
+            for f in os.listdir(fdir+folder):
+                if f.endswith('_dwg_Polyline.shp'):
+                    # print(f.decode('gbk'))
+                    daShapefile = fdir+folder+'\\' + f
+                    # print(daShapefile.decode('gbk'))
+                    # print(daShapefile.decode('gbk'))
+                    driver = ogr.GetDriverByName("ESRI Shapefile")
+                    dataSource = driver.Open(daShapefile, 0)
+                    layer = dataSource.GetLayer()
+                    # inlist_i = []
+                    for feature in layer:
+                        geom = feature.GetGeometryRef()
+                        Points = geom.GetPoints()
+                        if Points:
+                            for i in range(len(Points)):
+                                if i == len(Points) - 1:
+                                    break
+                                x1,y1 = Points[i]
+                                x2,y2 = Points[i + 1]
+                                x1,y1 = self.transform(x1,y1)
+                                x2, y2 = self.transform(x2,y2)
+
+
+                                # exit()
+                                inlist.append([(x1,y1), (x2, y2), '', '', '', '', ''])
+                    print('exporting line shp...')
+                    output_fn = fdir+folder +'\\'+ f.split('.')[0]+'_Transform.shp'
+                    output_fn = output_fn.encode('utf-8')
+                    line_to_shp(inlist, output_fn)
+
+
+
 def main(fdir,f_excel):
     # fdir = this_root+'190905\\dwg_to_shp\\jiang\\'
     flist = os.listdir(fdir)
     genlayer = GenLayer(f_excel)
+
+    CT = Cordinate_Transformation(fdir)
+    CT.line()
+    CT.point()
     for folder in flist:
-        shp_dir = fdir+folder+'/'
-        shp_list = os.listdir(shp_dir)
-        for shp in shp_list:
-            if shp.endswith('Annotation.shp'):
-                fname = (shp_dir+shp)
-                print(fname)
-                # print((shp_dir+'naizhang_ganta.shp').decode('gbk'))
-                genlayer.gen_naizhang_ganta_shp(fname.encode('utf-8'),(shp_dir+'naizhang_ganta.shp').encode('utf-8'))
-                genlayer.gen_line_annotation_shp(fname.encode('utf-8'),(shp_dir+'line_annotation1.shp').encode('utf-8'))
-                # gen_xiangshi_biandianzhan_shp(fname.encode('utf-8'),(shp_dir+'xiangshi_biandianzhan.shp').decode('gbk').encode('utf-8'))
-                genlayer.gen_zhushangbianyaqi_shp(fname.encode('utf-8'), (shp_dir + 'zhushangbianyaqi.shp').encode('utf-8'))
-                genlayer.gen_duanluqi_shp(fname.encode('utf-8'),(shp_dir+'duanluqi.shp').encode('utf-8'))
-                genlayer.gen_gongbian_shp(fname.encode('utf-8'),(shp_dir+'gongbian.shp').encode('utf-8'))
-                genlayer.gen_zhuanbian_shp(fname.encode('utf-8'),(shp_dir+'zhuanbian.shp').encode('utf-8'))
-                genlayer.gen_zoom_layer(fname.encode('utf-8'),(shp_dir+'zoom_layer.shp').encode('utf-8'))
-                genlayer.gen_biandianzhan_shp(fname.encode('utf-8'),(shp_dir+'biandianzhan.shp').encode('utf-8'))
-                genlayer.gen_mapinfo(folder,shp_dir+'info.txt')
+        shp_dir = fdir + folder + '/'
+
+
+        # shp_list = os.listdir(shp_dir)
+        # print(shp_dir)
+        fname = shp_dir+'dwg_Annotation_Transformed.shp'
+        # print((shp_dir+'naizhang_ganta.shp').decode('gbk'))
+        genlayer.gen_naizhang_ganta_shp(fname.encode('utf-8'),(shp_dir+'naizhang_ganta.shp').encode('utf-8'))
+        genlayer.gen_line_annotation_shp(fname.encode('utf-8'),(shp_dir+'line_annotation1.shp').encode('utf-8'))
+        # gen_xiangshi_biandianzhan_shp(fname.encode('utf-8'),(shp_dir+'xiangshi_biandianzhan.shp').decode('gbk').encode('utf-8'))
+        genlayer.gen_zhushangbianyaqi_shp(fname.encode('utf-8'), (shp_dir + 'zhushangbianyaqi.shp').encode('utf-8'))
+        genlayer.gen_duanluqi_shp(fname.encode('utf-8'),(shp_dir+'duanluqi.shp').encode('utf-8'))
+        genlayer.gen_gongbian_shp(fname.encode('utf-8'),(shp_dir+'gongbian.shp').encode('utf-8'))
+        genlayer.gen_zhuanbian_shp(fname.encode('utf-8'),(shp_dir+'zhuanbian.shp').encode('utf-8'))
+        genlayer.gen_zoom_layer(fname.encode('utf-8'),(shp_dir+'zoom_layer.shp').encode('utf-8'))
+        genlayer.gen_biandianzhan_shp(fname.encode('utf-8'),(shp_dir+'biandianzhan.shp').encode('utf-8'))
+        genlayer.gen_mapinfo(folder,shp_dir+'info.txt')
 
         # exit()
 
@@ -1387,4 +1516,6 @@ if __name__ == '__main__':
     # for shp_type in shptypes:
     #     M.merge_point_layer_shp(shp_type)
     # gui()
+    fdir = 'E:\\cui\\191102\\dwg_to_shp\\'
+    Cordinate_Transformation(fdir).line()
     pass

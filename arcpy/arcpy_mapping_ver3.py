@@ -48,7 +48,7 @@ def mapping(dir,out_pic_dir,ditu_path):
     df0 = arcpy.mapping.ListDataFrames(mxd)[0]
 
     workplace = 'SHAPEFILE_WORKSPACE'
-    output_mxd['导线'] = (dir.split('\\')[-2]+'_dwg_Polyline').decode('gbk')
+    output_mxd['导线'] = (dir.split('\\')[-2]+'_dwg_Polyline_Transform').decode('gbk')
     title = output_mxd['导线'].split('_')[0]+' 线路沿布图'.decode('gbk')
 
     text_f = open(dir+'\\'+'info.txt','r')
