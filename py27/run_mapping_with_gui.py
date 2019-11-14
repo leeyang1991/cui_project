@@ -96,12 +96,14 @@ def mapping():
             sg_input_dir = sg.Input(param_dic['fdir'].decode('gbk'))
             sg_arcgis_python = sg.Input(param_dic['arcgis_python'].decode('gbk'))
             sg_input_python_script = sg.Input(param_dic['mapping_script'].decode('gbk'))
+            sg_input_ditu = sg.Input(param_dic['input_ditu'].decode('gbk'))
             sg_out_pic_dir = sg.Input(param_dic['out_pic_dir'].decode('gbk'))
             sg_heng_template = sg.Input(param_dic['heng_template'].decode('gbk'))
             sg_shu_template = sg.Input(param_dic['shu_template'].decode('gbk'))
         except:
             sg_arcgis_python = sg.Input('')
             sg_input_python_script = sg.Input('')
+            sg_input_ditu = sg.Input('')
             sg_input_dir = sg.Input('')
             sg_out_pic_dir = sg.Input('')
             sg_heng_template = sg.Input('')
@@ -110,6 +112,7 @@ def mapping():
         sg_arcgis_python = sg.Input('')
         sg_input_dir = sg.Input('')
         sg_input_python_script = sg.Input('')
+        sg_input_ditu = sg.Input('')
         sg_out_pic_dir = sg.Input('')
         sg_heng_template = sg.Input('')
         sg_shu_template = sg.Input('')
@@ -118,6 +121,8 @@ def mapping():
             [sg_arcgis_python, sg.FileBrowse()],
             [sg.Text('ÖÆÍ¼½Å±¾.py'.decode('gbk'))],
             [sg_input_python_script, sg.FileBrowse()],
+            [sg.Text('µ×Í¼'.decode('gbk'))],
+            [sg_input_ditu, sg.FileBrowse()],
             [sg.Text('ºámxdÄ£°å.mxd'.decode('gbk'))],
             [sg_heng_template, sg.FileBrowse()],
             [sg.Text('ÊúmxdÄ£°å.mxd'.decode('gbk'))],
@@ -138,10 +143,11 @@ def mapping():
         # print(values1)
         arcgis_python = values1[0]
         mapping_script = values1[1]
-        heng_template = values1[2]
-        shu_template = values1[3]
-        fdir = values1[4]
-        out_pic_dir = values1[5]
+        mapping_input_ditu = values1[2]
+        heng_template = values1[3]
+        shu_template = values1[4]
+        fdir = values1[5]
+        out_pic_dir = values1[6]
 
         # print(fdir)
         # print(mapping_script)
@@ -150,6 +156,7 @@ def mapping():
         config = codecs.open(os.getcwd() + '/' + 'config_mapping.cfg', 'w')
         config.write('fdir=' + fdir.encode('gbk') + '\n')
         config.write('mapping_script=' + mapping_script.encode('gbk') + '\n')
+        config.write('input_ditu=' + mapping_input_ditu.encode('gbk') + '\n')
         config.write('arcgis_python=' + arcgis_python.encode('gbk') + '\n')
         config.write('out_pic_dir=' + out_pic_dir.encode('gbk') + '\n')
         config.write('heng_template=' + heng_template.encode('gbk') + '\n')
@@ -163,6 +170,7 @@ def mapping():
                 mapping_script.encode('gbk')+' '+
                 fdir.encode('gbk')+' '+
                 out_pic_dir.encode('gbk')+' '+
+                mapping_input_ditu.encode('gbk')+' '+
                 heng_template.encode('gbk')+' '+
                 shu_template.encode('gbk')
         )

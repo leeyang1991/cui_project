@@ -24,7 +24,7 @@ def mk_dir(dir):
         os.makedirs(dir)
 
 
-def mapping(dir,out_pic_dir):
+def mapping(dir,out_pic_dir,ditu_path):
     # ºáÊúÑ¡Ôñ
     f=open(dir+'\\'+'config.txt','r')
     line = f.readline()
@@ -32,11 +32,11 @@ def mapping(dir,out_pic_dir):
         # mxd_file = 'D:\\project13\\heng_ver5.mxd'
         # mxd_file = this_root+'mxd\\template_heng.mxd'
         # mxd_file = r'E:\cui\190905\template_heng.mxd'
-        mxd_file = sys.argv[3]
+        mxd_file = sys.argv[4]
     elif line == 'shu':
         # mxd_file = this_root + 'mxd\\template_shu.mxd'
         # mxd_file = r'E:\cui\190905\template_shu.mxd'
-        mxd_file = sys.argv[4]
+        mxd_file = sys.argv[5]
     else:
         mxd_file = None
     # mxd_file = 'D:\\project13\\ÐÂÖÆ×÷shu.mxd'
@@ -82,6 +82,15 @@ def mapping(dir,out_pic_dir):
             pass
 
 
+    # Ìæ»» 84.tif µ×Í¼
+    print(ditu_path)
+    ditu_dir = ditu_path.split('/')[:-1]
+    ditu_dir = '/'.join(ditu_dir)
+    ditu_tif = ditu_path.split('/')[-1].split('.')[0]
+    print(ditu_dir)
+    print(ditu_tif)
+    lyr_84 = arcpy.mapping.ListLayers(mxd, '84.tif', df0)[0]
+    lyr_84.replaceDataSource(ditu_dir, 'RASTER_WORKSPACE', ditu_tif)
 
     for i in output_mxd:
 
@@ -121,6 +130,7 @@ def main():
     # exit()
     dirs = sys.argv[1]
     out_pic_dir = sys.argv[2]
+    ditu_path = sys.argv[3]
     # print(dirs)
     # print(out_pic_dir)
     # print(dirs)
@@ -129,7 +139,7 @@ def main():
         # dir = dirs+'\\'+dir.decode('gbk')+'\\'
         dir = dirs+'\\'+dir+'\\'
         print(dir.decode('gbk'))
-        mapping(dir,out_pic_dir)
+        mapping(dir,out_pic_dir,ditu_path)
     # print(sys.argv)
     # pass
 

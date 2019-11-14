@@ -84,6 +84,10 @@ class ReadExcel:
             name_list.append(name)
             if i == nrows - 4:
                 break
+        # print len(lon_list)
+        # print len(lat_list)
+        # print len(name_list)
+        # print len(qianduan_list)
         return lon_list,lat_list,name_list,qianduan_list
 
 

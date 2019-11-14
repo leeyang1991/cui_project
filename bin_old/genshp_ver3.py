@@ -105,6 +105,7 @@ def jiliangxiang_shp(r,f_dir):
 #5连接电线杆
 #5.1生成电线杆连线两点坐标
 def dianxiangan_line(r):
+    # print(r)
     if r.dianxiangan():
         lon_list,lat_list,name_list,qianduan_list = r.dianxiangan()
         dianxiangan_coor_dic = {}
@@ -160,7 +161,7 @@ def dianxiangan_line(r):
         # print p2_list
         # print len(p1_list)
         # print len(p2_list)
-        for i in range(len(p1_list)):
+        for i in range(len(p2_list)):
 
             distancestr.append(str(round(wl.GetDistance(p1_list[i][0],p1_list[i][1],p2_list[i][0],p2_list[i][1]),2)))
             distance.append(wl.GetDistance(p1_list[i][0],p1_list[i][1],p2_list[i][0],p2_list[i][1]))
@@ -179,7 +180,7 @@ def dianxiangan_line_shp(r,f_dir):
         fname = directory+'\\dianxiangan_line'
 
         lines = []
-        for i in range(len(p1_list)):
+        for i in range(len(p2_list)):
             lines.append([p1_list[i],p2_list[i],distance[i],'','','',''])
         wl.line_to_shp(lines,fname+'.shp')
 
