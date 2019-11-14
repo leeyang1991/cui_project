@@ -14,6 +14,7 @@ from matplotlib import pyplot as plt
 import simple_tkinter as sg
 import codecs
 import coordinate_transformation as cs
+from tqdm import tqdm
 
 #
 # f_excel = this_root+'190905/台账数据.xlsx'
@@ -84,6 +85,64 @@ def line_to_shp(inputlist,outSHPfn):
         outFeature = None
 
 
+
+def line_to_shp1(inputlist,outSHPfn):
+    ############重要#################
+    gdal.SetConfigOption("SHAPE_ENCODING", "GBK")
+    ############重要#################
+    # start,end,outSHPfn,val1,val2,val3,val4,val5
+    # _,_,_,_=start[1],start[0],end[0],end[1]
+
+    shpDriver = ogr.GetDriverByName("ESRI Shapefile")
+    if os.path.exists(outSHPfn):
+        shpDriver.DeleteDataSource(outSHPfn)
+    outDataSource = shpDriver.CreateDataSource(outSHPfn)
+    outLayer = outDataSource.CreateLayer(outSHPfn, geom_type=ogr.wkbLineString)
+
+    #create line geometry
+    line = ogr.Geometry(ogr.wkbLineString)
+
+    # create a field
+    fieldType = ogr.OFTString
+    idField1 = ogr.FieldDefn('RefName', fieldType)
+    idField2 = ogr.FieldDefn('Layer', fieldType)
+    idField3 = ogr.FieldDefn('val3', fieldType)
+    idField4 = ogr.FieldDefn('val4', fieldType)
+    idField5 = ogr.FieldDefn('val5', fieldType)
+
+    outLayer.CreateField(idField1)
+    outLayer.CreateField(idField2)
+    outLayer.CreateField(idField3)
+    outLayer.CreateField(idField4)
+    outLayer.CreateField(idField5)
+
+    for i in range(len(inputlist)):
+        start = inputlist[i][0]
+        end = inputlist[i][1]
+        val1 = inputlist[i][2]
+        val2 = inputlist[i][3]
+        val3 = inputlist[i][4]
+        val4 = inputlist[i][5]
+        val5 = inputlist[i][6]
+
+        line.AddPoint(start[0],start[1])
+        line.AddPoint(end[0],end[1])
+
+        featureDefn = outLayer.GetLayerDefn()
+        outFeature = ogr.Feature(featureDefn)
+        outFeature.SetGeometry(line)
+        outFeature.SetField('RefName', val1)
+        outFeature.SetField('Layer', val2)
+        outFeature.SetField('val3', val3)
+        outFeature.SetField('val4', val4)
+        outFeature.SetField('val5', val5)
+        outLayer.CreateFeature(outFeature)
+        outFeature.Destroy()
+        line = ogr.Geometry(ogr.wkbLineString)
+        outFeature = None
+
+
+
 def point_to_shp(inputlist,outSHPfn):
     # gdal.SetConfigOption("GDAL_FILENAME_IS_UTF8", "YES")
     ############重要#################
@@ -151,7 +210,7 @@ def point_to_shp1(inputlist,outSHPfn):
 
     # create a field
     idField1 = ogr.FieldDefn('RefName',fieldType)
-    idField2 = ogr.FieldDefn('val2', fieldType)
+    idField2 = ogr.FieldDefn('Layer', fieldType)
     idField3 = ogr.FieldDefn('val3', fieldType)
     # idField4 = ogr.FieldDefn('val4', fieldType)
     # idField5 = ogr.FieldDefn('val5', fieldType)
@@ -528,7 +587,6 @@ class GenLayer:
             name_gbk = name.decode('utf-8')
             if name_gbk in zhuanbian:
                 out_list_gongbian.append([x, y, name_gbk, zhuanbian[name_gbk],''])
-
         point_to_shp(out_list_gongbian, out_shp)
         pass
 
@@ -542,21 +600,118 @@ class GenLayer:
         for i in range(nrows):
             if i + 1 == nrows:
                 continue
-            biandiamzhan_name = sh.cell_value(i + 1, 2)
-            val1 = biandiamzhan_name
-            biandiamzhan[val1] = val1
+            dianzhan_type = sh.cell_value(i + 1, 0)
+            if dianzhan_type == '变电站'.decode('gbk'):
 
+                biandiamzhan_name = sh.cell_value(i + 1, 2)
+                val1 = biandiamzhan_name
+                biaozhu_name = sh.cell_value(i + 1, 3)
+                biandiamzhan[val1] = biaozhu_name
         return biandiamzhan
 
     def gen_biandianzhan_shp(self,daShapefile,out_shp):
         biandianzhan = self.gen_biandianzhan_excel()
+        # for i in biandianzhan:
+        #     print(i)
         str_num = []
         for key in biandianzhan:
-            # print key,len(key)
             str_num.append(len(key))
-        # print(min(str_num))
-        # print(max(str_num))
-        # exit()
+        driver = ogr.GetDriverByName("ESRI Shapefile")
+        dataSource = driver.Open(daShapefile, 0)
+        layer = dataSource.GetLayer()
+        # ganta = gen_naizhang_ganta_excel()
+        out_list_biandianzhan = []
+
+        name_list = []
+        xy_list = []
+        for feature in layer:
+            geom = feature.GetGeometryRef()
+            x = geom.GetX()
+            y = geom.GetY()
+            xy_list.append([x,y])
+            name = feature.GetField("RefName")
+            name_gbk = name.decode('utf-8')
+
+            name_list.append(name_gbk)
+        # print(xy_list)
+        out_dic = {}
+        for i in range(len(name_list)):
+            sum_str = ''
+            selected_num = []
+            for j in range(max(str_num)):
+                try:
+                    sum_str += name_list[i+j]
+                    selected_num.append(i+j)
+                    # print(sum_str)
+                    if sum_str in biandianzhan:
+                        # print(sum_str)
+                        selected_x = []
+                        selected_y = []
+                        for k in selected_num:
+                            selected_x.append(xy_list[k][0])
+                            selected_y.append(xy_list[k][1])
+                        x = np.mean(selected_x)
+                        y = np.mean(selected_y)
+                        out_dic[sum_str] = []
+                        out_list_biandianzhan.append([x,y,sum_str,'',''])
+                    str_num_ = len(sum_str)
+                    if str_num_ > max(str_num):
+                        break
+                except:
+                    pass
+        for i in out_list_biandianzhan:
+            name = i[2]
+            out_dic[name].append([i[0],i[1]])
+
+        out_list_biandianzhan = []
+        for name in out_dic:
+            # print(name)
+            x = []
+            y = []
+            for xy in out_dic[name]:
+                x.append(xy[0])
+                y.append(xy[1])
+            x_mean = np.mean(x)
+            y_mean = np.mean(y)
+            out_list_biandianzhan.append([x_mean,y_mean,name,'',''])
+            # print(x_mean)
+            # print(y_mean)
+            # for i in zhuanbian:
+            #     print(i)
+            # exit()
+            # continue
+            # if name_gbk in biandianzhan:
+            #     out_list_biandianzhan.append([x, y, name_gbk, biandianzhan[name_gbk],''])
+        #
+        point_to_shp(out_list_biandianzhan, out_shp)
+        # pass
+
+    def gen_xiangbian_excel(self):
+        # f_excel = this_root + u'190714\\张桥所线路设备明细.xls'
+        bk = xlrd.open_workbook(self.f_excel)
+        sh = bk.sheet_by_name(u'电站')
+        nrows = sh.nrows
+        biandiamzhan = {}
+        for i in range(nrows):
+            if i + 1 == nrows:
+                continue
+            dianzhan_type = sh.cell_value(i + 1, 0)
+
+            if '箱式变电站'.decode('gbk') in dianzhan_type:
+                biandiamzhan_name = sh.cell_value(i + 1, 2)
+                val1 = biandiamzhan_name
+                biaozhu_name = sh.cell_value(i + 1, 3)
+                biandiamzhan[val1] = biaozhu_name
+
+        return biandiamzhan
+
+    def gen_xiangbian_shp(self,daShapefile,out_shp):
+        biandianzhan = self.gen_xiangbian_excel()
+        # for i in biandianzhan:
+        #     print(i)
+        str_num = []
+        for key in biandianzhan:
+            str_num.append(len(key))
         driver = ogr.GetDriverByName("ESRI Shapefile")
         dataSource = driver.Open(daShapefile, 0)
         layer = dataSource.GetLayer()
@@ -628,6 +783,206 @@ class GenLayer:
         # pass
 
 
+
+    def gen_huanwang_excel(self):
+        # f_excel = this_root + u'190714\\张桥所线路设备明细.xls'
+        bk = xlrd.open_workbook(self.f_excel)
+        sh = bk.sheet_by_name(u'电站')
+        nrows = sh.nrows
+        biandiamzhan = {}
+        for i in range(nrows):
+            if i + 1 == nrows:
+                continue
+            dianzhan_type = sh.cell_value(i + 1, 0)
+            # if dianzhan_type == '环网柜'.decode('gbk'):
+            if '环网柜'.decode('gbk') in dianzhan_type:
+                biandiamzhan_name = sh.cell_value(i + 1, 2)
+                val1 = biandiamzhan_name
+                biaozhu_name = sh.cell_value(i + 1, 3)
+                biandiamzhan[val1] = biaozhu_name
+
+        return biandiamzhan
+
+    def gen_huanwang_shp(self,daShapefile,out_shp):
+        biandianzhan = self.gen_huanwang_excel()
+        # for i in biandianzhan:
+        #     print(i)
+        str_num = []
+        for key in biandianzhan:
+            str_num.append(len(key))
+        driver = ogr.GetDriverByName("ESRI Shapefile")
+        dataSource = driver.Open(daShapefile, 0)
+        layer = dataSource.GetLayer()
+        # ganta = gen_naizhang_ganta_excel()
+        out_list_biandianzhan = []
+
+        name_list = []
+        xy_list = []
+        for feature in layer:
+            geom = feature.GetGeometryRef()
+            x = geom.GetX()
+            y = geom.GetY()
+            xy_list.append([x,y])
+            name = feature.GetField("RefName")
+            name_gbk = name.decode('utf-8')
+
+            name_list.append(name_gbk)
+        # print(xy_list)
+        out_dic = {}
+        for i in range(len(name_list)):
+            sum_str = ''
+            selected_num = []
+            for j in range(max(str_num)):
+                try:
+                    sum_str += name_list[i+j]
+                    selected_num.append(i+j)
+                    # print(sum_str)
+                    if sum_str in biandianzhan:
+                        # print(sum_str)
+                        selected_x = []
+                        selected_y = []
+                        for k in selected_num:
+                            selected_x.append(xy_list[k][0])
+                            selected_y.append(xy_list[k][1])
+                        x = np.mean(selected_x)
+                        y = np.mean(selected_y)
+                        out_dic[sum_str] = []
+                        out_list_biandianzhan.append([x,y,sum_str,'',''])
+                    str_num_ = len(sum_str)
+                    if str_num_ > max(str_num):
+                        break
+                except:
+                    pass
+        for i in out_list_biandianzhan:
+            name = i[2]
+            out_dic[name].append([i[0],i[1]])
+
+        out_list_biandianzhan = []
+        for name in out_dic:
+            # print(name)
+            x = []
+            y = []
+            for xy in out_dic[name]:
+                x.append(xy[0])
+                y.append(xy[1])
+            x_mean = np.mean(x)
+            y_mean = np.mean(y)
+            out_list_biandianzhan.append([x_mean,y_mean,name,'',''])
+            # print(x_mean)
+            # print(y_mean)
+            # for i in zhuanbian:
+            #     print(i)
+            # exit()
+            # continue
+            # if name_gbk in biandianzhan:
+            #     out_list_biandianzhan.append([x, y, name_gbk, biandianzhan[name_gbk],''])
+        #
+        point_to_shp(out_list_biandianzhan, out_shp)
+        # pass
+
+
+
+    def gen_peidian_excel(self):
+        # f_excel = this_root + u'190714\\张桥所线路设备明细.xls'
+        bk = xlrd.open_workbook(self.f_excel)
+        sh = bk.sheet_by_name(u'电站')
+        nrows = sh.nrows
+        biandiamzhan = {}
+        for i in range(nrows):
+            if i + 1 == nrows:
+                continue
+            dianzhan_type = sh.cell_value(i + 1, 0)
+            if '配电室'.decode('gbk') in dianzhan_type:
+                biandiamzhan_name = sh.cell_value(i + 1, 2)
+                val1 = biandiamzhan_name
+                biaozhu_name = sh.cell_value(i + 1, 3)
+                biandiamzhan[val1] = biaozhu_name
+
+        return biandiamzhan
+
+    def gen_peidian_shp(self,daShapefile,out_shp):
+        biandianzhan = self.gen_peidian_excel()
+        # for i in biandianzhan:
+        #     print(i)
+        str_num = []
+        for key in biandianzhan:
+            str_num.append(len(key))
+        driver = ogr.GetDriverByName("ESRI Shapefile")
+        dataSource = driver.Open(daShapefile, 0)
+        layer = dataSource.GetLayer()
+        # ganta = gen_naizhang_ganta_excel()
+        out_list_biandianzhan = []
+
+        name_list = []
+        xy_list = []
+        for feature in layer:
+            geom = feature.GetGeometryRef()
+            x = geom.GetX()
+            y = geom.GetY()
+            xy_list.append([x,y])
+            name = feature.GetField("RefName")
+            name_gbk = name.decode('utf-8')
+
+            name_list.append(name_gbk)
+        # print(xy_list)
+        out_dic = {}
+        for i in range(len(name_list)):
+            sum_str = ''
+            selected_num = []
+            for j in range(max(str_num)):
+                try:
+                    sum_str += name_list[i+j]
+                    selected_num.append(i+j)
+                    # print(sum_str)
+                    if sum_str in biandianzhan:
+                        # print(sum_str)
+                        selected_x = []
+                        selected_y = []
+                        for k in selected_num:
+                            selected_x.append(xy_list[k][0])
+                            selected_y.append(xy_list[k][1])
+                        x = np.mean(selected_x)
+                        y = np.mean(selected_y)
+                        out_dic[sum_str] = []
+                        out_list_biandianzhan.append([x,y,sum_str,'',''])
+                    str_num_ = len(sum_str)
+                    if str_num_ > max(str_num):
+                        break
+                except:
+                    pass
+        for i in out_list_biandianzhan:
+            name = i[2]
+            out_dic[name].append([i[0],i[1]])
+
+        out_list_biandianzhan = []
+        for name in out_dic:
+            # print(name)
+            x = []
+            y = []
+            for xy in out_dic[name]:
+                x.append(xy[0])
+                y.append(xy[1])
+            x_mean = np.mean(x)
+            y_mean = np.mean(y)
+            out_list_biandianzhan.append([x_mean,y_mean,name,'',''])
+            # print(x_mean)
+            # print(y_mean)
+            # for i in zhuanbian:
+            #     print(i)
+            # exit()
+            # continue
+            # if name_gbk in biandianzhan:
+            #     out_list_biandianzhan.append([x, y, name_gbk, biandianzhan[name_gbk],''])
+        #
+        point_to_shp(out_list_biandianzhan, out_shp)
+        # pass
+
+
+
+
+
+
+
     def gen_line_annotation_excel(self):
         # f_excel = this_root + u'190714\\张桥所线路设备明细.xls'
         bk = xlrd.open_workbook(self.f_excel)
@@ -690,6 +1045,48 @@ class GenLayer:
                 # out_list.append([start, end, val1, val2, val3, val4, ''])
 
         pass
+
+
+
+    def gen_dianlan(self,line_fname,folder):
+        daShapefile = line_fname
+
+        # print(daShapefile)
+        # print(daShapefile.decode('gbk'))
+        driver = ogr.GetDriverByName("ESRI Shapefile")
+        dataSource = driver.Open(daShapefile, 0)
+        layer = dataSource.GetLayer()
+        dianlan_inlist = []
+        daoxian_inlist = []
+        for feature in layer:
+            geom = feature.GetGeometryRef()
+            Points = geom.GetPoints()
+            line_type = feature.GetField("Layer")
+            # print(line_type)
+            if u'电缆'.encode('utf-8') in line_type:
+                for i in range(len(Points)):
+                    # print(line_type)
+                    if i == len(Points) - 1:
+                        break
+                    x1, y1 = Points[i]
+                    x2, y2 = Points[i + 1]
+                    dianlan_inlist.append([(x1, y1), (x2, y2), '', '', '', '', ''])
+            else:
+                for i in range(len(Points)):
+                    if i == len(Points) - 1:
+                        break
+                    x1, y1 = Points[i]
+                    x2, y2 = Points[i + 1]
+                    daoxian_inlist.append([(x1, y1), (x2, y2), '', '', '', '', ''])
+        dianlan = folder + 'dianlan.shp'
+        dianlan = dianlan.encode('utf-8')
+
+        daoxian = folder + 'daoxian.shp'
+        daoxian = daoxian.encode('utf-8')
+        line_to_shp(dianlan_inlist, dianlan)
+        line_to_shp(daoxian_inlist, daoxian)
+        pass
+
 
     def gen_zoom_layer(self,daShapefile, out_shp):
         '''
@@ -1389,14 +1786,14 @@ class Cordinate_Transformation:
         time_init = time.time()
         time_i = 0
 
-        for folder in flist:
+        for folder in tqdm(flist):
             inlist = []
             for f in os.listdir(fdir+folder):
                 if f.endswith('_dwg_Polyline.shp'):
                     # print(f.decode('gbk'))
                     daShapefile = fdir+folder+'\\' + f
 
-                    print(daShapefile)
+                    # print(daShapefile)
                     # print(daShapefile.decode('gbk'))
                     driver = ogr.GetDriverByName("ESRI Shapefile")
                     dataSource = driver.Open(daShapefile, 0)
@@ -1405,6 +1802,9 @@ class Cordinate_Transformation:
                     for feature in layer:
                         geom = feature.GetGeometryRef()
                         Points = geom.GetPoints()
+                        line_type = feature.GetField("Layer")
+                        RefName = feature.GetField("RefName")
+
                         if Points:
                             for i in range(len(Points)):
                                 if i == len(Points) - 1:
@@ -1416,11 +1816,12 @@ class Cordinate_Transformation:
 
 
                                 # exit()
-                                inlist.append([(x1,y1), (x2, y2), '', '', '', '', ''])
-                    print('exporting line shp...')
+                                inlist.append([(x1,y1), (x2, y2), RefName, line_type, '', '', ''])
+                    # exit()
+                    # print('exporting line shp...')
                     output_fn = fdir+folder +'\\'+ f.split('.')[0]+'_Transform.shp'
                     output_fn = output_fn.encode('utf-8')
-                    line_to_shp(inlist, output_fn)
+                    line_to_shp1(inlist, output_fn)
 
 
 
@@ -1433,6 +1834,7 @@ def main(fdir,f_excel):
     CT = Cordinate_Transformation(fdir)
     CT.line()
     CT.point()
+    # exit()
     for folder in tqdm(flist):
         shp_dir = fdir + folder + '/'
 
@@ -1440,7 +1842,9 @@ def main(fdir,f_excel):
         # shp_list = os.listdir(shp_dir)
         # print(shp_dir)
         fname = shp_dir+'dwg_Annotation_Transformed.shp'
+        line_fname = shp_dir+folder+'_dwg_Polyline_Transform.shp'
         # print((shp_dir+'naizhang_ganta.shp').decode('gbk'))
+        genlayer.gen_dianlan(line_fname,shp_dir)
         genlayer.gen_naizhang_ganta_shp(fname.encode('utf-8'),(shp_dir+'naizhang_ganta.shp').encode('utf-8'))
         genlayer.gen_line_annotation_shp(fname.encode('utf-8'),(shp_dir+'line_annotation1.shp').encode('utf-8'))
         # gen_xiangshi_biandianzhan_shp(fname.encode('utf-8'),(shp_dir+'xiangshi_biandianzhan.shp').decode('gbk').encode('utf-8'))
@@ -1450,6 +1854,9 @@ def main(fdir,f_excel):
         genlayer.gen_zhuanbian_shp(fname.encode('utf-8'),(shp_dir+'zhuanbian.shp').encode('utf-8'))
         genlayer.gen_zoom_layer(fname.encode('utf-8'),(shp_dir+'zoom_layer.shp').encode('utf-8'))
         genlayer.gen_biandianzhan_shp(fname.encode('utf-8'),(shp_dir+'biandianzhan.shp').encode('utf-8'))
+        genlayer.gen_xiangbian_shp(fname.encode('utf-8'),(shp_dir+'xiangbian.shp').encode('utf-8'))
+        genlayer.gen_huanwang_shp(fname.encode('utf-8'),(shp_dir+'huanwang.shp').encode('utf-8'))
+        genlayer.gen_peidian_shp(fname.encode('utf-8'),(shp_dir+'peidian.shp').encode('utf-8'))
         genlayer.gen_mapinfo(folder,shp_dir+'info.txt')
 
         # exit()
@@ -1490,8 +1897,8 @@ def gui():
         # print(values1)
         f_excel = values1[0]
         fdir = values1[1]
-        print(fdir)
-        print(f_excel)
+        # print(fdir)
+        # print(f_excel)
         config = codecs.open(os.getcwd() + '\\' + 'config.cfg', 'w')
         config.write('fdir=' + fdir.encode('gbk') + '\n')
         config.write('f_excel=' + f_excel.encode('gbk') + '\n')
@@ -1499,7 +1906,7 @@ def gui():
 
         main(fdir+'/',f_excel)
         sg.Popup('图层生成完毕！\n按OK结束'.decode('gbk'))
-        exit()
+        # exit()
 
 if __name__ == '__main__':
 

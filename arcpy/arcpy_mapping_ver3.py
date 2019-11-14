@@ -10,13 +10,17 @@ argvs = sys.argv
 
 output_mxd = {'柱上用户变压器':'zhuanbian',
               '耐张杆塔':'naizhang_ganta',
-              'xiangshi_biandianzhan':'xiangshi_biandianzhan',
+              'xiangshi_biandianzhan':'xiangbian',
               '断路器':'duanluqi',
               '柱上变压器':'zhushangbianyaqi',
               # 'dwg_Polyline':'***********',
               'line_annotation':'line_annotation1',
               'zoom_layer':'zoom_layer',
-              '电站':'biandianzhan'
+              '电站':'biandianzhan',
+              '导线':'daoxian',
+              '电缆':'dianlan',
+              'huanwang':'huanwang',
+              'peidian':'peidian',
                }
 
 def mk_dir(dir):
@@ -48,9 +52,9 @@ def mapping(dir,out_pic_dir,ditu_path):
     df0 = arcpy.mapping.ListDataFrames(mxd)[0]
 
     workplace = 'SHAPEFILE_WORKSPACE'
-    output_mxd['导线'] = (dir.split('\\')[-2]+'_dwg_Polyline_Transform').decode('gbk')
-    title = output_mxd['导线'].split('_')[0]+' 线路沿布图'.decode('gbk')
-
+    # output_mxd['导线'] = (dir.split('\\')[-2]+'_dwg_Polyline_Transform').decode('gbk')
+    # title = output_mxd['导线'].split('_')[0]+' 线路沿布图'.decode('gbk')
+    title = dir.split('\\')[-2]+'线路沿布图'
     text_f = open(dir+'\\'+'info.txt','r')
     line = text_f.readline()
     shebeimingcheng, qidiandianzhan, weihubanzu,\
