@@ -1395,7 +1395,8 @@ class Cordinate_Transformation:
                 if f.endswith('_dwg_Polyline.shp'):
                     # print(f.decode('gbk'))
                     daShapefile = fdir+folder+'\\' + f
-                    # print(daShapefile.decode('gbk'))
+
+                    print(daShapefile)
                     # print(daShapefile.decode('gbk'))
                     driver = ogr.GetDriverByName("ESRI Shapefile")
                     dataSource = driver.Open(daShapefile, 0)
@@ -1425,13 +1426,14 @@ class Cordinate_Transformation:
 
 def main(fdir,f_excel):
     # fdir = this_root+'190905\\dwg_to_shp\\jiang\\'
+    from tqdm import tqdm
     flist = os.listdir(fdir)
     genlayer = GenLayer(f_excel)
 
     CT = Cordinate_Transformation(fdir)
     CT.line()
     CT.point()
-    for folder in flist:
+    for folder in tqdm(flist):
         shp_dir = fdir + folder + '/'
 
 
@@ -1516,6 +1518,6 @@ if __name__ == '__main__':
     # for shp_type in shptypes:
     #     M.merge_point_layer_shp(shp_type)
     # gui()
-    fdir = 'E:\\cui\\191102\\dwg_to_shp\\'
-    Cordinate_Transformation(fdir).line()
+    # fdir = 'E:\\cui\\191102\\dwg_to_shp\\'
+    # Cordinate_Transformation(fdir).line()
     pass
