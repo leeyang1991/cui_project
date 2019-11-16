@@ -6,6 +6,7 @@ import sys
 import codecs
 import yongcheng
 import multiprocessing
+import update_script
 
 
 def kernel_dwg_to_shp(params):
@@ -309,10 +310,12 @@ def main():
     #            [sg.Text('2.生成layer'.decode('gbk'))],
     #            [sg.Text('3.出图'.decode('gbk'))],
     #            [sg.OK()]]
-    layout1 = [[sg.Radio('1.dwg转shp'.decode('gbk'), "RADIO1")],
+    layout1 = [[sg.Radio('0.更新代码'.decode('gbk'), "RADIO1")],
+                [sg.Radio('1.dwg转shp'.decode('gbk'), "RADIO1")],
               [sg.Radio('2.生成layer'.decode('gbk'), "RADIO1")],
               [sg.Radio('3.出图'.decode('gbk'), "RADIO1")],
                [sg.Radio('4.合并图层'.decode('gbk'), "RADIO1")],
+
                [sg.OK()]
                ]
 
@@ -323,12 +326,14 @@ def main():
         if event1 is None:
             break
         if values1[0]:
-            dwg_to_shp()
+            update_script.main()
         if values1[1]:
-            gen_layer()
+            dwg_to_shp()
         if values1[2]:
-            mapping()
+            gen_layer()
         if values1[3]:
+            mapping()
+        if values1[4]:
             merge()
         # window1.Close()
 if __name__ == '__main__':
