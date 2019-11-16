@@ -27,40 +27,67 @@ def mk_dir(dir):
     if not os.path.isdir(dir):
         os.makedirs(dir)
 
+def huanhang(txt,n):
+    n=int(n)
+    newtxt=''
+    for i,v in enumerate(txt):
+        # if i == 0:
+        #     continue
+        if i % n == 0 and i != 0:
+            newtxt+='\n'
+        newtxt+=v
+
+    return newtxt
+
+def new_huanhang(txt,n):
+    new_text = ''
+    # print([txt])
+    if '\\n' in txt:
+        txt = txt.split('\\n')
+        # print(123123)
+        for t in txt:
+            if len(t) > n:
+                nt = huanhang(t,n)
+                new_text += nt + '\\n'
+            else:
+                new_text+=t+'\\n'
+    return new_text
+
 
 def mapping(dir,out_pic_dir,ditu_path):
     # 横竖选择
     f=open(dir+'\\'+'config.txt','r')
     line = f.readline()
-    if line == 'heng':
+    template = line.split(',')[0]
+    level = line.split(',')[1]
+    if template == 'heng':
         # mxd_file = 'D:\\project13\\heng_ver5.mxd'
         # mxd_file = this_root+'mxd\\template_heng.mxd'
         # mxd_file = r'E:\cui\190905\template_heng.mxd'
         mxd_file = sys.argv[4]
-    elif line == 'shu':
+    elif template == 'shu':
         # mxd_file = this_root + 'mxd\\template_shu.mxd'
         # mxd_file = r'E:\cui\190905\template_shu.mxd'
         mxd_file = sys.argv[5]
     else:
         mxd_file = None
-    # mxd_file = 'D:\\project13\\新制作shu.mxd'
-    title = ''
-    # print(dir)
-    # exit()
 
     mxd = arcpy.mapping.MapDocument(mxd_file)
     df0 = arcpy.mapping.ListDataFrames(mxd)[0]
 
     workplace = 'SHAPEFILE_WORKSPACE'
-    # output_mxd['导线'] = (dir.split('\\')[-2]+'_dwg_Polyline_Transform').decode('gbk')
-    # title = output_mxd['导线'].split('_')[0]+' 线路沿布图'.decode('gbk')
-    title = dir.split('\\')[-2]+'线路沿布图'
+    # title = dir.split('\\')[-2]+'线路沿布图'
     text_f = open(dir+'\\'+'info.txt','r')
     line = text_f.readline()
     shebeimingcheng, qidiandianzhan, weihubanzu,\
     xianluzongchangdu,jiakong, dianlan, gongbian, \
-    zhuanbian, duanluqi = line.split(',')
-
+    zhuanbian, duanluqi,title,beizhu = line.split(',')
+    if len(beizhu) == 0:
+        beizhu = ' '
+    # print(beizhu)
+    beizhu = new_huanhang(beizhu.decode('utf-8'),20)
+    print(beizhu)
+    # exit()
     for textElement in arcpy.mapping.ListLayoutElements(mxd, "TEXT_ELEMENT"):
         if textElement.name == 'title':
             textElement.text = (title)
@@ -82,15 +109,17 @@ def mapping(dir,out_pic_dir,ditu_path):
             textElement.text = (zhuanbian)
         elif textElement.name == 'duanluqi':
             textElement.text = (duanluqi)
+        elif textElement.name == 'beizhu':
+            textElement.text = (beizhu)
+            textElement.elementPositionY = 0.7
         else:
             pass
 
 
     # 替换 84.tif 底图
-    print(ditu_path)
-    ditu_dir = ditu_path.split('/')[:-1]
-    ditu_dir = '/'.join(ditu_dir)
-    ditu_tif = ditu_path.split('/')[-1].split('.')[0]
+    ditu_dir = ditu_path
+    # ditu_dir = '/'.join(ditu_dir)
+    ditu_tif = level+'.tif'
     print(ditu_dir)
     print(ditu_tif)
     lyr_84 = arcpy.mapping.ListLayers(mxd, '84.tif', df0)[0]
@@ -115,9 +144,8 @@ def mapping(dir,out_pic_dir,ditu_path):
         os.remove(dir+'\\mxd.mxd')
     mxd.saveACopy(dir+'\\mxd.mxd','9.2')
     mk_dir(out_pic_dir.decode('gbk')+'\\')
-    # outjpeg = this_root+'output_pic\\'+dir.split('\\')[-2]
-    outjpeg = out_pic_dir.decode('gbk')+'\\'+dir.split('\\')[-2]
-    # print(outjpeg)
+    # outjpeg = out_pic_dir.decode('gbk')+'\\'+dir.split('\\')[-2]
+    outjpeg = out_pic_dir.decode('gbk')+'\\'+title.decode('utf-8')
     arcpy.mapping.ExportToJPEG(mxd,outjpeg,data_frame='PAGE_LAYOUT',df_export_width=mxd.pageSize.width,df_export_height=mxd.pageSize.height,color_mode='24-BIT_TRUE_COLOR',resolution=300,jpeg_quality=100)
     # arcpy.mapping.ExportToAI(mxd,outjpeg+'.ai')
     print 'done'

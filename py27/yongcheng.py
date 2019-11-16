@@ -15,6 +15,7 @@ import simple_tkinter as sg
 import codecs
 import coordinate_transformation as cs
 from tqdm import tqdm
+import math
 
 #
 # f_excel = this_root+'190905/台账数据.xlsx'
@@ -241,6 +242,19 @@ def point_to_shp1(inputlist,outSHPfn):
     outFeature = None
 
 
+def rad(d):
+    return d*math.pi/180
+
+def GetDistance(point1,point2):
+    # unit meter
+    radLat1=rad(point1[1])
+    radLat2=rad(point2[1])
+    a=radLat1-radLat2
+    b=rad(point1[0])-rad(point2[0])
+    s=2 * math.asin(math.sqrt(math.pow(math.sin(a/2),2) +math.cos(radLat1)*math.cos(radLat2)*math.pow(math.sin(b/2),2)))
+    s = s *6378.137*1000
+    distance=round(s,4)
+    return distance
 
 
 
@@ -611,8 +625,9 @@ class GenLayer:
 
     def gen_biandianzhan_shp(self,daShapefile,out_shp):
         biandianzhan = self.gen_biandianzhan_excel()
-        # for i in biandianzhan:
-        #     print(i)
+        if len(biandianzhan) == 0:
+            point_to_shp([], out_shp)
+            return None
         str_num = []
         for key in biandianzhan:
             str_num.append(len(key))
@@ -707,8 +722,9 @@ class GenLayer:
 
     def gen_xiangbian_shp(self,daShapefile,out_shp):
         biandianzhan = self.gen_xiangbian_excel()
-        # for i in biandianzhan:
-        #     print(i)
+        if len(biandianzhan) == 0:
+            point_to_shp([], out_shp)
+            return None
         str_num = []
         for key in biandianzhan:
             str_num.append(len(key))
@@ -805,6 +821,9 @@ class GenLayer:
 
     def gen_huanwang_shp(self,daShapefile,out_shp):
         biandianzhan = self.gen_huanwang_excel()
+        if len(biandianzhan) == 0:
+            point_to_shp([], out_shp)
+            return None
         # for i in biandianzhan:
         #     print(i)
         str_num = []
@@ -902,8 +921,9 @@ class GenLayer:
 
     def gen_peidian_shp(self,daShapefile,out_shp):
         biandianzhan = self.gen_peidian_excel()
-        # for i in biandianzhan:
-        #     print(i)
+        if len(biandianzhan) == 0:
+            point_to_shp([], out_shp)
+            return None
         str_num = []
         for key in biandianzhan:
             str_num.append(len(key))
@@ -1108,10 +1128,27 @@ class GenLayer:
             y = geom.GetY()
             x_list.append(x)
             y_list.append(y)
-        xmin = min(x_list) - 0.003
-        xmax = max(x_list) + 0.003
-        ymin = min(y_list) - 0.003
-        ymax = max(y_list) + 0.003
+        # xmin = min(x_list) - 0.0015
+        # xmax = max(x_list) + 0.0015
+        # ymin = min(y_list) - 0.0015
+        # ymax = max(y_list) + 0.0015
+
+
+
+
+        xmin = min(x_list)
+        xmax = max(x_list)
+        ymin = min(y_list)
+        ymax = max(y_list)
+
+        x_offset = abs(xmin - xmax) * 0.05
+        y_offset = abs(ymin - ymax) * 0.05
+
+        xmin = xmin - x_offset
+        xmax = xmax + x_offset
+        ymin = ymin - y_offset
+        ymax = ymax
+
 
         a = [xmin, ymin, '', '', '']
         b = [xmin, ymax, '', '', '']
@@ -1129,18 +1166,29 @@ class GenLayer:
         x_range = xmax - xmin
         y_range = ymax - ymin
 
+        point1 = [xmax,ymax]
+        point2 = [xmin,ymax]
+
+        real_distance = GetDistance(point1,point2) # meter
+
+        if real_distance <= 2000:
+            level = 18
+        elif 2000 < real_distance <= 3000:
+            level = 17
+        else:
+            level = 16
+        # exit()
         # print(x_range)
         # print(y_range)
         file_name = '/'.join(daShapefile.split('/')[:-1]) + '\\config.txt'
         # print(file_name.decode('utf-8'))
         fw = open(file_name.decode('utf-8'), 'w')
         if x_range > y_range:
-            fw.write('heng')
+            fw.write('heng,{}'.format(level))
         elif y_range > x_range:
-            fw.write('shu')
+            fw.write('shu,{}'.format(level))
         else:
             fw.write('error')
-
         pass
 
 
@@ -1161,9 +1209,12 @@ class GenLayer:
             gongbian = sh.cell_value(i + 1, 8)
             zhuanbian = sh.cell_value(i + 1, 9)
             duanluqi = sh.cell_value(i + 1, 10)
+            tuzhimingcheng = sh.cell_value(i + 1, 11)
+            beizhu = sh.cell_value(i + 1, 12)
             info_dic[shebeimingcheng] = [shebeimingcheng,qidiandianzhan,weihubanzu,
                                          xianluzongchangdu,
-                                         jiakong,dianlan,gongbian,zhuanbian,duanluqi]
+                                         jiakong,dianlan,gongbian,zhuanbian,duanluqi,
+                                         tuzhimingcheng,beizhu]
         return info_dic
         pass
 
@@ -1699,17 +1750,20 @@ class Merge:
 
 class Cordinate_Transformation:
 
-    def __init__(self,indir):
+    def __init__(self,indir,Transform=True):
         # 直接转换annotation
         self.indir = indir
+        self.Transform = Transform
         gdal.SetConfigOption("SHAPE_ENCODING", "GBK")
         pass
 
 
     def transform(self,x,y):
+
+
         [newx, newy] = cs.wgs84_to_bd09(x, y)
-        newx = newx - (116.271585 - 116.272903)
-        newy = newy - (34.119071 - 34.117548)
+        newx = newx - (116.271585 - 116.272903)# 加了微调
+        newy = newy - (34.119071 - 34.117548)# 加了微调
         return newx,newy
 
 
@@ -1763,8 +1817,11 @@ class Cordinate_Transformation:
                                 #     break
                                 x = Points[i][0]
                                 y = Points[i][1]
-                                newx, newy = self.transform(x,y)
-                                inlist.append([newx,newy, val1, '', '', '', ''])
+                                if self.Transform:
+                                    newx, newy = self.transform(x,y)
+                                    inlist.append([newx,newy, val1, '', '', '', ''])
+                                else:
+                                    inlist.append([x, y, val1, '', '', '', ''])
 
             time_end = time.time()
             time_i += 1
@@ -1811,14 +1868,12 @@ class Cordinate_Transformation:
                                     break
                                 x1,y1 = Points[i]
                                 x2,y2 = Points[i + 1]
-                                x1,y1 = self.transform(x1,y1)
-                                x2, y2 = self.transform(x2,y2)
-
-
-                                # exit()
-                                inlist.append([(x1,y1), (x2, y2), RefName, line_type, '', '', ''])
-                    # exit()
-                    # print('exporting line shp...')
+                                if self.Transform:
+                                    x1,y1 = self.transform(x1,y1)
+                                    x2, y2 = self.transform(x2,y2)
+                                    inlist.append([(x1,y1), (x2, y2), RefName, line_type, '', '', ''])
+                                else:
+                                    inlist.append([(x1, y1), (x2, y2), RefName, line_type, '', '', ''])
                     output_fn = fdir+folder +'\\'+ f.split('.')[0]+'_Transform.shp'
                     output_fn = output_fn.encode('utf-8')
                     line_to_shp1(inlist, output_fn)

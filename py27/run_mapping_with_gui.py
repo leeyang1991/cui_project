@@ -122,7 +122,7 @@ def mapping():
             [sg.Text('ÖÆÍ¼½Å±¾.py'.decode('gbk'))],
             [sg_input_python_script, sg.FileBrowse()],
             [sg.Text('µ×Í¼'.decode('gbk'))],
-            [sg_input_ditu, sg.FileBrowse()],
+            [sg_input_ditu, sg.FolderBrowse()],
             [sg.Text('ºámxdÄ£°å.mxd'.decode('gbk'))],
             [sg_heng_template, sg.FileBrowse()],
             [sg.Text('ÊúmxdÄ£°å.mxd'.decode('gbk'))],
