@@ -306,10 +306,6 @@ def merge():
 
 
 def main():
-    # layout1 = [[sg.Text('1.dwg转shp'.decode('gbk'))],
-    #            [sg.Text('2.生成layer'.decode('gbk'))],
-    #            [sg.Text('3.出图'.decode('gbk'))],
-    #            [sg.OK()]]
     layout1 = [[sg.Radio('0.更新代码'.decode('gbk'), "RADIO1")],
                 [sg.Radio('1.dwg转shp'.decode('gbk'), "RADIO1")],
               [sg.Radio('2.生成layer'.decode('gbk'), "RADIO1")],
