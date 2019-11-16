@@ -1083,6 +1083,7 @@ class GenLayer:
             Points = geom.GetPoints()
             line_type = feature.GetField("Layer")
             # print(line_type)
+            # print(len(line_type))
             if u'电缆'.encode('utf-8') in line_type:
                 for i in range(len(Points)):
                     # print(line_type)
@@ -1091,13 +1092,17 @@ class GenLayer:
                     x1, y1 = Points[i]
                     x2, y2 = Points[i + 1]
                     dianlan_inlist.append([(x1, y1), (x2, y2), '', '', '', '', ''])
-            else:
+            elif u'导线'.encode('utf-8') in line_type or u'站外'.encode('utf-8') in line_type:
                 for i in range(len(Points)):
                     if i == len(Points) - 1:
                         break
                     x1, y1 = Points[i]
                     x2, y2 = Points[i + 1]
                     daoxian_inlist.append([(x1, y1), (x2, y2), '', '', '', '', ''])
+
+
+            # else:
+
         dianlan = folder + 'dianlan.shp'
         dianlan = dianlan.encode('utf-8')
 

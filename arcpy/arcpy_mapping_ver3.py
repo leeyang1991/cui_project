@@ -51,6 +51,8 @@ def new_huanhang(txt,n):
                 new_text += nt + '\\n'
             else:
                 new_text+=t+'\\n'
+    else:
+        new_text = huanhang(txt,n)
     return new_text
 
 

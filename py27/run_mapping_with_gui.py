@@ -5,6 +5,21 @@ import os
 import sys
 import codecs
 import yongcheng
+import multiprocessing
+
+
+def kernel_dwg_to_shp(params):
+    arcgis_python,input_python_script,input_dir,out_dir = params
+
+    os.system(
+        arcgis_python.encode('gbk') + ' ' +
+        input_python_script.encode('gbk') + ' ' +
+        input_dir.encode('gbk') + ' ' +
+        out_dir.encode('gbk')
+    )
+    sg.Popup('dwg转shp完毕！\n按OK结束'.decode('gbk'))
+    pass
+
 
 def dwg_to_shp():
     if os.path.isfile(os.getcwd() + '/config_dwg_to_shp.cfg'):
@@ -70,15 +85,27 @@ def dwg_to_shp():
         input_dir = input_dir.replace('/','\\')
         out_dir = out_dir.replace('/','\\')
 
-        os.system(
-            arcgis_python.encode('gbk') + ' ' +
-            input_python_script.encode('gbk') + ' ' +
-            input_dir.encode('gbk') + ' ' +
-            out_dir.encode('gbk')
-        )
-        sg.Popup('dwg转shp完毕！\n按OK结束'.decode('gbk'))
+        params = [arcgis_python,input_python_script,input_dir,out_dir]
+        p = multiprocessing.Process(target=kernel_dwg_to_shp, args=[params])
+        p.start()
         window1.Close()
         break
+
+def kernel_mapping(params):
+    arcgis_python,mapping_script,fdir,out_pic_dir,mapping_input_ditu,heng_template,shu_template = params
+    print(arcgis_python)
+    os.system(
+        arcgis_python.encode('gbk') + ' ' +
+        mapping_script.encode('gbk') + ' ' +
+        fdir.encode('gbk') + ' ' +
+        out_pic_dir.encode('gbk') + ' ' +
+        mapping_input_ditu.encode('gbk') + ' ' +
+        heng_template.encode('gbk') + ' ' +
+        shu_template.encode('gbk')
+    )
+    sg.Popup('制图完毕！\n按OK结束'.decode('gbk'))
+    pass
+
 
 
 def mapping():
@@ -134,13 +161,11 @@ def mapping():
             [sg.OK()]
     ]
     window1 = sg.Window('arcpy制图'.decode('gbk'),font=("Helvetica", 20)).Layout(layout1)
-
     while 1:
 
         event1, values1 = window1.Read()
         if event1 is None:
             break
-        # print(values1)
         arcgis_python = values1[0]
         mapping_script = values1[1]
         mapping_input_ditu = values1[2]
@@ -149,10 +174,6 @@ def mapping():
         fdir = values1[5]
         out_pic_dir = values1[6]
 
-        # print(fdir)
-        # print(mapping_script)
-        # print(arcgis_python)
-        # print(out_pic_dir)
         config = codecs.open(os.getcwd() + '/' + 'config_mapping.cfg', 'w')
         config.write('fdir=' + fdir.encode('gbk') + '\n')
         config.write('mapping_script=' + mapping_script.encode('gbk') + '\n')
@@ -165,18 +186,21 @@ def mapping():
         # print(arcgis_python+' '+mapping_script)
         fdir = fdir.replace('/','\\')
         out_pic_dir = out_pic_dir.replace('/','\\')
-        os.system(
-                arcgis_python.encode('gbk')+' '+
-                mapping_script.encode('gbk')+' '+
-                fdir.encode('gbk')+' '+
-                out_pic_dir.encode('gbk')+' '+
-                mapping_input_ditu.encode('gbk')+' '+
-                heng_template.encode('gbk')+' '+
-                shu_template.encode('gbk')
-        )
-        sg.Popup('制图完毕！\n按OK结束'.decode('gbk'))
+
+        params = [arcgis_python,mapping_script,fdir,out_pic_dir,mapping_input_ditu,heng_template,shu_template]
+        p = multiprocessing.Process(target=kernel_mapping, args=[params])
+        p.start()
+
         window1.Close()
         break
+
+
+def kernel_gen_layer(fdir,f_excel):
+    yongcheng.main(fdir + '/', f_excel)
+    sg.Popup('图层生成完毕！\n按OK结束'.decode('gbk'))
+
+    pass
+
 
 
 def gen_layer():
@@ -222,8 +246,8 @@ def gen_layer():
         config.write('f_excel=' + f_excel.encode('gbk') + '\n')
         config.close()
 
-        yongcheng.main(fdir+'/',f_excel)
-        sg.Popup('图层生成完毕！\n按OK结束'.decode('gbk'))
+        p = multiprocessing.Process(target=kernel_gen_layer, args=(fdir,f_excel))
+        p.start()
         window1.Close()
         break
 
