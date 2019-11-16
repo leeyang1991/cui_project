@@ -58,6 +58,8 @@ def replace(date):
                 print(f)
                 os.remove(dest_dir+folder+'\\'+f)
                 shutil.copy(update+folder+'\\'+f,dest_dir+folder+'\\'+f)
+            else:
+                shutil.copy(update + folder + '\\' + f, dest_dir + folder + '\\' + f)
 
 
 
