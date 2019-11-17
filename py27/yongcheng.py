@@ -620,7 +620,8 @@ class GenLayer:
                 biandiamzhan_name = sh.cell_value(i + 1, 2)
                 val1 = biandiamzhan_name
                 biaozhu_name = sh.cell_value(i + 1, 3)
-                biandiamzhan[val1] = biaozhu_name
+                rongliang = sh.cell_value(i + 1, 4)
+                biandiamzhan[val1] = [biaozhu_name, rongliang]
         return biandiamzhan
 
     def gen_biandianzhan_shp(self,daShapefile,out_shp):
@@ -668,7 +669,7 @@ class GenLayer:
                         x = np.mean(selected_x)
                         y = np.mean(selected_y)
                         # out_dic[sum_str] = []
-                        out_list_biandianzhan.append([x,y,sum_str,'',''])
+                        out_list_biandianzhan.append([x, y, biandianzhan[sum_str][0] + '\n' + str(biandianzhan[sum_str][1]), '', ''])
                         break
                     str_num_ = len(sum_str)
                     if str_num_ > max(str_num):
@@ -692,7 +693,8 @@ class GenLayer:
                 biandiamzhan_name = sh.cell_value(i + 1, 2)
                 val1 = biandiamzhan_name
                 biaozhu_name = sh.cell_value(i + 1, 3)
-                biandiamzhan[val1] = biaozhu_name
+                rongliang = sh.cell_value(i + 1, 4)
+                biandiamzhan[val1] = [biaozhu_name, rongliang]
 
         return biandiamzhan
 
@@ -741,12 +743,13 @@ class GenLayer:
                         x = np.mean(selected_x)
                         y = np.mean(selected_y)
                         # out_dic[sum_str] = []
-                        out_list_biandianzhan.append([x,y,sum_str,'',''])
+                        out_list_biandianzhan.append(
+                            [x, y, biandianzhan[sum_str][0] + '\n' + str(biandianzhan[sum_str][1]), '', ''])
                         break
                     str_num_ = len(sum_str)
                     if str_num_ > max(str_num):
                         break
-                except:
+                except Exception as e:
                     pass
         point_to_shp(out_list_biandianzhan, out_shp)
         # pass
@@ -768,7 +771,8 @@ class GenLayer:
                 biandiamzhan_name = sh.cell_value(i + 1, 2)
                 val1 = biandiamzhan_name
                 biaozhu_name = sh.cell_value(i + 1, 3)
-                biandiamzhan[val1] = biaozhu_name
+                rongliang = sh.cell_value(i + 1, 4)
+                biandiamzhan[val1] = [biaozhu_name, rongliang]
 
         return biandiamzhan
 
@@ -817,7 +821,8 @@ class GenLayer:
                         x = np.mean(selected_x)
                         y = np.mean(selected_y)
                         # out_dic[sum_str] = []
-                        out_list_biandianzhan.append([x,y,sum_str,'',''])
+                        out_list_biandianzhan.append(
+                            [x, y, biandianzhan[sum_str][0] + '\n' + str(biandianzhan[sum_str][1]), '', ''])
                         break
                     str_num_ = len(sum_str)
                     if str_num_ > max(str_num):
@@ -841,7 +846,8 @@ class GenLayer:
                 biandiamzhan_name = sh.cell_value(i + 1, 2)
                 val1 = biandiamzhan_name
                 biaozhu_name = sh.cell_value(i + 1, 3)
-                biandiamzhan[val1] = biaozhu_name
+                rongliang = sh.cell_value(i + 1, 4)
+                biandiamzhan[val1] = [biaozhu_name, rongliang]
 
         return biandiamzhan
 
@@ -890,7 +896,8 @@ class GenLayer:
                         x = np.mean(selected_x)
                         y = np.mean(selected_y)
                         # out_dic[sum_str] = []
-                        out_list_biandianzhan.append([x,y,sum_str,'',''])
+                        out_list_biandianzhan.append(
+                            [x, y, biandianzhan[sum_str][0] + '\n' + str(biandianzhan[sum_str][1]), '', ''])
                         break
                     str_num_ = len(sum_str)
                     if str_num_ > max(str_num):
