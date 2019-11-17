@@ -43,7 +43,11 @@ def run_dwg_to_shp(fdir,out_dir_):
         # print(out_dir)
         # exit()
         if os.path.isdir(out_dir):
+            end = time.time()
+            log_process.process_bar(flag, len(flist), init_time, start, end,
+                                    str(flag + 1) + '/' + str(len(flist)) + '\n')
             flag += 1
+            print(out_dir+'is existed')
             continue
         mk_dir(out_dir)
         # try:

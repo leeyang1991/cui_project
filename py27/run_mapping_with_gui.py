@@ -6,7 +6,20 @@ import sys
 import codecs
 import yongcheng
 import multiprocessing
-import update_script
+
+
+def kernel_update_scrpit(params):
+
+    pass
+
+def update_script(py_script):
+    py3_path = ''
+    # py_script = ''
+    os.system(
+        py3_path+' '+py_script
+    )
+    sg.Popup('更新完成！\n按OK结束'.decode('gbk'))
+    pass
 
 
 def kernel_dwg_to_shp(params):
@@ -306,14 +319,17 @@ def merge():
 
 
 def main():
-    layout1 = [[sg.Radio('0.更新代码'.decode('gbk'), "RADIO1")],
-                [sg.Radio('1.dwg转shp'.decode('gbk'), "RADIO1")],
-              [sg.Radio('2.生成layer'.decode('gbk'), "RADIO1")],
-              [sg.Radio('3.出图'.decode('gbk'), "RADIO1")],
-               [sg.Radio('4.合并图层'.decode('gbk'), "RADIO1")],
+    # layout1 = [[sg.Radio('0.更新代码'.decode('gbk'), "RADIO1")],
+    #             [sg.Radio('1.dwg转shp'.decode('gbk'), "RADIO1")],
+    #           [sg.Radio('2.生成layer'.decode('gbk'), "RADIO1")],
+    #           [sg.Radio('3.出图'.decode('gbk'), "RADIO1")],
+    #            [sg.Radio('4.合并图层'.decode('gbk'), "RADIO1")],
+    #
+    #            [sg.OK()]
+    #            ]
 
-               [sg.OK()]
-               ]
+    layout1 = [[sg.InputCombo(('0.更新代码'.decode('gbk'),'1.dwg转shp'.decode('gbk'), '2.生成layer'.decode('gbk'), '3.出图'.decode('gbk'), '4.合并图层'.decode('gbk')), size=(20, 1))],
+               [sg.OK()]]
 
     window1 = sg.Window('自动制图'.decode('gbk'),layout1,font=("Helvetica", 20))
     while 1:
@@ -321,16 +337,28 @@ def main():
         # print(values1)
         if event1 is None:
             break
-        if values1[0]:
-            update_script.main()
-        if values1[1]:
+        if values1[0] == '0.更新代码'.decode('gbk'):
+            py_scrpit = os.getcwd()+'\\update_script.py'
+            update_script(py_scrpit)
+        elif values1[0] == '1.dwg转shp'.decode('gbk'):
             dwg_to_shp()
-        if values1[2]:
+        elif values1[0] == '2.生成layer'.decode('gbk'):
             gen_layer()
-        if values1[3]:
+        elif values1[0] == '3.出图'.decode('gbk'):
             mapping()
-        if values1[4]:
+        elif values1[0] == '4.合并图层'.decode('gbk'):
             merge()
+
+    #     if values1[0]:
+    #         update_script.main()
+    #     if values1[1]:
+    #         dwg_to_shp()
+    #     if values1[2]:
+    #         gen_layer()
+    #     if values1[3]:
+    #         mapping()
+    #     if values1[4]:
+    #         merge()
         # window1.Close()
 if __name__ == '__main__':
     main()

@@ -649,7 +649,7 @@ class GenLayer:
 
             name_list.append(name_gbk)
         # print(xy_list)
-        out_dic = {}
+        # out_dic = {}
         for i in range(len(name_list)):
             sum_str = ''
             selected_num = []
@@ -667,39 +667,15 @@ class GenLayer:
                             selected_y.append(xy_list[k][1])
                         x = np.mean(selected_x)
                         y = np.mean(selected_y)
-                        out_dic[sum_str] = []
+                        # out_dic[sum_str] = []
                         out_list_biandianzhan.append([x,y,sum_str,'',''])
+                        break
                     str_num_ = len(sum_str)
                     if str_num_ > max(str_num):
                         break
                 except:
                     pass
-        for i in out_list_biandianzhan:
-            name = i[2]
-            out_dic[name].append([i[0],i[1]])
-
-        out_list_biandianzhan = []
-        for name in out_dic:
-            # print(name)
-            x = []
-            y = []
-            for xy in out_dic[name]:
-                x.append(xy[0])
-                y.append(xy[1])
-            x_mean = np.mean(x)
-            y_mean = np.mean(y)
-            out_list_biandianzhan.append([x_mean,y_mean,name,'',''])
-            # print(x_mean)
-            # print(y_mean)
-            # for i in zhuanbian:
-            #     print(i)
-            # exit()
-            # continue
-            # if name_gbk in biandianzhan:
-            #     out_list_biandianzhan.append([x, y, name_gbk, biandianzhan[name_gbk],''])
-        #
         point_to_shp(out_list_biandianzhan, out_shp)
-        # pass
 
     def gen_xiangbian_excel(self):
         # f_excel = this_root + u'190714\\张桥所线路设备明细.xls'
@@ -746,7 +722,7 @@ class GenLayer:
 
             name_list.append(name_gbk)
         # print(xy_list)
-        out_dic = {}
+        # out_dic = {}
         for i in range(len(name_list)):
             sum_str = ''
             selected_num = []
@@ -764,37 +740,14 @@ class GenLayer:
                             selected_y.append(xy_list[k][1])
                         x = np.mean(selected_x)
                         y = np.mean(selected_y)
-                        out_dic[sum_str] = []
+                        # out_dic[sum_str] = []
                         out_list_biandianzhan.append([x,y,sum_str,'',''])
+                        break
                     str_num_ = len(sum_str)
                     if str_num_ > max(str_num):
                         break
                 except:
                     pass
-        for i in out_list_biandianzhan:
-            name = i[2]
-            out_dic[name].append([i[0],i[1]])
-
-        out_list_biandianzhan = []
-        for name in out_dic:
-            # print(name)
-            x = []
-            y = []
-            for xy in out_dic[name]:
-                x.append(xy[0])
-                y.append(xy[1])
-            x_mean = np.mean(x)
-            y_mean = np.mean(y)
-            out_list_biandianzhan.append([x_mean,y_mean,name,'',''])
-            # print(x_mean)
-            # print(y_mean)
-            # for i in zhuanbian:
-            #     print(i)
-            # exit()
-            # continue
-            # if name_gbk in biandianzhan:
-            #     out_list_biandianzhan.append([x, y, name_gbk, biandianzhan[name_gbk],''])
-        #
         point_to_shp(out_list_biandianzhan, out_shp)
         # pass
 
@@ -824,8 +777,6 @@ class GenLayer:
         if len(biandianzhan) == 0:
             point_to_shp([], out_shp)
             return None
-        # for i in biandianzhan:
-        #     print(i)
         str_num = []
         for key in biandianzhan:
             str_num.append(len(key))
@@ -847,7 +798,7 @@ class GenLayer:
 
             name_list.append(name_gbk)
         # print(xy_list)
-        out_dic = {}
+        # out_dic = {}
         for i in range(len(name_list)):
             sum_str = ''
             selected_num = []
@@ -865,40 +816,15 @@ class GenLayer:
                             selected_y.append(xy_list[k][1])
                         x = np.mean(selected_x)
                         y = np.mean(selected_y)
-                        out_dic[sum_str] = []
+                        # out_dic[sum_str] = []
                         out_list_biandianzhan.append([x,y,sum_str,'',''])
+                        break
                     str_num_ = len(sum_str)
                     if str_num_ > max(str_num):
                         break
                 except:
                     pass
-        for i in out_list_biandianzhan:
-            name = i[2]
-            out_dic[name].append([i[0],i[1]])
-
-        out_list_biandianzhan = []
-        for name in out_dic:
-            # print(name)
-            x = []
-            y = []
-            for xy in out_dic[name]:
-                x.append(xy[0])
-                y.append(xy[1])
-            x_mean = np.mean(x)
-            y_mean = np.mean(y)
-            out_list_biandianzhan.append([x_mean,y_mean,name,'',''])
-            # print(x_mean)
-            # print(y_mean)
-            # for i in zhuanbian:
-            #     print(i)
-            # exit()
-            # continue
-            # if name_gbk in biandianzhan:
-            #     out_list_biandianzhan.append([x, y, name_gbk, biandianzhan[name_gbk],''])
-        #
         point_to_shp(out_list_biandianzhan, out_shp)
-        # pass
-
 
 
     def gen_peidian_excel(self):
@@ -945,7 +871,7 @@ class GenLayer:
 
             name_list.append(name_gbk)
         # print(xy_list)
-        out_dic = {}
+        # out_dic = {}
         for i in range(len(name_list)):
             sum_str = ''
             selected_num = []
@@ -963,39 +889,15 @@ class GenLayer:
                             selected_y.append(xy_list[k][1])
                         x = np.mean(selected_x)
                         y = np.mean(selected_y)
-                        out_dic[sum_str] = []
+                        # out_dic[sum_str] = []
                         out_list_biandianzhan.append([x,y,sum_str,'',''])
+                        break
                     str_num_ = len(sum_str)
                     if str_num_ > max(str_num):
                         break
                 except:
                     pass
-        for i in out_list_biandianzhan:
-            name = i[2]
-            out_dic[name].append([i[0],i[1]])
-
-        out_list_biandianzhan = []
-        for name in out_dic:
-            # print(name)
-            x = []
-            y = []
-            for xy in out_dic[name]:
-                x.append(xy[0])
-                y.append(xy[1])
-            x_mean = np.mean(x)
-            y_mean = np.mean(y)
-            out_list_biandianzhan.append([x_mean,y_mean,name,'',''])
-            # print(x_mean)
-            # print(y_mean)
-            # for i in zhuanbian:
-            #     print(i)
-            # exit()
-            # continue
-            # if name_gbk in biandianzhan:
-            #     out_list_biandianzhan.append([x, y, name_gbk, biandianzhan[name_gbk],''])
-        #
         point_to_shp(out_list_biandianzhan, out_shp)
-        # pass
 
 
 
@@ -1238,7 +1140,8 @@ class GenLayer:
                 info_list.append(i)
             f.write(','.join(info_list))
             f.close()
-        # exit()
+        else:
+            print folder+' error'
 
 class LineAnnotation:
 

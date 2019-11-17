@@ -1,12 +1,15 @@
 # coding=gbk
-
+# python 3
 import os
-import requests
+# import urllib
+# urllib.request
+from urllib import request
+# from urllib import
 import zipfile
 import shutil
 import datetime
 from tqdm import tqdm
-
+# import urllib.request
 
 this_root = os.getcwd()+'\\'
 def mk_dir(dir):
@@ -15,27 +18,26 @@ def mk_dir(dir):
 
 def update_scrpit():
     url = 'https://codeload.github.com/leeyang1991/cui_project/zip/master'
-    # video_i = requests.get(url)
     now = datetime.datetime.now()
     year = now.year
     mon = now.month
     day = now.day
     zip_file_name =this_root+'{}_{}_{}.zip'.format(year,mon,day)
-
+    date = '{}_{}_{}'.format(year, mon, day)
     downloadFILE(url,zip_file_name)
-
-    date = '{}_{}_{}'.format(year,mon,day)
     return zip_file_name,date
 
 
 def downloadFILE(url,name):
-    resp = requests.get(url=url,stream=True)
-    # print(resp.headers)
+    resp = request.urlopen(url=url)
+    resp = resp.read()
+    # print(resp)
     # content_size = int(resp.headers['Content-Length'])/1024
-    content_size = 231
+    # content_size = 231
     with open(name, "wb") as f:
-        for data in tqdm(iterable=resp.iter_content(1024),ncols=100,total=content_size,unit='k',desc=name):
-            f.write(data)
+        f.write(resp)
+        # for data in tqdm(iterable=resp.iter_content(1024),ncols=100,total=content_size,unit='k',desc=name):
+        #     f.write(data)
 
 
 def unzip(zip,move_dst_folder):
@@ -54,13 +56,15 @@ def replace(date):
     dest_dir = this_root+'..\\'
     for folder in os.listdir(update):
         for f in os.listdir(update+folder):
-            if os.path.isfile(dest_dir+folder+'\\'+f):
-                print(f)
-                os.remove(dest_dir+folder+'\\'+f)
-                shutil.copy(update+folder+'\\'+f,dest_dir+folder+'\\'+f)
-            else:
-                shutil.copy(update + folder + '\\' + f, dest_dir + folder + '\\' + f)
-
+            try:
+                if os.path.isfile(dest_dir+folder+'\\'+f):
+                    print(f)
+                    os.remove(dest_dir+folder+'\\'+f)
+                    shutil.copy(update+folder+'\\'+f,dest_dir+folder+'\\'+f)
+                else:
+                    shutil.copy(update + folder + '\\' + f, dest_dir + folder + '\\' + f)
+            except:
+                pass
 
 
 def main():
