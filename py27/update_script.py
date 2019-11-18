@@ -1,4 +1,3 @@
-# coding=gbk
 # python 3
 import os
 # import urllib
