@@ -1056,7 +1056,7 @@ class GenLayer:
         ymax = max(y_list)
 
         x_offset = abs(xmin - xmax) * 0.05
-        y_offset = abs(ymin - ymax) * 0.05
+        y_offset = abs(ymin - ymax) * 0.15
 
         xmin = xmin - x_offset
         xmax = xmax + x_offset

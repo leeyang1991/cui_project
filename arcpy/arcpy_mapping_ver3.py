@@ -67,12 +67,12 @@ def mapping(dir,out_pic_dir,ditu_path):
         # mxd_file = this_root+'mxd\\template_heng.mxd'
         # mxd_file = r'E:\cui\190905\template_heng.mxd'
         mxd_file = sys.argv[4]
-        x = 35.8029
+        x = 35.0339
     elif template == 'shu':
         # mxd_file = this_root + 'mxd\\template_shu.mxd'
         # mxd_file = r'E:\cui\190905\template_shu.mxd'
         mxd_file = sys.argv[5]
-        x = 23.6926
+        x = 22.9125
     else:
         mxd_file = None
         x = None
