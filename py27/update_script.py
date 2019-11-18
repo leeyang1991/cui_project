@@ -7,7 +7,6 @@ from urllib import request
 import zipfile
 import shutil
 import datetime
-from tqdm import tqdm
 # import urllib.request
 
 this_root = os.getcwd()+'\\'
