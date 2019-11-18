@@ -349,37 +349,26 @@ def main():
     #     elif values1[0] == '4.合并图层'.decode('gbk'):
     #         merge()
 
+    while 1:
+        print('input number:')
+        print('0.更新代码\n1.dwg转shp\n2.生成layer\n3.出图\n4.合并图层')
+        input_num = raw_input('input:')
+        if input_num == '0':
+            py_scrpit = 'd:\\zhongyaxianlutu\\cui_project_191116\\cui_project\\py27\\update_script.py'
+            update_script(py_scrpit)
+        elif input_num == '1':
+            dwg_to_shp()
+            pass
+        elif input_num == '2':
+            gen_layer()
+            pass
+        elif input_num == '3':
+            mapping()
+            pass
+        elif input_num == '4':
+            merge()
+            pass
 
-    print('input number:')
-    print('0.更新代码\n1.dwg转shp\n2.生成layer\n3.出图\n4.合并图层')
-    input_num = raw_input('input:')
-    if input_num == '0':
-        py_scrpit = 'd:\\zhongyaxianlutu\\cui_project_191116\\cui_project\\py27\\update_script.py'
-        update_script(py_scrpit)
-    elif input_num == '1':
-        dwg_to_shp()
-        pass
-    elif input_num == '2':
-        gen_layer()
-        pass
-    elif input_num == '3':
-        mapping()
-        pass
-    elif input_num == '4':
-        merge()
-        pass
 
-
-    #     if values1[0]:
-    #         update_script.main()
-    #     if values1[1]:
-    #         dwg_to_shp()
-    #     if values1[2]:
-    #         gen_layer()
-    #     if values1[3]:
-    #         mapping()
-    #     if values1[4]:
-    #         merge()
-        # window1.Close()
 if __name__ == '__main__':
     main()
