@@ -9,7 +9,7 @@ import shutil
 import datetime
 # import urllib.request
 
-this_root = os.getcwd()+'\\'
+this_root = 'd:\\zhongyaxianlutu\\cui_project_191116\\cui_project\\py27\\'
 def mk_dir(dir):
     if not os.path.isdir(dir):
         os.makedirs(dir)
@@ -33,6 +33,7 @@ def downloadFILE(url,name):
 
     with open(name, "wb") as f:
         f.write(resp)
+    print('done')
 
 
 def unzip(zip,move_dst_folder):
