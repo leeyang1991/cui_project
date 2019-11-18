@@ -29,15 +29,12 @@ def update_scrpit():
 
 
 def downloadFILE(url,name):
+    print('downloading...')
     resp = request.urlopen(url=url)
     resp = resp.read()
-    # print(resp)
-    # content_size = int(resp.headers['Content-Length'])/1024
-    # content_size = 231
+
     with open(name, "wb") as f:
         f.write(resp)
-        # for data in tqdm(iterable=resp.iter_content(1024),ncols=100,total=content_size,unit='k',desc=name):
-        #     f.write(data)
 
 
 def unzip(zip,move_dst_folder):
