@@ -338,7 +338,7 @@ def main():
         if event1 is None:
             break
         if values1[0] == '0.更新代码'.decode('gbk'):
-            py_scrpit = os.getcwd()+'\\update_script.py'
+            py_scrpit = 'd:\\zhongyaxianlutu\\cui_project_191116\\py27\\update_script.py'
             update_script(py_scrpit)
         elif values1[0] == '1.dwg转shp'.decode('gbk'):
             dwg_to_shp()

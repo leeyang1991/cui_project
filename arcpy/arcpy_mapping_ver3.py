@@ -67,12 +67,15 @@ def mapping(dir,out_pic_dir,ditu_path):
         # mxd_file = this_root+'mxd\\template_heng.mxd'
         # mxd_file = r'E:\cui\190905\template_heng.mxd'
         mxd_file = sys.argv[4]
+        x = 35.8029
     elif template == 'shu':
         # mxd_file = this_root + 'mxd\\template_shu.mxd'
         # mxd_file = r'E:\cui\190905\template_shu.mxd'
         mxd_file = sys.argv[5]
+        x = 23.6926
     else:
         mxd_file = None
+        x = None
 
     mxd = arcpy.mapping.MapDocument(mxd_file)
     df0 = arcpy.mapping.ListDataFrames(mxd)[0]
@@ -87,7 +90,7 @@ def mapping(dir,out_pic_dir,ditu_path):
     if len(beizhu) == 0:
         beizhu = ' '
     # print(beizhu)
-    beizhu = new_huanhang(beizhu.decode('utf-8'),20)
+    beizhu = new_huanhang(beizhu.decode('utf-8'),30)
     print(beizhu)
     # exit()
     for textElement in arcpy.mapping.ListLayoutElements(mxd, "TEXT_ELEMENT"):
@@ -114,6 +117,7 @@ def mapping(dir,out_pic_dir,ditu_path):
         elif textElement.name == 'beizhu':
             textElement.text = (beizhu)
             textElement.elementPositionY = 0.7
+            textElement.elementPositionX = x
         else:
             pass
 
