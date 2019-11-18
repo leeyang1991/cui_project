@@ -13,7 +13,7 @@ def kernel_update_scrpit(params):
     pass
 
 def update_script(py_script):
-    py3_path = ''
+    py3_path = 'c:\\python35\\python.exe'
     # py_script = ''
     os.system(
         py3_path+' '+py_script
