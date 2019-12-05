@@ -259,7 +259,7 @@ def gen_layer():
         config.write('fdir=' + fdir.encode('gbk') + '\n')
         config.write('f_excel=' + f_excel.encode('gbk') + '\n')
         config.close()
-
+        # kernel_gen_layer(fdir,f_excel)
         p = multiprocessing.Process(target=kernel_gen_layer, args=(fdir,f_excel))
         p.start()
         window1.Close()
@@ -319,55 +319,55 @@ def merge():
 
 
 def main():
-    # layout1 = [[sg.Radio('0.更新代码'.decode('gbk'), "RADIO1")],
-    #             [sg.Radio('1.dwg转shp'.decode('gbk'), "RADIO1")],
-    #           [sg.Radio('2.生成layer'.decode('gbk'), "RADIO1")],
-    #           [sg.Radio('3.出图'.decode('gbk'), "RADIO1")],
-    #            [sg.Radio('4.合并图层'.decode('gbk'), "RADIO1")],
-    #
-    #            [sg.OK()]
-    #            ]
+    layout1 = [[sg.Radio('0.更新代码'.decode('gbk'), "RADIO1")],
+                [sg.Radio('1.dwg转shp'.decode('gbk'), "RADIO1")],
+              [sg.Radio('2.生成layer'.decode('gbk'), "RADIO1")],
+              [sg.Radio('3.出图'.decode('gbk'), "RADIO1")],
+               [sg.Radio('4.合并图层'.decode('gbk'), "RADIO1")],
 
-    # layout1 = [[sg.InputCombo(('0.更新代码'.decode('gbk'),'1.dwg转shp'.decode('gbk'), '2.生成layer'.decode('gbk'), '3.出图'.decode('gbk'), '4.合并图层'.decode('gbk')), size=(20, 1))],
-    #            [sg.OK()]]
-    #
-    # window1 = sg.Window('自动制图'.decode('gbk'),layout1,font=("Helvetica", 20))
-    # while 1:
-    #     event1, values1 = window1.Read()
-    #     # print(values1)
-    #     if event1 is None:
-    #         break
-    #     if values1[0] == '0.更新代码'.decode('gbk'):
-    #
-    #         # update_script(py_scrpit)
-    #     elif values1[0] == '1.dwg转shp'.decode('gbk'):
-    #         dwg_to_shp()
-    #     elif values1[0] == '2.生成layer'.decode('gbk'):
-    #         gen_layer()
-    #     elif values1[0] == '3.出图'.decode('gbk'):
-    #         mapping()
-    #     elif values1[0] == '4.合并图层'.decode('gbk'):
-    #         merge()
+               [sg.OK()]
+               ]
 
+    layout1 = [[sg.InputCombo(('0.更新代码'.decode('gbk'),'1.dwg转shp'.decode('gbk'), '2.生成layer'.decode('gbk'), '3.出图'.decode('gbk'), '4.合并图层'.decode('gbk')), size=(20, 1))],
+               [sg.OK()]]
+
+    window1 = sg.Window('自动制图'.decode('gbk'),layout1,font=("Helvetica", 20))
     while 1:
-        print('input number:')
-        print('0.更新代码\n1.dwg转shp\n2.生成layer\n3.出图\n4.合并图层')
-        input_num = raw_input('input:')
-        if input_num == '0':
+        event1, values1 = window1.Read()
+        # print(values1)
+        if event1 is None:
+            break
+        if values1[0] == '0.更新代码'.decode('gbk'):
             py_scrpit = 'd:\\zhongyaxianlutu\\cui_project_191116\\cui_project\\py27\\update_script.py'
             update_script(py_scrpit)
-        elif input_num == '1':
+        elif values1[0] == '1.dwg转shp'.decode('gbk'):
             dwg_to_shp()
-            pass
-        elif input_num == '2':
+        elif values1[0] == '2.生成layer'.decode('gbk'):
             gen_layer()
-            pass
-        elif input_num == '3':
+        elif values1[0] == '3.出图'.decode('gbk'):
             mapping()
-            pass
-        elif input_num == '4':
+        elif values1[0] == '4.合并图层'.decode('gbk'):
             merge()
-            pass
+
+    # while 1:
+    #     print('input number:')
+    #     print('0.更新代码\n1.dwg转shp\n2.生成layer\n3.出图\n4.合并图层')
+    #     input_num = raw_input('input:')
+    #     if input_num == '0':
+    #         py_scrpit = 'd:\\zhongyaxianlutu\\cui_project_191116\\cui_project\\py27\\update_script.py'
+    #         update_script(py_scrpit)
+    #     elif input_num == '1':
+    #         dwg_to_shp()
+    #         pass
+    #     elif input_num == '2':
+    #         gen_layer()
+    #         pass
+    #     elif input_num == '3':
+    #         mapping()
+    #         pass
+    #     elif input_num == '4':
+    #         merge()
+    #         pass
 
 
 if __name__ == '__main__':

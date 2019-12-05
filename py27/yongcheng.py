@@ -1699,58 +1699,61 @@ class Cordinate_Transformation:
 
             shp_list = os.listdir(shp_dir)
             inlist = []
-            for shp in shp_list:
-                # print(shp.decode('gbk'))
-                # print(shp_type+'.shp')
-                # exit()
-                if shp.endswith('Annotation' + '.shp'):
+            try:
+                for shp in shp_list:
                     # print(shp.decode('gbk'))
-                    # print(1)
+                    # print(shp_type+'.shp')
                     # exit()
-                    daShapefile = shp_dir + shp
-                    # daShapefile = daShapefile.encode('gbk')
-                    print(daShapefile)
-                    # print(daShapefile.decode('gbk'))
-                    driver = ogr.GetDriverByName("ESRI Shapefile")
-                    dataSource = driver.Open(daShapefile, 0)
-                    layer = dataSource.GetLayer()
-                    # inlist_i = []
-                    for feature in layer:
-                        geom = feature.GetGeometryRef()
-                        # geom.
-                        Points = geom.GetPoints()
-                        val1 = feature.GetField("RefName")
-                        # val2 = feature.GetField("val2")
-                        # val3 = feature.GetField("val3")
-                        # print(Points)
+                    if shp.endswith('Annotation' + '.shp'):
+                        # print(shp.decode('gbk'))
+                        # print(1)
                         # exit()
-                        if Points:
+                        daShapefile = shp_dir + shp
+                        # daShapefile = daShapefile.encode('gbk')
+                        print(daShapefile)
+                        # print(daShapefile.decode('gbk'))
+                        driver = ogr.GetDriverByName("ESRI Shapefile")
+                        dataSource = driver.Open(daShapefile, 0)
+                        layer = dataSource.GetLayer()
+                        # inlist_i = []
+                        for feature in layer:
+                            geom = feature.GetGeometryRef()
+                            # geom.
+                            Points = geom.GetPoints()
+                            val1 = feature.GetField("RefName")
+                            # val2 = feature.GetField("val2")
+                            # val3 = feature.GetField("val3")
                             # print(Points)
                             # exit()
-                            for i in range(len(Points)):
-                                # if i == len(Points)-1:
-                                #     break
-                                x = Points[i][0]
-                                y = Points[i][1]
-                                if self.Transform:
-                                    newx, newy = self.transform(x,y)
-                                    inlist.append([newx,newy, val1, '', '', '', ''])
-                                else:
-                                    inlist.append([x, y, val1, '', '', '', ''])
+                            if Points:
+                                # print(Points)
+                                # exit()
+                                for i in range(len(Points)):
+                                    # if i == len(Points)-1:
+                                    #     break
+                                    x = Points[i][0]
+                                    y = Points[i][1]
+                                    if self.Transform:
+                                        newx, newy = self.transform(x,y)
+                                        inlist.append([newx,newy, val1, '', '', '', ''])
+                                    else:
+                                        inlist.append([x, y, val1, '', '', '', ''])
 
-            time_end = time.time()
-            time_i += 1
-            log_process.process_bar(time_i, len(flist), time_init, time_start, time_end)
-            ##
-            output_fn = shp_dir + '\\dwg_Annotation_Transformed.shp'
-            output_fn = output_fn.encode('utf-8')
-            # output_fn = output_fn.encode('gbk')
-            # for i in inlist:
-            #     print(i)
-            # print('exporting line shp...')
-            # print(output_fn)
-            # exit()
-            point_to_shp1(inlist, output_fn)
+                time_end = time.time()
+                time_i += 1
+                log_process.process_bar(time_i, len(flist), time_init, time_start, time_end)
+                ##
+                output_fn = shp_dir + '\\dwg_Annotation_Transformed.shp'
+                output_fn = output_fn.encode('utf-8')
+                # output_fn = output_fn.encode('gbk')
+                # for i in inlist:
+                #     print(i)
+                # print('exporting line shp...')
+                # print(output_fn)
+                # exit()
+                point_to_shp1(inlist, output_fn)
+            except:
+                pass
 
     def line(self):
         fdir = self.indir
@@ -1760,38 +1763,40 @@ class Cordinate_Transformation:
 
         for folder in tqdm(flist):
             inlist = []
-            for f in os.listdir(fdir+folder):
-                if f.endswith('_dwg_Polyline.shp'):
-                    # print(f.decode('gbk'))
-                    daShapefile = fdir+folder+'\\' + f
+            try:
+                for f in os.listdir(fdir+folder):
+                    if f.endswith('_dwg_Polyline.shp'):
+                        daShapefile = fdir+folder+'\\' + f
 
-                    # print(daShapefile)
-                    # print(daShapefile.decode('gbk'))
-                    driver = ogr.GetDriverByName("ESRI Shapefile")
-                    dataSource = driver.Open(daShapefile, 0)
-                    layer = dataSource.GetLayer()
-                    # inlist_i = []
-                    for feature in layer:
-                        geom = feature.GetGeometryRef()
-                        Points = geom.GetPoints()
-                        line_type = feature.GetField("Layer")
-                        RefName = feature.GetField("RefName")
+                        # print(daShapefile)
+                        # print(daShapefile.decode('gbk'))
+                        driver = ogr.GetDriverByName("ESRI Shapefile")
+                        dataSource = driver.Open(daShapefile, 0)
+                        layer = dataSource.GetLayer()
+                        # inlist_i = []
+                        for feature in layer:
+                            geom = feature.GetGeometryRef()
+                            Points = geom.GetPoints()
+                            line_type = feature.GetField("Layer")
+                            RefName = feature.GetField("RefName")
 
-                        if Points:
-                            for i in range(len(Points)):
-                                if i == len(Points) - 1:
-                                    break
-                                x1,y1 = Points[i]
-                                x2,y2 = Points[i + 1]
-                                if self.Transform:
-                                    x1,y1 = self.transform(x1,y1)
-                                    x2, y2 = self.transform(x2,y2)
-                                    inlist.append([(x1,y1), (x2, y2), RefName, line_type, '', '', ''])
-                                else:
-                                    inlist.append([(x1, y1), (x2, y2), RefName, line_type, '', '', ''])
-                    output_fn = fdir+folder +'\\'+ f.split('.')[0]+'_Transform.shp'
-                    output_fn = output_fn.encode('utf-8')
-                    line_to_shp1(inlist, output_fn)
+                            if Points:
+                                for i in range(len(Points)):
+                                    if i == len(Points) - 1:
+                                        break
+                                    x1,y1 = Points[i]
+                                    x2,y2 = Points[i + 1]
+                                    if self.Transform:
+                                        x1,y1 = self.transform(x1,y1)
+                                        x2, y2 = self.transform(x2,y2)
+                                        inlist.append([(x1,y1), (x2, y2), RefName, line_type, '', '', ''])
+                                    else:
+                                        inlist.append([(x1, y1), (x2, y2), RefName, line_type, '', '', ''])
+                        output_fn = fdir+folder +'\\'+ f.split('.')[0]+'_Transform.shp'
+                        output_fn = output_fn.encode('utf-8')
+                        line_to_shp1(inlist, output_fn)
+            except:
+                pass
 
 
 
@@ -1802,12 +1807,19 @@ def main(fdir,f_excel):
     genlayer = GenLayer(f_excel)
 
     CT = Cordinate_Transformation(fdir)
-    CT.line()
-    CT.point()
+    try:
+        CT.line()
+    except:
+        pass
+    try:
+        CT.point()
+    except:
+        pass
     # exit()
+    print 'ok'
     for folder in tqdm(flist):
         shp_dir = fdir + folder + '/'
-
+        # print shp_dir.decode('gbk')
 
         # shp_list = os.listdir(shp_dir)
         # print(shp_dir)
