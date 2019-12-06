@@ -5,7 +5,59 @@ import os
 import sys
 import codecs
 import yongcheng
+from multiprocessing.pool import ThreadPool as TPool
 import multiprocessing
+import copy_reg
+import types
+
+
+
+class MUTIPROCESS:
+    '''
+    可对类内的函数进行多进程并行
+    由于GIL，多线程无法跑满CPU，对于不占用CPU的计算函数可用多线程
+    并行计算加入进度条
+    '''
+
+    def __init__(self, func, params):
+        self.func = func
+        self.params = params
+        copy_reg.pickle(types.MethodType, self._pickle_method)
+        pass
+
+    def _pickle_method(self, m):
+        if m.im_self is None:
+            return getattr, (m.im_class, m.im_func.func_name)
+        else:
+            return getattr, (m.im_self, m.im_func.func_name)
+
+    def run(self, process=6, process_or_thread='p', **kwargs):
+        '''
+        # 并行计算加进度条
+        :param func: input a kenel_function
+        :param params: para1,para2,para3... = params
+        :param process: number of cpu
+        :param thread_or_process: multi-thread or multi-process,'p' or 't'
+        :param kwargs: tqdm kwargs
+        :return:
+        '''
+        if 'text' in kwargs:
+            kwargs['desc'] = kwargs['text']
+            del kwargs['text']
+
+        if process_or_thread == 'p':
+            pool = multiprocessing.Pool(process)
+        elif process_or_thread == 't':
+            pool = TPool(process)
+        else:
+            raise IOError('process_or_thread key error, input keyword such as "p" or "t"')
+
+        results = list(tqdm(pool.imap(self.func, self.params), total=len(self.params), **kwargs))
+        pool.close()
+        pool.join()
+        return results
+
+
 
 
 def kernel_update_scrpit(params):
@@ -319,16 +371,16 @@ def merge():
 
 
 def main():
-    layout1 = [[sg.Radio('0.更新代码'.decode('gbk'), "RADIO1")],
-                [sg.Radio('1.dwg转shp'.decode('gbk'), "RADIO1")],
-              [sg.Radio('2.生成layer'.decode('gbk'), "RADIO1")],
-              [sg.Radio('3.出图'.decode('gbk'), "RADIO1")],
-               [sg.Radio('4.合并图层'.decode('gbk'), "RADIO1")],
+    # layout1 = [
+    #             [sg.Radio('1.dwg转shp'.decode('gbk'), "RADIO1")],
+    #           [sg.Radio('2.生成layer'.decode('gbk'), "RADIO1")],
+    #           [sg.Radio('3.出图'.decode('gbk'), "RADIO1")],
+    #            [sg.Radio('4.合并图层'.decode('gbk'), "RADIO1")],
+    #             [sg.Radio('5.更新代码'.decode('gbk'), "RADIO1")],
+    #            [sg.OK()]
+    #            ]
 
-               [sg.OK()]
-               ]
-
-    layout1 = [[sg.InputCombo(('0.更新代码'.decode('gbk'),'1.dwg转shp'.decode('gbk'), '2.生成layer'.decode('gbk'), '3.出图'.decode('gbk'), '4.合并图层'.decode('gbk')), size=(20, 1))],
+    layout1 = [[sg.InputCombo(('1.dwg转shp'.decode('gbk'), '2.生成layer'.decode('gbk'), '3.出图'.decode('gbk'), '4.合并图层'.decode('gbk'),'0.更新代码'.decode('gbk')), size=(20, 1))],
                [sg.OK()]]
 
     window1 = sg.Window('自动制图'.decode('gbk'),layout1,font=("Helvetica", 20))
@@ -337,7 +389,7 @@ def main():
         # print(values1)
         if event1 is None:
             break
-        if values1[0] == '0.更新代码'.decode('gbk'):
+        if values1[0] == '5.更新代码'.decode('gbk'):
             py_scrpit = 'd:\\zhongyaxianlutu\\cui_project_191116\\cui_project\\py27\\update_script.py'
             update_script(py_scrpit)
         elif values1[0] == '1.dwg转shp'.decode('gbk'):

@@ -11,7 +11,9 @@ argvs = sys.argv
 output_mxd = {'柱上用户变压器':'zhuanbian',
               '耐张杆塔':'naizhang_ganta',
               'xiangshi_biandianzhan':'xiangbian',
-              '断路器':'duanluqi',
+              # '断路器':'duanluqi',
+              'changkai':'duanluqi_changkai',
+              'changbi':'duanluqi_changbi',
               '柱上变压器':'zhushangbianyaqi',
               # 'dwg_Polyline':'***********',
               'line_annotation':'line_annotation1',
@@ -67,57 +69,49 @@ def mapping(dir,out_pic_dir,ditu_path):
         # mxd_file = this_root+'mxd\\template_heng.mxd'
         # mxd_file = r'E:\cui\190905\template_heng.mxd'
         mxd_file = sys.argv[4]
-        x = 35.0339
+        x_beizhu = 35.0339
+        x_tuli = 40.468
     elif template == 'shu':
         # mxd_file = this_root + 'mxd\\template_shu.mxd'
         # mxd_file = r'E:\cui\190905\template_shu.mxd'
         mxd_file = sys.argv[5]
-        x = 22.9125
+        x_beizhu = 22.9125
+        x_tuli = 28.3618
     else:
         mxd_file = None
-        x = None
+        x_beizhu = None
+        x_tuli = None
 
     mxd = arcpy.mapping.MapDocument(mxd_file)
     df0 = arcpy.mapping.ListDataFrames(mxd)[0]
 
     workplace = 'SHAPEFILE_WORKSPACE'
     # title = dir.split('\\')[-2]+'线路沿布图'
-    text_f = open(dir+'\\'+'info.txt','r')
-    line = text_f.readline()
-    shebeimingcheng, qidiandianzhan, weihubanzu,\
-    xianluzongchangdu,jiakong, dianlan, gongbian, \
-    zhuanbian, duanluqi,title,beizhu = line.split(',')
+    # text_f = open(dir+'\\'+'info.txt','r')
+    # line = text_f.readline()
+    # shebeimingcheng, qidiandianzhan, weihubanzu,\
+    # xianluzongchangdu,jiakong, dianlan, gongbian, \
+    # zhuanbian, duanluqi,title,beizhu = line.split(',')
+
+    # print(beizhu)
+    title = open(dir+'\\'+'info_title.txt','r').read()
+    beizhu = open(dir+'\\'+'info_beizhu.txt','r').read()
+    tuli = open(dir+'\\'+'info_tuli.txt','r').read()
+
+    beizhu = new_huanhang(beizhu.decode('utf-8'),30)
     if len(beizhu) == 0:
         beizhu = ' '
-    # print(beizhu)
-    beizhu = new_huanhang(beizhu.decode('utf-8'),30)
-    print(beizhu)
-    # exit()
     for textElement in arcpy.mapping.ListLayoutElements(mxd, "TEXT_ELEMENT"):
         if textElement.name == 'title':
             textElement.text = (title)
-        elif textElement.name == 'shebeimingcheng':
-            textElement.text = (shebeimingcheng)
-        elif textElement.name == 'qidiandianzhan':
-            textElement.text = (qidiandianzhan)
-        elif textElement.name == 'weihubanzu':
-            textElement.text = (weihubanzu)
-        elif textElement.name == 'xianluzongchangdu':
-            textElement.text = (xianluzongchangdu)
-        elif textElement.name == 'jiakongxianluchangdu':
-            textElement.text = (jiakong)
-        elif textElement.name == 'dianlanxianluchangdu':
-            textElement.text = (dianlan)
-        elif textElement.name == 'gongbianshuliang':
-            textElement.text = (gongbian)
-        elif textElement.name == 'zhuanbianshuliang':
-            textElement.text = (zhuanbian)
-        elif textElement.name == 'duanluqi':
-            textElement.text = (duanluqi)
+        elif textElement.name == 'tuli':
+            textElement.text = (tuli)
+            textElement.elementPositionY = 0.7
+            textElement.elementPositionX = x_tuli
         elif textElement.name == 'beizhu':
             textElement.text = (beizhu)
             textElement.elementPositionY = 0.7
-            textElement.elementPositionX = x
+            textElement.elementPositionX = x_beizhu
         else:
             pass
 

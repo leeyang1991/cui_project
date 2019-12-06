@@ -6,11 +6,14 @@ import log_process
 import time
 import sys
 
+
+
 # this_root = os.getcwd()+'\\..\\'
 this_root = 'e:\\cui\\'
 
 # in_features_point = this_root+'new_test_data\\123.dwg\\Annotation'
 # in_features_line = this_root+'new_test_data\\123.dwg\\Polyline'
+
 
 def mk_dir(dir):
     if not os.path.isdir(dir):
@@ -67,11 +70,13 @@ def run_dwg_to_shp(fdir,out_dir_):
 
 
 def rename(fdir):
-    # È¥³ý#ºÅ
+    # È¥³ý# (  )ºÅ
     # fdir = this_root + '190905\\ÓÀ³Ç\\'
     flist = os.listdir(fdir)
     for f in flist:
         f_new = f.replace('#',' ')
+        f_new = f_new.replace('(','')
+        f_new = f_new.replace(')','')
         # f_new = f_new.replace('_','.')
         os.rename(fdir+f,fdir+f_new)
 

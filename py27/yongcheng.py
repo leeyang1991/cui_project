@@ -16,6 +16,7 @@ import codecs
 import coordinate_transformation as cs
 from tqdm import tqdm
 import math
+import collections
 
 #
 # f_excel = this_root+'190905/台账数据.xlsx'
@@ -29,6 +30,12 @@ def mk_dir(dir):
     if not os.path.isdir(dir):
         os.makedirs(dir)
 
+
+def rename(f):
+    f_new = f.replace('#',' ')
+    f_new = f_new.replace('(','')
+    f_new = f_new.replace(')','')
+    return f_new
 
 def line_to_shp(inputlist,outSHPfn):
     ############重要#################
@@ -241,6 +248,28 @@ def point_to_shp1(inputlist,outSHPfn):
         outFeature.Destroy()
     outFeature = None
 
+
+def delete_repeat(inlist):
+    pos_dic = {}
+    for i in inlist:
+        lon = i[0]
+        lat = i[1]
+        label1 = i[2]
+        label2 = i[3]
+        label3 = i[4]
+        pos_lon = round(i[0],4)
+        pos_lat = round(i[1],4)
+        key = str(pos_lon)+'_'+str(pos_lat)+'_'+label1
+
+        pos_dic[key] = [lon,lat,label1,label2,label3]
+    # pos_dic to inlist
+    new_inlist = []
+    for key in pos_dic:
+        new_inlist.append(pos_dic[key])
+    # print len(new_inlist)
+    # print len(inlist)
+    # exit()
+    return new_inlist
 
 def rad(d):
     return d*math.pi/180
@@ -474,8 +503,10 @@ class GenLayer:
         rongduanqi = {}
         for i in range(nrows):
             rongduanqi_name = sh.cell_value(i, 0)
+            rongduanqi_biaozhu = sh.cell_value(i, 5)
             rongduanqi_attrib = sh.cell_value(i, 4)
-            rongduanqi[rongduanqi_name] = rongduanqi_attrib
+            changkaizhuangtai = sh.cell_value(i, 6)
+            rongduanqi[rongduanqi_name] = [rongduanqi_biaozhu,rongduanqi_attrib,changkaizhuangtai]
         return rongduanqi
         pass
 
@@ -486,7 +517,8 @@ class GenLayer:
         driver = ogr.GetDriverByName("ESRI Shapefile")
         dataSource = driver.Open(daShapefile, 0)
         layer = dataSource.GetLayer()
-        out_list_biandianzhan = []
+        changkai = []
+        changbi = []
         for feature in layer:
             geom = feature.GetGeometryRef()
             x = geom.GetX()
@@ -494,14 +526,23 @@ class GenLayer:
             name = feature.GetField("RefName")
             name_gbk = name.decode('utf-8')
 
-
             if name_gbk in rongduanqi:
-                out_list_biandianzhan.append([x, y, name_gbk, rongduanqi[name_gbk],''])
-
+                changkaizhuangtai = rongduanqi[name_gbk][2]
+                # print rongduanqi[name_gbk]
+                # print changkaizhuangtai
+                # exit()
+                if changkaizhuangtai == '常开'.decode('gbk') or changkaizhuangtai == '拉开'.decode('gbk'):
+                    changkai.append([x, y, rongduanqi[name_gbk][0], rongduanqi[name_gbk][1],''])
+                elif changkaizhuangtai == '常闭'.decode('gbk') or changkaizhuangtai == '闭合'.decode('gbk'):
+                    changbi.append([x, y, rongduanqi[name_gbk][0], rongduanqi[name_gbk][1], ''])
+                else:
+                    print changkaizhuangtai
             # if '熔断器'.decode('gbk') in name_gbk:
             #     out_list_biandianzhan.append([x, y, name_gbk, '',''])
-
-        point_to_shp(out_list_biandianzhan, out_shp)
+        changkai = delete_repeat(changkai)
+        changbi = delete_repeat(changbi)
+        point_to_shp(changkai, out_shp+'_changkai.shp')
+        point_to_shp(changbi, out_shp+'_changbi.shp')
 
         pass
 
@@ -676,6 +717,8 @@ class GenLayer:
                         break
                 except:
                     pass
+        out_list_biandianzhan = delete_repeat(out_list_biandianzhan)
+        # exit()
         point_to_shp(out_list_biandianzhan, out_shp)
 
     def gen_xiangbian_excel(self):
@@ -1055,13 +1098,13 @@ class GenLayer:
         ymin = min(y_list)
         ymax = max(y_list)
 
-        x_offset = abs(xmin - xmax) * 0.05
+        x_offset = abs(xmin - xmax) * 0.15
         y_offset = abs(ymin - ymax) * 0.15
 
         xmin = xmin - x_offset
         xmax = xmax + x_offset
         ymin = ymin - y_offset
-        ymax = ymax
+        ymax = ymax + y_offset
 
 
         a = [xmin, ymin, '', '', '']
@@ -1106,50 +1149,165 @@ class GenLayer:
         pass
 
 
+    # def gen_mapinfo_excel(self):
+    #     bk = xlrd.open_workbook(self.f_excel)
+    #     sh = bk.sheet_by_name('图例'.decode('gbk'))
+    #     nrows = sh.nrows
+    #     info_dic = {}
+    #     for i in range(nrows):
+    #         if i + 1 == nrows:
+    #             continue
+    #         shebeimingcheng = sh.cell_value(i + 1, 2)
+    #         shebeimingcheng = rename(shebeimingcheng)
+    #         qidiandianzhan = sh.cell_value(i + 1, 3)
+    #         weihubanzu = sh.cell_value(i + 1, 4)
+    #         xianluzongchangdu = sh.cell_value(i + 1, 5)
+    #         jiakong = sh.cell_value(i + 1, 6)
+    #         dianlan = sh.cell_value(i + 1, 7)
+    #         gongbian = sh.cell_value(i + 1, 8)
+    #         zhuanbian = sh.cell_value(i + 1, 9)
+    #         duanluqi = sh.cell_value(i + 1, 10)
+    #         tuzhimingcheng = sh.cell_value(i + 1, 11)
+    #         beizhu = sh.cell_value(i + 1, 12)
+    #         info_dic[shebeimingcheng] = [shebeimingcheng,qidiandianzhan,weihubanzu,
+    #                                      xianluzongchangdu,
+    #                                      jiakong,dianlan,gongbian,zhuanbian,duanluqi,
+    #                                      tuzhimingcheng,beizhu]
+    #     return info_dic
+    #     pass
+
     def gen_mapinfo_excel(self):
         bk = xlrd.open_workbook(self.f_excel)
         sh = bk.sheet_by_name('图例'.decode('gbk'))
         nrows = sh.nrows
+        ncols = sh.ncols
+        col_dic = collections.OrderedDict()
+        for c in range(ncols):
+            name = sh.cell_value(0, c)
+            # if name == ''
+            col_dic[name] = c
+        # print col_dic['线路名称'.decode('gbk')]
+        # exit()
         info_dic = {}
         for i in range(nrows):
             if i + 1 == nrows:
                 continue
-            shebeimingcheng = sh.cell_value(i + 1, 2)
-            qidiandianzhan = sh.cell_value(i + 1, 3)
-            weihubanzu = sh.cell_value(i + 1, 4)
-            xianluzongchangdu = sh.cell_value(i + 1, 5)
-            jiakong = sh.cell_value(i + 1, 6)
-            dianlan = sh.cell_value(i + 1, 7)
-            gongbian = sh.cell_value(i + 1, 8)
-            zhuanbian = sh.cell_value(i + 1, 9)
-            duanluqi = sh.cell_value(i + 1, 10)
-            tuzhimingcheng = sh.cell_value(i + 1, 11)
-            beizhu = sh.cell_value(i + 1, 12)
-            info_dic[shebeimingcheng] = [shebeimingcheng,qidiandianzhan,weihubanzu,
-                                         xianluzongchangdu,
-                                         jiakong,dianlan,gongbian,zhuanbian,duanluqi,
-                                         tuzhimingcheng,beizhu]
-        return info_dic
+            vals_list = []
+            for c in col_dic:
+                vals_list.append(sh.cell_value(i + 1, col_dic[c]))
+
+            format_list = []
+            for val in vals_list:
+                if type(val) == unicode:
+                    format_list.append(val)
+                elif type(val) == float:
+                    format_list.append(str(val))
+                elif type(val) == int:
+                    format_list.append(str(val))
+                else:
+                    format_list.append(str(val))
+            key = sh.cell_value(i + 1, col_dic['线路名称'.decode('gbk')])
+            key = rename(key)
+            info_dic[key] = format_list
+
+            #     # shebeimingcheng = sh.cell_value(i + 1, 2)
+        # #     print shebeimingcheng
+        # exit()
+        return info_dic,col_dic
+
+    def format_text(self,a,b):
+        lena = len(a)
+        lenb = len(b)
+        x = 40-lena-lenb
+        # format_t = '{:<'+' '*x+'}{:>}\n'
+        format_t = '{}'+' ' * x + '{}\n'
+        # format_t = '{}{}\n'
+        return format_t
         pass
 
+
     def gen_mapinfo(self,folder,out_txt):
-        info_dic = self.gen_mapinfo_excel()
-
+        info_dic,col_dic = self.gen_mapinfo_excel()
         if folder in info_dic:
-            f = codecs.open(out_txt, 'w',encoding='utf-8')
+            # print info_dic[folder]
+            # print col_dic['线路名称'.decode('gbk')]
             info = info_dic[folder]
-            info_list = []
-            for i in info:
-                try:
-                    i = str(i)
-                except:
-                    i = i
-                info_list.append(i)
-            f.write(','.join(info_list))
-            f.close()
-        else:
-            print folder+' error'
+            text_tuli = ''
+            for name in col_dic:
+                if name == '图纸名称'.decode('gbk') or name == '备注'.decode('gbk'):
+                    continue
+                ind = col_dic[name]
+                if len(info[ind]) == 0:
+                    continue
+                text_tuli += name+':'+info[ind]+'\n'
+                # text_tuli += '{:<20}{}\n'.format(name,info[ind])
 
+
+                # format_t = self.format_text(name,info[ind])
+                # # print format_t
+                # text_tuli += format_t.format(name.encode('utf-8'),info[ind].encode('utf-8'))
+                # print len(format_t.format(name.encode('utf-8'),info[ind].encode('utf-8')))
+                # print name
+            # print text_tuli
+
+            ind_beizhu = col_dic['备注'.decode('gbk')]
+            text_beizhu = info[ind_beizhu]
+
+            ind_title = col_dic['图纸名称'.decode('gbk')]
+            text_title = info[ind_title]
+
+            f_tuli = codecs.open(out_txt+'_tuli.txt', 'w',encoding='utf-8')
+            f_tuli.write(text_tuli)
+
+            f_beizhu = codecs.open(out_txt+'_beizhu.txt', 'w',encoding='utf-8')
+            f_beizhu.write(text_beizhu)
+
+            f_title = codecs.open(out_txt+'_title.txt', 'w',encoding='utf-8')
+            f_title.write(text_title)
+        else:
+            print folder
+            f_tuli = codecs.open(out_txt + '_tuli.txt', 'w', encoding='utf-8')
+            f_tuli.write('text_tuli')
+
+            f_beizhu = codecs.open(out_txt + '_beizhu.txt', 'w', encoding='utf-8')
+            f_beizhu.write('text_beizhu')
+
+            f_title = codecs.open(out_txt + '_title.txt', 'w', encoding='utf-8')
+            f_title.write('text_title')
+        # exit()
+        #     info_list = []
+        #     for i in info:
+        #         try:
+        #             i = str(i)
+        #         except:
+        #             i = i
+        #         info_list.append(i)
+        #     f.write(','.join(info_list))
+        #     f.close()
+        # else:
+        #     f = codecs.open(out_txt, 'w',encoding='utf-8')
+        #     f.close()
+
+
+    def gen_tuli_shp(self,folder,out_shp):
+
+        info_dic, col_dic = self.gen_mapinfo_excel()
+        if folder in info_dic:
+            # print info_dic[folder]
+            # print col_dic['线路名称'.decode('gbk')]
+            info = info_dic[folder]
+            text_tuli = ''
+            inlist = []
+            for name in col_dic:
+                if name == '图纸名称'.decode('gbk') or name == '备注'.decode('gbk'):
+                    continue
+                ind = col_dic[name]
+                if len(info[ind]) == 0:
+                    continue
+                inlist.append([0.,0.,name,info[ind],''])
+                # inlist.append(info[ind])
+                # text_tuli += name + ':' + info[ind] + '\n'
+            point_to_shp(inlist,out_shp)
 class LineAnnotation:
 
     def __init__(self):
@@ -1802,10 +1960,9 @@ class Cordinate_Transformation:
 
 def main(fdir,f_excel):
     # fdir = this_root+'190905\\dwg_to_shp\\jiang\\'
-    from tqdm import tqdm
     flist = os.listdir(fdir)
     genlayer = GenLayer(f_excel)
-
+    #
     CT = Cordinate_Transformation(fdir)
     try:
         CT.line()
@@ -1816,7 +1973,6 @@ def main(fdir,f_excel):
     except:
         pass
     # exit()
-    print 'ok'
     for folder in tqdm(flist):
         shp_dir = fdir + folder + '/'
         # print shp_dir.decode('gbk')
@@ -1826,12 +1982,14 @@ def main(fdir,f_excel):
         fname = shp_dir+'dwg_Annotation_Transformed.shp'
         line_fname = shp_dir+folder+'_dwg_Polyline_Transform.shp'
         # print((shp_dir+'naizhang_ganta.shp').decode('gbk'))
+        genlayer.gen_mapinfo(folder, shp_dir + 'info')
+        # genlayer.gen_tuli_shp(folder,(shp_dir+'tuli.shp').encode('utf-8'))
         genlayer.gen_dianlan(line_fname,shp_dir)
         genlayer.gen_naizhang_ganta_shp(fname.encode('utf-8'),(shp_dir+'naizhang_ganta.shp').encode('utf-8'))
         genlayer.gen_line_annotation_shp(fname.encode('utf-8'),(shp_dir+'line_annotation1.shp').encode('utf-8'))
         # gen_xiangshi_biandianzhan_shp(fname.encode('utf-8'),(shp_dir+'xiangshi_biandianzhan.shp').decode('gbk').encode('utf-8'))
         genlayer.gen_zhushangbianyaqi_shp(fname.encode('utf-8'), (shp_dir + 'zhushangbianyaqi.shp').encode('utf-8'))
-        genlayer.gen_duanluqi_shp(fname.encode('utf-8'),(shp_dir+'duanluqi.shp').encode('utf-8'))
+        genlayer.gen_duanluqi_shp(fname.encode('utf-8'),(shp_dir+'duanluqi').encode('utf-8'))
         genlayer.gen_gongbian_shp(fname.encode('utf-8'),(shp_dir+'gongbian.shp').encode('utf-8'))
         genlayer.gen_zhuanbian_shp(fname.encode('utf-8'),(shp_dir+'zhuanbian.shp').encode('utf-8'))
         genlayer.gen_zoom_layer(fname.encode('utf-8'),(shp_dir+'zoom_layer.shp').encode('utf-8'))
@@ -1839,7 +1997,7 @@ def main(fdir,f_excel):
         genlayer.gen_xiangbian_shp(fname.encode('utf-8'),(shp_dir+'xiangbian.shp').encode('utf-8'))
         genlayer.gen_huanwang_shp(fname.encode('utf-8'),(shp_dir+'huanwang.shp').encode('utf-8'))
         genlayer.gen_peidian_shp(fname.encode('utf-8'),(shp_dir+'peidian.shp').encode('utf-8'))
-        genlayer.gen_mapinfo(folder,shp_dir+'info.txt')
+
 
         # exit()
 
