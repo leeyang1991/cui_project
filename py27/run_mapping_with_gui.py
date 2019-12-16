@@ -9,7 +9,7 @@ from multiprocessing.pool import ThreadPool as TPool
 import multiprocessing
 import copy_reg
 import types
-
+from tqdm import tqdm
 
 
 class MUTIPROCESS:

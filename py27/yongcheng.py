@@ -10,14 +10,17 @@ import time
 import re
 import numpy as np
 import log_process
-from matplotlib import pyplot as plt
+# from matplotlib import pyplot as plt
 import simple_tkinter as sg
 import codecs
 import coordinate_transformation as cs
 from tqdm import tqdm
 import math
 import collections
-
+import multiprocessing
+import copy_reg
+import types
+from multiprocessing.pool import ThreadPool as TPool
 #
 # f_excel = this_root+'190905/台账数据.xlsx'
 # f_excel = 'E:\\cui\\190905\\台账数据.xls'.decode('gbk')
@@ -25,6 +28,60 @@ import collections
 ############重要#################
 gdal.SetConfigOption("SHAPE_ENCODING", "GBK")
 ############重要#################
+
+
+
+
+class MUTIPROCESS:
+    '''
+    可对类内的函数进行多进程并行
+    由于GIL，多线程无法跑满CPU，对于不占用CPU的计算函数可用多线程
+    并行计算加入进度条
+    '''
+
+    def __init__(self, func, params):
+        self.func = func
+        self.params = params
+        copy_reg.pickle(types.MethodType, self._pickle_method)
+        pass
+
+    def _pickle_method(self, m):
+        if m.im_self is None:
+            return getattr, (m.im_class, m.im_func.func_name)
+        else:
+            return getattr, (m.im_self, m.im_func.func_name)
+
+    def run(self, process=6, process_or_thread='p', **kwargs):
+        '''
+        # 并行计算加进度条
+        :param func: input a kenel_function
+        :param params: para1,para2,para3... = params
+        :param process: number of cpu
+        :param thread_or_process: multi-thread or multi-process,'p' or 't'
+        :param kwargs: tqdm kwargs
+        :return:
+        '''
+        if 'text' in kwargs:
+            kwargs['desc'] = kwargs['text']
+            del kwargs['text']
+
+        if process_or_thread == 'p':
+            pool = multiprocessing.Pool(process)
+        elif process_or_thread == 't':
+            pool = TPool(process)
+        else:
+            raise IOError('process_or_thread key error, input keyword such as "p" or "t"')
+
+        results = list(tqdm(pool.imap(self.func, self.params), total=len(self.params), **kwargs))
+        pool.close()
+        pool.join()
+        return results
+
+
+
+
+
+
 
 def mk_dir(dir):
     if not os.path.isdir(dir):
@@ -257,8 +314,8 @@ def delete_repeat(inlist):
         label1 = i[2]
         label2 = i[3]
         label3 = i[4]
-        pos_lon = round(i[0],4)
-        pos_lat = round(i[1],4)
+        pos_lon = round(i[0],3)
+        pos_lat = round(i[1],3)
         key = str(pos_lon)+'_'+str(pos_lat)+'_'+label1
 
         pos_dic[key] = [lon,lat,label1,label2,label3]
@@ -1840,123 +1897,162 @@ class Cordinate_Transformation:
         return newx,newy
 
 
+
+    def kernel_point(self,params):
+
+        fdir,folder = params
+
+        shp_dir = fdir + folder + '\\'
+
+        shp_list = os.listdir(shp_dir)
+        inlist = []
+        try:
+            for shp in shp_list:
+                # print(shp.decode('gbk'))
+                # print(shp_type+'.shp')
+                # exit()
+                if shp.endswith('Annotation' + '.shp'):
+                    # print(shp.decode('gbk'))
+                    # print(1)
+                    # exit()
+                    daShapefile = shp_dir + shp
+                    # daShapefile = daShapefile.encode('gbk')
+                    print(daShapefile)
+                    # print(daShapefile.decode('gbk'))
+                    driver = ogr.GetDriverByName("ESRI Shapefile")
+                    dataSource = driver.Open(daShapefile, 0)
+                    layer = dataSource.GetLayer()
+                    # inlist_i = []
+                    for feature in layer:
+                        geom = feature.GetGeometryRef()
+                        # geom.
+                        Points = geom.GetPoints()
+                        val1 = feature.GetField("RefName")
+                        # val2 = feature.GetField("val2")
+                        # val3 = feature.GetField("val3")
+                        # print(Points)
+                        # exit()
+                        if Points:
+                            # print(Points)
+                            # exit()
+                            for i in range(len(Points)):
+                                # if i == len(Points)-1:
+                                #     break
+                                x = Points[i][0]
+                                y = Points[i][1]
+                                if self.Transform:
+                                    newx, newy = self.transform(x, y)
+                                    inlist.append([newx, newy, val1, '', '', '', ''])
+                                else:
+                                    inlist.append([x, y, val1, '', '', '', ''])
+
+            ##
+            output_fn = shp_dir + '\\dwg_Annotation_Transformed.shp'
+            output_fn = output_fn.encode('utf-8')
+            # output_fn = output_fn.encode('gbk')
+            # for i in inlist:
+            #     print(i)
+            # print('exporting line shp...')
+            # print(output_fn)
+            # exit()
+            point_to_shp1(inlist, output_fn)
+        except:
+            pass
+
+        pass
+
+
     def point(self):
         # gdal.SetConfigOption("SHAPE_ENCODING", "GBK")
         # fdir = this_root + '\\190725\\dwg_to_shp\\'
         fdir = self.indir
         flist = os.listdir(fdir)
-        time_init = time.time()
-        time_i = 0
         # inlist = []
+        params = []
         for folder in flist:
-            # print(folder.decode('gbk'))
-            # exit()
-            time_start = time.time()
-            # print(folder.decode('gbk'))
-            shp_dir = fdir + folder + '\\'
+            params.append([fdir,folder])
+        MUTIPROCESS(self.kernel_point,params).run(process=20,process_or_thread='p')
 
-            shp_list = os.listdir(shp_dir)
-            inlist = []
-            try:
-                for shp in shp_list:
-                    # print(shp.decode('gbk'))
-                    # print(shp_type+'.shp')
-                    # exit()
-                    if shp.endswith('Annotation' + '.shp'):
-                        # print(shp.decode('gbk'))
-                        # print(1)
-                        # exit()
-                        daShapefile = shp_dir + shp
-                        # daShapefile = daShapefile.encode('gbk')
-                        print(daShapefile)
-                        # print(daShapefile.decode('gbk'))
-                        driver = ogr.GetDriverByName("ESRI Shapefile")
-                        dataSource = driver.Open(daShapefile, 0)
-                        layer = dataSource.GetLayer()
-                        # inlist_i = []
-                        for feature in layer:
-                            geom = feature.GetGeometryRef()
-                            # geom.
-                            Points = geom.GetPoints()
-                            val1 = feature.GetField("RefName")
-                            # val2 = feature.GetField("val2")
-                            # val3 = feature.GetField("val3")
-                            # print(Points)
-                            # exit()
-                            if Points:
-                                # print(Points)
-                                # exit()
-                                for i in range(len(Points)):
-                                    # if i == len(Points)-1:
-                                    #     break
-                                    x = Points[i][0]
-                                    y = Points[i][1]
-                                    if self.Transform:
-                                        newx, newy = self.transform(x,y)
-                                        inlist.append([newx,newy, val1, '', '', '', ''])
-                                    else:
-                                        inlist.append([x, y, val1, '', '', '', ''])
 
-                time_end = time.time()
-                time_i += 1
-                log_process.process_bar(time_i, len(flist), time_init, time_start, time_end)
-                ##
-                output_fn = shp_dir + '\\dwg_Annotation_Transformed.shp'
-                output_fn = output_fn.encode('utf-8')
-                # output_fn = output_fn.encode('gbk')
-                # for i in inlist:
-                #     print(i)
-                # print('exporting line shp...')
-                # print(output_fn)
-                # exit()
-                point_to_shp1(inlist, output_fn)
-            except:
-                pass
+    def kernel_line(self,parmas):
+
+        fdir,folder = parmas
+
+        inlist = []
+        try:
+            for f in os.listdir(fdir + folder):
+                if f.endswith('_dwg_Polyline.shp'):
+                    daShapefile = fdir + folder + '\\' + f
+
+                    driver = ogr.GetDriverByName("ESRI Shapefile")
+                    dataSource = driver.Open(daShapefile, 0)
+                    layer = dataSource.GetLayer()
+                    # inlist_i = []
+                    for feature in layer:
+                        geom = feature.GetGeometryRef()
+                        Points = geom.GetPoints()
+                        line_type = feature.GetField("Layer")
+                        RefName = feature.GetField("RefName")
+
+                        if Points:
+                            for i in range(len(Points)):
+                                if i == len(Points) - 1:
+                                    break
+                                x1, y1 = Points[i]
+                                x2, y2 = Points[i + 1]
+                                if self.Transform:
+                                    x1, y1 = self.transform(x1, y1)
+                                    x2, y2 = self.transform(x2, y2)
+                                    inlist.append([(x1, y1), (x2, y2), RefName, line_type, '', '', ''])
+                                else:
+                                    inlist.append([(x1, y1), (x2, y2), RefName, line_type, '', '', ''])
+                    output_fn = fdir + folder + '\\' + f.split('.')[0] + '_Transform.shp'
+                    output_fn = output_fn.encode('utf-8')
+                    line_to_shp1(inlist, output_fn)
+        except:
+            pass
+
+        pass
 
     def line(self):
         fdir = self.indir
         flist = os.listdir(fdir)
-        time_init = time.time()
-        time_i = 0
+        parmas = []
+        for folder in flist:
+            parmas.append([fdir,folder])
 
-        for folder in tqdm(flist):
-            inlist = []
-            try:
-                for f in os.listdir(fdir+folder):
-                    if f.endswith('_dwg_Polyline.shp'):
-                        daShapefile = fdir+folder+'\\' + f
-
-                        # print(daShapefile)
-                        # print(daShapefile.decode('gbk'))
-                        driver = ogr.GetDriverByName("ESRI Shapefile")
-                        dataSource = driver.Open(daShapefile, 0)
-                        layer = dataSource.GetLayer()
-                        # inlist_i = []
-                        for feature in layer:
-                            geom = feature.GetGeometryRef()
-                            Points = geom.GetPoints()
-                            line_type = feature.GetField("Layer")
-                            RefName = feature.GetField("RefName")
-
-                            if Points:
-                                for i in range(len(Points)):
-                                    if i == len(Points) - 1:
-                                        break
-                                    x1,y1 = Points[i]
-                                    x2,y2 = Points[i + 1]
-                                    if self.Transform:
-                                        x1,y1 = self.transform(x1,y1)
-                                        x2, y2 = self.transform(x2,y2)
-                                        inlist.append([(x1,y1), (x2, y2), RefName, line_type, '', '', ''])
-                                    else:
-                                        inlist.append([(x1, y1), (x2, y2), RefName, line_type, '', '', ''])
-                        output_fn = fdir+folder +'\\'+ f.split('.')[0]+'_Transform.shp'
-                        output_fn = output_fn.encode('utf-8')
-                        line_to_shp1(inlist, output_fn)
-            except:
-                pass
+        MUTIPROCESS(self.kernel_line,parmas).run(process=20,process_or_thread='p')
 
 
+def kernel_main(params):
+
+    fdir, folder, genlayer= params
+
+    shp_dir = fdir + folder + '/'
+    # print shp_dir.decode('gbk')
+
+    # shp_list = os.listdir(shp_dir)
+    # print(shp_dir)
+    fname = shp_dir + 'dwg_Annotation_Transformed.shp'
+    line_fname = shp_dir + folder + '_dwg_Polyline_Transform.shp'
+    # print((shp_dir+'naizhang_ganta.shp').decode('gbk'))
+    genlayer.gen_mapinfo(folder, shp_dir + 'info')
+    # genlayer.gen_tuli_shp(folder,(shp_dir+'tuli.shp').encode('utf-8'))
+    genlayer.gen_dianlan(line_fname, shp_dir)
+    genlayer.gen_naizhang_ganta_shp(fname.encode('utf-8'), (shp_dir + 'naizhang_ganta.shp').encode('utf-8'))
+    genlayer.gen_line_annotation_shp(fname.encode('utf-8'), (shp_dir + 'line_annotation1.shp').encode('utf-8'))
+    # gen_xiangshi_biandianzhan_shp(fname.encode('utf-8'),(shp_dir+'xiangshi_biandianzhan.shp').decode('gbk').encode('utf-8'))
+    genlayer.gen_zhushangbianyaqi_shp(fname.encode('utf-8'), (shp_dir + 'zhushangbianyaqi.shp').encode('utf-8'))
+    genlayer.gen_duanluqi_shp(fname.encode('utf-8'), (shp_dir + 'duanluqi').encode('utf-8'))
+    genlayer.gen_gongbian_shp(fname.encode('utf-8'), (shp_dir + 'gongbian.shp').encode('utf-8'))
+    genlayer.gen_zhuanbian_shp(fname.encode('utf-8'), (shp_dir + 'zhuanbian.shp').encode('utf-8'))
+    genlayer.gen_zoom_layer(fname.encode('utf-8'), (shp_dir + 'zoom_layer.shp').encode('utf-8'))
+    genlayer.gen_biandianzhan_shp(fname.encode('utf-8'), (shp_dir + 'biandianzhan.shp').encode('utf-8'))
+    genlayer.gen_xiangbian_shp(fname.encode('utf-8'), (shp_dir + 'xiangbian.shp').encode('utf-8'))
+    genlayer.gen_huanwang_shp(fname.encode('utf-8'), (shp_dir + 'huanwang.shp').encode('utf-8'))
+    genlayer.gen_peidian_shp(fname.encode('utf-8'), (shp_dir + 'peidian.shp').encode('utf-8'))
+
+    # exit()
 
 def main(fdir,f_excel):
     # fdir = this_root+'190905\\dwg_to_shp\\jiang\\'
@@ -1964,42 +2060,21 @@ def main(fdir,f_excel):
     genlayer = GenLayer(f_excel)
     #
     CT = Cordinate_Transformation(fdir)
-    try:
-        CT.line()
-    except:
-        pass
-    try:
-        CT.point()
-    except:
-        pass
+    # try:
+    CT.line()
+    # except:
+    #     pass
+    # try:
+    CT.point()
+    # except:
+    #     pass
     # exit()
-    for folder in tqdm(flist):
-        shp_dir = fdir + folder + '/'
-        # print shp_dir.decode('gbk')
+    params = []
+    for folder in flist:
+        params.append([fdir, folder, genlayer])
 
-        # shp_list = os.listdir(shp_dir)
-        # print(shp_dir)
-        fname = shp_dir+'dwg_Annotation_Transformed.shp'
-        line_fname = shp_dir+folder+'_dwg_Polyline_Transform.shp'
-        # print((shp_dir+'naizhang_ganta.shp').decode('gbk'))
-        genlayer.gen_mapinfo(folder, shp_dir + 'info')
-        # genlayer.gen_tuli_shp(folder,(shp_dir+'tuli.shp').encode('utf-8'))
-        genlayer.gen_dianlan(line_fname,shp_dir)
-        genlayer.gen_naizhang_ganta_shp(fname.encode('utf-8'),(shp_dir+'naizhang_ganta.shp').encode('utf-8'))
-        genlayer.gen_line_annotation_shp(fname.encode('utf-8'),(shp_dir+'line_annotation1.shp').encode('utf-8'))
-        # gen_xiangshi_biandianzhan_shp(fname.encode('utf-8'),(shp_dir+'xiangshi_biandianzhan.shp').decode('gbk').encode('utf-8'))
-        genlayer.gen_zhushangbianyaqi_shp(fname.encode('utf-8'), (shp_dir + 'zhushangbianyaqi.shp').encode('utf-8'))
-        genlayer.gen_duanluqi_shp(fname.encode('utf-8'),(shp_dir+'duanluqi').encode('utf-8'))
-        genlayer.gen_gongbian_shp(fname.encode('utf-8'),(shp_dir+'gongbian.shp').encode('utf-8'))
-        genlayer.gen_zhuanbian_shp(fname.encode('utf-8'),(shp_dir+'zhuanbian.shp').encode('utf-8'))
-        genlayer.gen_zoom_layer(fname.encode('utf-8'),(shp_dir+'zoom_layer.shp').encode('utf-8'))
-        genlayer.gen_biandianzhan_shp(fname.encode('utf-8'),(shp_dir+'biandianzhan.shp').encode('utf-8'))
-        genlayer.gen_xiangbian_shp(fname.encode('utf-8'),(shp_dir+'xiangbian.shp').encode('utf-8'))
-        genlayer.gen_huanwang_shp(fname.encode('utf-8'),(shp_dir+'huanwang.shp').encode('utf-8'))
-        genlayer.gen_peidian_shp(fname.encode('utf-8'),(shp_dir+'peidian.shp').encode('utf-8'))
+    MUTIPROCESS(kernel_main,params).run(process=6)
 
-
-        # exit()
 
 def gui():
     Font = ('SimHei', 12)
