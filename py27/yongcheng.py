@@ -2113,10 +2113,10 @@ def main(fdir,f_excel):
     # exit()
     params = []
     for folder in flist:
-        # params.append([fdir, folder, genlayer])
-        kernel_main([fdir, folder, genlayer])
+        params.append([fdir, folder, genlayer])
+        # kernel_main([fdir, folder, genlayer])
 
-    # MUTIPROCESS(kernel_main,params).run(process=6)
+    MUTIPROCESS(kernel_main,params).run(process=6)
 
 
 def gui():
