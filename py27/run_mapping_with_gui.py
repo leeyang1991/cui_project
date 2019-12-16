@@ -158,7 +158,7 @@ def dwg_to_shp():
         break
 
 def kernel_mapping(params):
-    arcgis_python,mapping_script,fdir,out_pic_dir,mapping_input_ditu,heng_template,shu_template = params
+    arcgis_python,mapping_script,fdir,out_pic_dir,mapping_input_ditu,heng_template,shu_template,size = params
     print(arcgis_python)
     os.system(
         arcgis_python.encode('gbk') + ' ' +
@@ -167,7 +167,8 @@ def kernel_mapping(params):
         out_pic_dir.encode('gbk') + ' ' +
         mapping_input_ditu.encode('gbk') + ' ' +
         heng_template.encode('gbk') + ' ' +
-        shu_template.encode('gbk')
+        shu_template.encode('gbk') + ' ' +
+        size
     )
     sg.Popup('制图完毕！\n按OK结束'.decode('gbk'))
     pass
@@ -220,6 +221,10 @@ def mapping():
             [sg_heng_template, sg.FileBrowse()],
             [sg.Text('竖mxd模板.mxd'.decode('gbk'))],
             [sg_shu_template, sg.FileBrowse()],
+
+            [sg.Radio('A0'.decode('gbk'), "RADIO1"),sg.Radio('A3'.decode('gbk'), "RADIO1")],
+            # [sg.Radio('A3'.decode('gbk'), "RADIO1")],
+
             [sg.Text('制图目录'.decode('gbk'))],
             [sg_input_dir, sg.FolderBrowse()],
             [sg.Text('图片输出目录'.decode('gbk'))],
@@ -230,6 +235,8 @@ def mapping():
     while 1:
 
         event1, values1 = window1.Read()
+        # print event1
+        # print values1
         if event1 is None:
             break
         arcgis_python = values1[0]
@@ -237,8 +244,10 @@ def mapping():
         mapping_input_ditu = values1[2]
         heng_template = values1[3]
         shu_template = values1[4]
-        fdir = values1[5]
-        out_pic_dir = values1[6]
+        a0 = values1[5]
+        a3 = values1[6]
+        fdir = values1[7]
+        out_pic_dir = values1[8]
 
         config = codecs.open(os.getcwd() + '/' + 'config_mapping.cfg', 'w')
         config.write('fdir=' + fdir.encode('gbk') + '\n')
@@ -248,12 +257,18 @@ def mapping():
         config.write('out_pic_dir=' + out_pic_dir.encode('gbk') + '\n')
         config.write('heng_template=' + heng_template.encode('gbk') + '\n')
         config.write('shu_template=' + shu_template.encode('gbk') + '\n')
+        # config.write('a0=' + str(a0) + '\n')
+        # config.write('a3=' + str(a3) + '\n')
         config.close()
         # print(arcgis_python+' '+mapping_script)
         fdir = fdir.replace('/','\\')
         out_pic_dir = out_pic_dir.replace('/','\\')
-
-        params = [arcgis_python,mapping_script,fdir,out_pic_dir,mapping_input_ditu,heng_template,shu_template]
+        size = ''
+        if a0:
+            size = 'a0'
+        if a3:
+            size = 'a3'
+        params = [arcgis_python,mapping_script,fdir,out_pic_dir,mapping_input_ditu,heng_template,shu_template,size]
         p = multiprocessing.Process(target=kernel_mapping, args=[params])
         p.start()
 

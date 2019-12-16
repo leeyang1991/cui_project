@@ -60,6 +60,7 @@ def new_huanhang(txt,n):
 
 def mapping(dir,out_pic_dir,ditu_path):
     # ºáÊúÑ¡Ôñ
+    size = sys.argv[6]
     f=open(dir+'\\'+'config.txt','r')
     line = f.readline()
     template = line.split(',')[0]
@@ -69,14 +70,22 @@ def mapping(dir,out_pic_dir,ditu_path):
         # mxd_file = this_root+'mxd\\template_heng.mxd'
         # mxd_file = r'E:\cui\190905\template_heng.mxd'
         mxd_file = sys.argv[4]
-        x_beizhu = 35.0339
-        x_tuli = 40.468
+        if size == 'a0':
+            x_beizhu = 10.3992
+            x_tuli = 10.3992
+        elif size == 'a3':
+            x_beizhu = 10.3992
+            x_tuli = 10.3992
     elif template == 'shu':
         # mxd_file = this_root + 'mxd\\template_shu.mxd'
         # mxd_file = r'E:\cui\190905\template_shu.mxd'
         mxd_file = sys.argv[5]
-        x_beizhu = 22.9125
-        x_tuli = 28.3618
+        if size == 'a0':
+            x_beizhu = 10.3164
+            x_tuli = 10.3164
+        elif size == 'a3':
+            x_beizhu = 9.6794
+            x_tuli = 9.6794
     else:
         mxd_file = None
         x_beizhu = None
@@ -98,6 +107,10 @@ def mapping(dir,out_pic_dir,ditu_path):
     beizhu = open(dir+'\\'+'info_beizhu.txt','r').read()
     tuli = open(dir+'\\'+'info_tuli.txt','r').read()
 
+    renyuan = open(dir+'\\'+'info_huizhi.txt','r').read()
+    renyuan_split = renyuan.split('__')
+    huizhiren,shenherenyuan,huizhishijian = renyuan_split
+
     beizhu = new_huanhang(beizhu.decode('utf-8'),30)
     if len(beizhu) == 0:
         beizhu = ' '
@@ -106,12 +119,20 @@ def mapping(dir,out_pic_dir,ditu_path):
             textElement.text = (title)
         elif textElement.name == 'tuli':
             textElement.text = (tuli)
-            textElement.elementPositionY = 0.7
+            textElement.elementPositionY = 1.7
             textElement.elementPositionX = x_tuli
         elif textElement.name == 'beizhu':
             textElement.text = (beizhu)
-            textElement.elementPositionY = 0.7
+            textElement.elementPositionY = 1.7
             textElement.elementPositionX = x_beizhu
+
+
+        elif textElement.name == 'huizhiren':
+            textElement.text = (huizhiren)
+        elif textElement.name == 'shenherenyuan':
+            textElement.text = (shenherenyuan)
+        elif textElement.name == 'huizhishijian':
+            textElement.text = (huizhishijian)
         else:
             pass
 
@@ -119,7 +140,11 @@ def mapping(dir,out_pic_dir,ditu_path):
     # Ìæ»» 84.tif µ×Í¼
     ditu_dir = ditu_path
     # ditu_dir = '/'.join(ditu_dir)
+    if size == 'a0':
+        level = '17'
     ditu_tif = level+'.tif'
+
+
     print(ditu_dir)
     print(ditu_tif)
     lyr_84 = arcpy.mapping.ListLayers(mxd, '84.tif', df0)[0]

@@ -227,14 +227,14 @@ def point_to_shp(inputlist,outSHPfn):
     idField1 = ogr.FieldDefn('val1',fieldType)
     idField2 = ogr.FieldDefn('val2', fieldType)
     idField3 = ogr.FieldDefn('val3', fieldType)
-    # idField4 = ogr.FieldDefn('val4', fieldType)
-    # idField5 = ogr.FieldDefn('val5', fieldType)
+    idField4 = ogr.FieldDefn('val4', fieldType)
+    idField5 = ogr.FieldDefn('val5', fieldType)
 
     outLayer.CreateField(idField1)
     outLayer.CreateField(idField2)
     outLayer.CreateField(idField3)
-    # outLayer.CreateField(idField4)
-    # outLayer.CreateField(idField5)
+    outLayer.CreateField(idField4)
+    outLayer.CreateField(idField5)
 
     # Create the feature and set values
 
@@ -248,8 +248,8 @@ def point_to_shp(inputlist,outSHPfn):
         outFeature.SetField('val1', inputlist[i][2])
         outFeature.SetField('val2', inputlist[i][3])
         outFeature.SetField('val3', inputlist[i][4])
-        # outFeature.SetField('val4', inputlist[i][5].encode('gbk'))
-        # outFeature.SetField('val5', inputlist[i][6].encode('gbk'))
+        outFeature.SetField('val4', inputlist[i][5])
+        outFeature.SetField('val5', inputlist[i][6])
 
         outLayer.CreateFeature(outFeature)
         outFeature.Destroy()
@@ -296,7 +296,7 @@ def point_to_shp1(inputlist,outSHPfn):
         outFeature = ogr.Feature(featureDefn)
         outFeature.SetGeometry(point)
         outFeature.SetField('RefName', inputlist[i][2])
-        outFeature.SetField('val2', inputlist[i][3])
+        outFeature.SetField('Layer', inputlist[i][3])
         outFeature.SetField('val3', inputlist[i][4])
         # outFeature.SetField('val4', inputlist[i][5].encode('gbk'))
         # outFeature.SetField('val5', inputlist[i][6].encode('gbk'))
@@ -314,11 +314,13 @@ def delete_repeat(inlist):
         label1 = i[2]
         label2 = i[3]
         label3 = i[4]
+        label4 = i[5]
+        label5 = i[6]
         pos_lon = round(i[0],3)
         pos_lat = round(i[1],3)
         key = str(pos_lon)+'_'+str(pos_lat)+'_'+label1
 
-        pos_dic[key] = [lon,lat,label1,label2,label3]
+        pos_dic[key] = [lon,lat,label1,label2,label3,label4,label5]
     # pos_dic to inlist
     new_inlist = []
     for key in pos_dic:
@@ -402,7 +404,7 @@ class GenLayer:
             # print(name_gbk)
             if name_gbk in ganta:
                 # print(1)
-                out_list.append([x,y,name_gbk,ganta[name_gbk],''])
+                out_list.append([x,y,name_gbk,ganta[name_gbk],'','',''])
         point_to_shp(out_list,out_shp)
 
 
@@ -412,24 +414,31 @@ class GenLayer:
         bk = xlrd.open_workbook(self.f_excel)
         sh = bk.sheet_by_name(u'柱上变压器')
         nrows = sh.nrows
-        biandiamzhan = {}
+        biandianzhan = {}
         xinghao_dic = {}
         refname = {}
+        suoshuganta_dic = {}
+        beizhu_dic = {}
         for i in range(nrows):
             if i + 1 == nrows:
                 continue
             biandiamzhan_name = sh.cell_value(i + 1, 0)
             xinghao = sh.cell_value(i + 1, 3)
             ref = sh.cell_value(i + 1, 4)
+            suoshuganta = sh.cell_value(i + 1, 5)
+            beizhu = sh.cell_value(i + 1, 6)
             val1 = biandiamzhan_name
-            biandiamzhan[val1] = val1
+            biandianzhan[val1] = val1
             xinghao_dic[val1] = xinghao
             refname[val1] = ref
 
-        return biandiamzhan,xinghao_dic,refname
+            suoshuganta_dic[val1] = suoshuganta
+            beizhu_dic[val1] = beizhu
+
+        return biandianzhan,xinghao_dic,refname,suoshuganta_dic,beizhu_dic
 
     def gen_zhushangbianyaqi_shp(self,daShapefile,out_shp):
-        biandianzhan,xinghao_dic,refname = self.gen_zhushangbianyaqi_excel()
+        biandianzhan,xinghao_dic,refname,suoshuganta_dic,beizhu_dic = self.gen_zhushangbianyaqi_excel()
         str_num = []
         for key in biandianzhan:
             # print key,len(key)
@@ -476,7 +485,7 @@ class GenLayer:
                         out_dic[sum_str] = []
                         # print(xinghao_dic[sum_str])
                         # exit()
-                        out_list_biandianzhan.append([x,y,sum_str,xinghao_dic[sum_str],''])
+                        out_list_biandianzhan.append([x,y,sum_str,xinghao_dic[sum_str],suoshuganta_dic[sum_str],beizhu_dic[sum_str]])
                     str_num_ = len(sum_str)
                     if str_num_ > max(str_num):
                         break
@@ -496,7 +505,7 @@ class GenLayer:
                 y.append(xy[1])
             x_mean = np.mean(x)
             y_mean = np.mean(y)
-            out_list_biandianzhan.append([x_mean,y_mean,refname[name],xinghao_dic[name],''])
+            out_list_biandianzhan.append([x_mean,y_mean,refname[name],xinghao_dic[name],suoshuganta_dic[name],beizhu_dic[name],''])
             # print(x_mean)
             # print(y_mean)
             # for i in zhuanbian:
@@ -563,7 +572,11 @@ class GenLayer:
             rongduanqi_biaozhu = sh.cell_value(i, 5)
             rongduanqi_attrib = sh.cell_value(i, 4)
             changkaizhuangtai = sh.cell_value(i, 6)
-            rongduanqi[rongduanqi_name] = [rongduanqi_biaozhu,rongduanqi_attrib,changkaizhuangtai]
+
+            suoshuganta = sh.cell_value(i, 7)
+            beizhu = sh.cell_value(i, 8)
+
+            rongduanqi[rongduanqi_name] = [rongduanqi_biaozhu,rongduanqi_attrib,changkaizhuangtai,suoshuganta,beizhu]
         return rongduanqi
         pass
 
@@ -589,9 +602,9 @@ class GenLayer:
                 # print changkaizhuangtai
                 # exit()
                 if changkaizhuangtai == '常开'.decode('gbk') or changkaizhuangtai == '拉开'.decode('gbk'):
-                    changkai.append([x, y, rongduanqi[name_gbk][0], rongduanqi[name_gbk][1],''])
+                    changkai.append([x, y, rongduanqi[name_gbk][0], rongduanqi[name_gbk][1],rongduanqi[name_gbk][3],rongduanqi[name_gbk][4],''])
                 elif changkaizhuangtai == '常闭'.decode('gbk') or changkaizhuangtai == '闭合'.decode('gbk'):
-                    changbi.append([x, y, rongduanqi[name_gbk][0], rongduanqi[name_gbk][1], ''])
+                    changbi.append([x, y, rongduanqi[name_gbk][0], rongduanqi[name_gbk][1],rongduanqi[name_gbk][3],rongduanqi[name_gbk][4],''])
                 else:
                     print changkaizhuangtai
             # if '熔断器'.decode('gbk') in name_gbk:
@@ -660,17 +673,21 @@ class GenLayer:
             if i+1 == nrows:
                 continue
             bianyaqi_name = sh.cell_value(i+1, 1)
-            bianyaqi_xinghao = sh.cell_value(i+1, 3)
+            biaozhu = sh.cell_value(i+1, 6)
+            # bianyaqi_xinghao = sh.cell_value(i+1, 3)
             bianyaqi_rongliang = sh.cell_value(i+1, 2)
-            # bianyaqi_rongliang = int(float(unicode(bianyaqi_rongliang)))
             bianyaqi_rongliang = unicode(bianyaqi_rongliang)
+            suoshuganta = sh.cell_value(i+1, 7)
+            beizhu = sh.cell_value(i+1, 8)
+            # bianyaqi_rongliang = int(float(unicode(bianyaqi_rongliang)))
+
             # print(bianyaqi_rongliang)
             try:
                 bianyaqi_rongliang = int(float(bianyaqi_rongliang))
                 bianyaqi_rongliang = str(bianyaqi_rongliang)
-                zhuanbian[bianyaqi_name] = bianyaqi_xinghao+' '+bianyaqi_rongliang
+                zhuanbian[bianyaqi_name] = [biaozhu,bianyaqi_rongliang,suoshuganta,beizhu]
             except:
-                zhuanbian[bianyaqi_name] = bianyaqi_xinghao
+                zhuanbian[bianyaqi_name] = [biaozhu,bianyaqi_rongliang,suoshuganta,beizhu]
 
         # for i in zhuanbian:
         #     print i,'\n',zhuanbian[i]
@@ -698,7 +715,8 @@ class GenLayer:
             name = feature.GetField("RefName")
             name_gbk = name.decode('utf-8')
             if name_gbk in zhuanbian:
-                out_list_gongbian.append([x, y, name_gbk, zhuanbian[name_gbk],''])
+                biaozhu, bianyaqi_rongliang, suoshuganta, beizhu = zhuanbian[name_gbk]
+                out_list_gongbian.append([x, y, biaozhu, bianyaqi_rongliang, suoshuganta, beizhu,''])
         point_to_shp(out_list_gongbian, out_shp)
         pass
 
@@ -719,7 +737,8 @@ class GenLayer:
                 val1 = biandiamzhan_name
                 biaozhu_name = sh.cell_value(i + 1, 3)
                 rongliang = sh.cell_value(i + 1, 4)
-                biandiamzhan[val1] = [biaozhu_name, rongliang]
+                beizhu = sh.cell_value(i + 1, 5)
+                biandiamzhan[val1] = [biaozhu_name, rongliang, beizhu]
         return biandiamzhan
 
     def gen_biandianzhan_shp(self,daShapefile,out_shp):
@@ -767,7 +786,7 @@ class GenLayer:
                         x = np.mean(selected_x)
                         y = np.mean(selected_y)
                         # out_dic[sum_str] = []
-                        out_list_biandianzhan.append([x, y, biandianzhan[sum_str][0] + '\n' + str(biandianzhan[sum_str][1]), '', ''])
+                        out_list_biandianzhan.append([x, y, biandianzhan[sum_str][0],str(biandianzhan[sum_str][1]), biandianzhan[sum_str][2], '', ''])
                         break
                     str_num_ = len(sum_str)
                     if str_num_ > max(str_num):
@@ -794,7 +813,8 @@ class GenLayer:
                 val1 = biandiamzhan_name
                 biaozhu_name = sh.cell_value(i + 1, 3)
                 rongliang = sh.cell_value(i + 1, 4)
-                biandiamzhan[val1] = [biaozhu_name, rongliang]
+                beizhu = sh.cell_value(i + 1, 5)
+                biandiamzhan[val1] = [biaozhu_name, rongliang,beizhu]
 
         return biandiamzhan
 
@@ -844,12 +864,12 @@ class GenLayer:
                         y = np.mean(selected_y)
                         # out_dic[sum_str] = []
                         out_list_biandianzhan.append(
-                            [x, y, biandianzhan[sum_str][0] + '\n' + str(biandianzhan[sum_str][1]), '', ''])
+                            [x, y, biandianzhan[sum_str][0], str(biandianzhan[sum_str][1]), biandianzhan[sum_str][2], '', ''])
                         break
                     str_num_ = len(sum_str)
                     if str_num_ > max(str_num):
                         break
-                except Exception as e:
+                except:
                     pass
         point_to_shp(out_list_biandianzhan, out_shp)
         # pass
@@ -872,7 +892,8 @@ class GenLayer:
                 val1 = biandiamzhan_name
                 biaozhu_name = sh.cell_value(i + 1, 3)
                 rongliang = sh.cell_value(i + 1, 4)
-                biandiamzhan[val1] = [biaozhu_name, rongliang]
+                beizhu = sh.cell_value(i + 1, 5)
+                biandiamzhan[val1] = [biaozhu_name, rongliang,beizhu]
 
         return biandiamzhan
 
@@ -922,7 +943,7 @@ class GenLayer:
                         y = np.mean(selected_y)
                         # out_dic[sum_str] = []
                         out_list_biandianzhan.append(
-                            [x, y, biandianzhan[sum_str][0] + '\n' + str(biandianzhan[sum_str][1]), '', ''])
+                            [x, y, biandianzhan[sum_str][0] ,str(biandianzhan[sum_str][1]), biandianzhan[sum_str][2], '', ''])
                         break
                     str_num_ = len(sum_str)
                     if str_num_ > max(str_num):
@@ -947,7 +968,8 @@ class GenLayer:
                 val1 = biandiamzhan_name
                 biaozhu_name = sh.cell_value(i + 1, 3)
                 rongliang = sh.cell_value(i + 1, 4)
-                biandiamzhan[val1] = [biaozhu_name, rongliang]
+                beizhu = sh.cell_value(i + 1, 5)
+                biandiamzhan[val1] = [biaozhu_name, rongliang,beizhu]
 
         return biandiamzhan
 
@@ -997,7 +1019,7 @@ class GenLayer:
                         y = np.mean(selected_y)
                         # out_dic[sum_str] = []
                         out_list_biandianzhan.append(
-                            [x, y, biandianzhan[sum_str][0] + '\n' + str(biandianzhan[sum_str][1]), '', ''])
+                            [x, y, biandianzhan[sum_str][0],str(biandianzhan[sum_str][1]), biandianzhan[sum_str][2], '', ''])
                         break
                     str_num_ = len(sum_str)
                     if str_num_ > max(str_num):
@@ -1155,8 +1177,8 @@ class GenLayer:
         ymin = min(y_list)
         ymax = max(y_list)
 
-        x_offset = abs(xmin - xmax) * 0.15
-        y_offset = abs(ymin - ymax) * 0.15
+        x_offset = abs(xmin - xmax) * 0.1
+        y_offset = abs(ymin - ymax) * 0.1
 
         xmin = xmin - x_offset
         xmax = xmax + x_offset
@@ -1164,10 +1186,10 @@ class GenLayer:
         ymax = ymax + y_offset
 
 
-        a = [xmin, ymin, '', '', '']
-        b = [xmin, ymax, '', '', '']
-        c = [xmax, ymin, '', '', '']
-        d = [xmax, ymax, '', '', '']
+        a = [xmin, ymin, '', '', '', '', '']
+        b = [xmin, ymax, '', '', '', '', '']
+        c = [xmax, ymin, '', '', '', '', '']
+        d = [xmax, ymax, '', '', '', '', '']
         # plt.scatter(a[0],a[1])
         # plt.scatter(b[0],b[1])
         # plt.scatter(c[0],c[1])
@@ -1291,12 +1313,15 @@ class GenLayer:
             info = info_dic[folder]
             text_tuli = ''
             for name in col_dic:
-                if name == '图纸名称'.decode('gbk') or name == '备注'.decode('gbk'):
+                if name == '图纸名称'.decode('gbk') or name == '备注'.decode('gbk') \
+                        or name == '绘制人'.decode('gbk') \
+                        or name == '审核人员'.decode('gbk') \
+                        or name == '绘制时间'.decode('gbk'):
                     continue
                 ind = col_dic[name]
                 if len(info[ind]) == 0:
                     continue
-                text_tuli += name+':'+info[ind]+'\n'
+                text_tuli += name+': '+info[ind]+'\n'
                 # text_tuli += '{:<20}{}\n'.format(name,info[ind])
 
 
@@ -1313,6 +1338,15 @@ class GenLayer:
             ind_title = col_dic['图纸名称'.decode('gbk')]
             text_title = info[ind_title]
 
+            ind_huizhiren = col_dic['绘制人'.decode('gbk')]
+            text_huizhiren = info[ind_huizhiren]
+
+            ind_shenherenyuan = col_dic['审核人员'.decode('gbk')]
+            text_shenherenyuan = info[ind_shenherenyuan]
+
+            ind_huizhishijian = col_dic['绘制时间'.decode('gbk')]
+            text_huizhishijian = info[ind_huizhishijian]
+
             f_tuli = codecs.open(out_txt+'_tuli.txt', 'w',encoding='utf-8')
             f_tuli.write(text_tuli)
 
@@ -1321,6 +1355,11 @@ class GenLayer:
 
             f_title = codecs.open(out_txt+'_title.txt', 'w',encoding='utf-8')
             f_title.write(text_title)
+
+            f_huizhi = codecs.open(out_txt+'_huizhi.txt', 'w',encoding='utf-8')
+            # f_huizhi.write('{}__{}__{}'.format(text_huizhiren,text_shenherenyuan,text_huizhishijian))
+            f_huizhi.write(text_huizhiren+'__'+text_shenherenyuan+'__'+text_huizhishijian)
+
         else:
             print folder
             f_tuli = codecs.open(out_txt + '_tuli.txt', 'w', encoding='utf-8')
@@ -1331,6 +1370,9 @@ class GenLayer:
 
             f_title = codecs.open(out_txt + '_title.txt', 'w', encoding='utf-8')
             f_title.write('text_title')
+
+            f_huizhi = codecs.open(out_txt + '_huizhi.txt', 'w', encoding='utf-8')
+            f_huizhi.write('f_huizhi')
         # exit()
         #     info_list = []
         #     for i in info:
@@ -2044,7 +2086,7 @@ def kernel_main(params):
     # gen_xiangshi_biandianzhan_shp(fname.encode('utf-8'),(shp_dir+'xiangshi_biandianzhan.shp').decode('gbk').encode('utf-8'))
     genlayer.gen_zhushangbianyaqi_shp(fname.encode('utf-8'), (shp_dir + 'zhushangbianyaqi.shp').encode('utf-8'))
     genlayer.gen_duanluqi_shp(fname.encode('utf-8'), (shp_dir + 'duanluqi').encode('utf-8'))
-    genlayer.gen_gongbian_shp(fname.encode('utf-8'), (shp_dir + 'gongbian.shp').encode('utf-8'))
+    # genlayer.gen_gongbian_shp(fname.encode('utf-8'), (shp_dir + 'gongbian.shp').encode('utf-8'))
     genlayer.gen_zhuanbian_shp(fname.encode('utf-8'), (shp_dir + 'zhuanbian.shp').encode('utf-8'))
     genlayer.gen_zoom_layer(fname.encode('utf-8'), (shp_dir + 'zoom_layer.shp').encode('utf-8'))
     genlayer.gen_biandianzhan_shp(fname.encode('utf-8'), (shp_dir + 'biandianzhan.shp').encode('utf-8'))
@@ -2071,9 +2113,10 @@ def main(fdir,f_excel):
     # exit()
     params = []
     for folder in flist:
-        params.append([fdir, folder, genlayer])
+        # params.append([fdir, folder, genlayer])
+        kernel_main([fdir, folder, genlayer])
 
-    MUTIPROCESS(kernel_main,params).run(process=6)
+    # MUTIPROCESS(kernel_main,params).run(process=6)
 
 
 def gui():
