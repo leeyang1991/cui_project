@@ -587,28 +587,82 @@ class GenLayer:
         driver = ogr.GetDriverByName("ESRI Shapefile")
         dataSource = driver.Open(daShapefile, 0)
         layer = dataSource.GetLayer()
-        changkai = []
-        changbi = []
+
+
+
+        name_list = []
+        xy_list = []
         for feature in layer:
             geom = feature.GetGeometryRef()
             x = geom.GetX()
             y = geom.GetY()
+            xy_list.append([x, y])
             name = feature.GetField("RefName")
             name_gbk = name.decode('utf-8')
 
-            if name_gbk in rongduanqi:
-                changkaizhuangtai = rongduanqi[name_gbk][2]
-                # print rongduanqi[name_gbk]
-                # print changkaizhuangtai
-                # exit()
-                if changkaizhuangtai == '常开'.decode('gbk') or changkaizhuangtai == '拉开'.decode('gbk'):
-                    changkai.append([x, y, rongduanqi[name_gbk][0], rongduanqi[name_gbk][1],rongduanqi[name_gbk][3],rongduanqi[name_gbk][4],''])
-                elif changkaizhuangtai == '常闭'.decode('gbk') or changkaizhuangtai == '闭合'.decode('gbk'):
-                    changbi.append([x, y, rongduanqi[name_gbk][0], rongduanqi[name_gbk][1],rongduanqi[name_gbk][3],rongduanqi[name_gbk][4],''])
-                else:
-                    print changkaizhuangtai
-            # if '熔断器'.decode('gbk') in name_gbk:
-            #     out_list_biandianzhan.append([x, y, name_gbk, '',''])
+            name_list.append(name_gbk)
+
+        str_num = []
+        for key in rongduanqi:
+            str_num.append(len(key))
+
+        out_list_biandianzhan = []
+        for i in range(len(name_list)):
+            sum_str = ''
+            selected_num = []
+            for j in range(max(str_num)):
+                try:
+                    sum_str += name_list[i + j]
+                    selected_num.append(i + j)
+                    # print(sum_str)
+                    if sum_str in rongduanqi:
+                        # print(sum_str)
+                        selected_x = []
+                        selected_y = []
+                        for k in selected_num:
+                            selected_x.append(xy_list[k][0])
+                            selected_y.append(xy_list[k][1])
+                        x = np.mean(selected_x)
+                        y = np.mean(selected_y)
+                        # out_dic[sum_str] = []
+                        rongduanqi_biaozhu, rongduanqi_attrib, changkaizhuangtai, suoshuganta, beizhu = rongduanqi[sum_str]
+                        out_list_biandianzhan.append(
+                            [x, y, rongduanqi_biaozhu, rongduanqi_attrib, changkaizhuangtai, suoshuganta, beizhu,sum_str])
+                        break
+                    str_num_ = len(sum_str)
+                    if str_num_ > max(str_num):
+                        break
+                except:
+                    pass
+
+
+        changkai = []
+        changbi = []
+        for inlist in out_list_biandianzhan:
+            x, y, rongduanqi_biaozhu, rongduanqi_attrib, changkaizhuangtai, suoshuganta, beizhu, sum_str = inlist
+            if changkaizhuangtai == '常开'.decode('gbk') or changkaizhuangtai == '拉开'.decode('gbk'):
+                changkai.append([x,y,rongduanqi_biaozhu, rongduanqi_attrib, suoshuganta, beizhu,sum_str])
+            elif changkaizhuangtai == '常闭'.decode('gbk') or changkaizhuangtai == '闭合'.decode('gbk'):
+                changbi.append([x, y, rongduanqi_biaozhu, rongduanqi_attrib, suoshuganta, beizhu,sum_str])
+        # for feature in layer:
+        #     geom = feature.GetGeometryRef()
+        #     x = geom.GetX()
+        #     y = geom.GetY()
+        #     name = feature.GetField("RefName")
+        #     name_gbk = name.decode('utf-8')
+        #     if name_gbk in rongduanqi:
+        #         changkaizhuangtai = rongduanqi[name_gbk][2]
+        #         # print rongduanqi[name_gbk]
+        #         # print changkaizhuangtai
+        #         # exit()
+        #         if changkaizhuangtai == '常开'.decode('gbk') or changkaizhuangtai == '拉开'.decode('gbk'):
+        #             changkai.append([x, y, rongduanqi[name_gbk][0], rongduanqi[name_gbk][1],rongduanqi[name_gbk][3],rongduanqi[name_gbk][4],''])
+        #         elif changkaizhuangtai == '常闭'.decode('gbk') or changkaizhuangtai == '闭合'.decode('gbk'):
+        #             changbi.append([x, y, rongduanqi[name_gbk][0], rongduanqi[name_gbk][1],rongduanqi[name_gbk][3],rongduanqi[name_gbk][4],''])
+        #         else:
+        #             print changkaizhuangtai
+        #     # if '熔断器'.decode('gbk') in name_gbk:
+        #     #     out_list_biandianzhan.append([x, y, name_gbk, '',''])
         changkai = delete_repeat(changkai)
         changbi = delete_repeat(changbi)
         point_to_shp(changkai, out_shp+'_changkai.shp')

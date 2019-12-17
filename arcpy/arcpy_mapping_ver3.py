@@ -231,7 +231,7 @@ def mapping(dir,out_pic_dir,ditu_path):
     # outjpeg = out_pic_dir.decode('gbk')+'\\'+dir.split('\\')[-2]
     outjpeg = out_pic_dir.decode('gbk')+'\\'+title.decode('utf-8')
     arcpy.mapping.ExportToJPEG(mxd,outjpeg,data_frame='PAGE_LAYOUT',df_export_width=mxd.pageSize.width,df_export_height=mxd.pageSize.height,color_mode='24-BIT_TRUE_COLOR',resolution=300,jpeg_quality=100)
-    # arcpy.mapping.ExportToAI(mxd,outjpeg+'.ai')
+    # arcpy.mapping.ExportToPDF(mxd,outjpeg+'.pdf')
     print 'done'
 
 
