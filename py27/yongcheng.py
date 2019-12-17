@@ -1316,6 +1316,7 @@ class GenLayer:
                 if name == '图纸名称'.decode('gbk') or name == '备注'.decode('gbk') \
                         or name == '绘制人'.decode('gbk') \
                         or name == '审核人员'.decode('gbk') \
+                        or name == '线路名称'.decode('gbk') \
                         or name == '绘制时间'.decode('gbk'):
                     continue
                 ind = col_dic[name]
