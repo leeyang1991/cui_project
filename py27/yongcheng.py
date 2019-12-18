@@ -21,15 +21,16 @@ import multiprocessing
 import copy_reg
 import types
 from multiprocessing.pool import ThreadPool as TPool
+
 #
 # f_excel = this_root+'190905/台账数据.xlsx'
 # f_excel = 'E:\\cui\\190905\\台账数据.xls'.decode('gbk')
 
 ############重要#################
 gdal.SetConfigOption("SHAPE_ENCODING", "GBK")
+
+
 ############重要#################
-
-
 
 
 class MUTIPROCESS:
@@ -78,23 +79,19 @@ class MUTIPROCESS:
         return results
 
 
-
-
-
-
-
 def mk_dir(dir):
     if not os.path.isdir(dir):
         os.makedirs(dir)
 
 
 def rename(f):
-    f_new = f.replace('#',' ')
-    f_new = f_new.replace('(','')
-    f_new = f_new.replace(')','')
+    f_new = f.replace('#', ' ')
+    f_new = f_new.replace('(', '')
+    f_new = f_new.replace(')', '')
     return f_new
 
-def line_to_shp(inputlist,outSHPfn):
+
+def line_to_shp(inputlist, outSHPfn):
     ############重要#################
     gdal.SetConfigOption("SHAPE_ENCODING", "GBK")
     ############重要#################
@@ -107,7 +104,7 @@ def line_to_shp(inputlist,outSHPfn):
     outDataSource = shpDriver.CreateDataSource(outSHPfn)
     outLayer = outDataSource.CreateLayer(outSHPfn, geom_type=ogr.wkbLineString)
 
-    #create line geometry
+    # create line geometry
     line = ogr.Geometry(ogr.wkbLineString)
 
     # create a field
@@ -133,8 +130,8 @@ def line_to_shp(inputlist,outSHPfn):
         val4 = inputlist[i][5]
         val5 = inputlist[i][6]
 
-        line.AddPoint(start[0],start[1])
-        line.AddPoint(end[0],end[1])
+        line.AddPoint(start[0], start[1])
+        line.AddPoint(end[0], end[1])
 
         featureDefn = outLayer.GetLayerDefn()
         outFeature = ogr.Feature(featureDefn)
@@ -150,8 +147,7 @@ def line_to_shp(inputlist,outSHPfn):
         outFeature = None
 
 
-
-def line_to_shp1(inputlist,outSHPfn):
+def line_to_shp1(inputlist, outSHPfn):
     ############重要#################
     gdal.SetConfigOption("SHAPE_ENCODING", "GBK")
     ############重要#################
@@ -164,7 +160,7 @@ def line_to_shp1(inputlist,outSHPfn):
     outDataSource = shpDriver.CreateDataSource(outSHPfn)
     outLayer = outDataSource.CreateLayer(outSHPfn, geom_type=ogr.wkbLineString)
 
-    #create line geometry
+    # create line geometry
     line = ogr.Geometry(ogr.wkbLineString)
 
     # create a field
@@ -190,8 +186,8 @@ def line_to_shp1(inputlist,outSHPfn):
         val4 = inputlist[i][5]
         val5 = inputlist[i][6]
 
-        line.AddPoint(start[0],start[1])
-        line.AddPoint(end[0],end[1])
+        line.AddPoint(start[0], start[1])
+        line.AddPoint(end[0], end[1])
 
         featureDefn = outLayer.GetLayerDefn()
         outFeature = ogr.Feature(featureDefn)
@@ -207,8 +203,7 @@ def line_to_shp1(inputlist,outSHPfn):
         outFeature = None
 
 
-
-def point_to_shp(inputlist,outSHPfn):
+def point_to_shp(inputlist, outSHPfn):
     # gdal.SetConfigOption("GDAL_FILENAME_IS_UTF8", "YES")
     ############重要#################
     gdal.SetConfigOption("SHAPE_ENCODING", "GBK")
@@ -222,9 +217,8 @@ def point_to_shp(inputlist,outSHPfn):
     outDataSource = shpDriver.CreateDataSource(outSHPfn)
     outLayer = outDataSource.CreateLayer(outSHPfn, geom_type=ogr.wkbPoint)
 
-
     # create a field
-    idField1 = ogr.FieldDefn('val1',fieldType)
+    idField1 = ogr.FieldDefn('val1', fieldType)
     idField2 = ogr.FieldDefn('val2', fieldType)
     idField3 = ogr.FieldDefn('val3', fieldType)
     idField4 = ogr.FieldDefn('val4', fieldType)
@@ -240,7 +234,7 @@ def point_to_shp(inputlist,outSHPfn):
 
     for i in range(len(inputlist)):
         point = ogr.Geometry(ogr.wkbPoint)
-        point.AddPoint(inputlist[i][0],inputlist[i][1])
+        point.AddPoint(inputlist[i][0], inputlist[i][1])
 
         featureDefn = outLayer.GetLayerDefn()
         outFeature = ogr.Feature(featureDefn)
@@ -256,8 +250,7 @@ def point_to_shp(inputlist,outSHPfn):
     outFeature = None
 
 
-
-def point_to_shp1(inputlist,outSHPfn):
+def point_to_shp1(inputlist, outSHPfn):
     # for merge
     # gdal.SetConfigOption("GDAL_FILENAME_IS_UTF8", "YES")
     ############重要#################
@@ -272,9 +265,8 @@ def point_to_shp1(inputlist,outSHPfn):
     outDataSource = shpDriver.CreateDataSource(outSHPfn)
     outLayer = outDataSource.CreateLayer(outSHPfn, geom_type=ogr.wkbPoint)
 
-
     # create a field
-    idField1 = ogr.FieldDefn('RefName',fieldType)
+    idField1 = ogr.FieldDefn('RefName', fieldType)
     idField2 = ogr.FieldDefn('Layer', fieldType)
     idField3 = ogr.FieldDefn('val3', fieldType)
     # idField4 = ogr.FieldDefn('val4', fieldType)
@@ -290,7 +282,7 @@ def point_to_shp1(inputlist,outSHPfn):
 
     for i in range(len(inputlist)):
         point = ogr.Geometry(ogr.wkbPoint)
-        point.AddPoint(inputlist[i][0],inputlist[i][1])
+        point.AddPoint(inputlist[i][0], inputlist[i][1])
 
         featureDefn = outLayer.GetLayerDefn()
         outFeature = ogr.Feature(featureDefn)
@@ -316,11 +308,11 @@ def delete_repeat(inlist):
         label3 = i[4]
         label4 = i[5]
         label5 = i[6]
-        pos_lon = round(i[0],3)
-        pos_lat = round(i[1],3)
-        key = str(pos_lon)+'_'+str(pos_lat)+'_'+label1
+        pos_lon = round(i[0], 3)
+        pos_lat = round(i[1], 3)
+        key = str(pos_lon) + '_' + str(pos_lat) + '_' + label1
 
-        pos_dic[key] = [lon,lat,label1,label2,label3,label4,label5]
+        pos_dic[key] = [lon, lat, label1, label2, label3, label4, label5]
     # pos_dic to inlist
     new_inlist = []
     for key in pos_dic:
@@ -330,27 +322,27 @@ def delete_repeat(inlist):
     # exit()
     return new_inlist
 
+
 def rad(d):
-    return d*math.pi/180
+    return d * math.pi / 180
 
-def GetDistance(point1,point2):
+
+def GetDistance(point1, point2):
     # unit meter
-    radLat1=rad(point1[1])
-    radLat2=rad(point2[1])
-    a=radLat1-radLat2
-    b=rad(point1[0])-rad(point2[0])
-    s=2 * math.asin(math.sqrt(math.pow(math.sin(a/2),2) +math.cos(radLat1)*math.cos(radLat2)*math.pow(math.sin(b/2),2)))
-    s = s *6378.137*1000
-    distance=round(s,4)
+    radLat1 = rad(point1[1])
+    radLat2 = rad(point2[1])
+    a = radLat1 - radLat2
+    b = rad(point1[0]) - rad(point2[0])
+    s = 2 * math.asin(
+        math.sqrt(math.pow(math.sin(a / 2), 2) + math.cos(radLat1) * math.cos(radLat2) * math.pow(math.sin(b / 2), 2)))
+    s = s * 6378.137 * 1000
+    distance = round(s, 4)
     return distance
-
-
-
 
 
 class GenLayer:
 
-    def __init__(self,f_excel):
+    def __init__(self, f_excel):
         # fdir = 'E:\\cui\\190905\\'
         # flist = os.listdir(fdir)
         # for f in flist:
@@ -370,9 +362,9 @@ class GenLayer:
         ganta = []
         ganta_num = []
         for i in range(nrows):
-            ganta_attrib = sh.cell_value(i,3)
-            ganta_name = sh.cell(i,0)
-            ganta_num_i = sh.cell_value(i,1)
+            ganta_attrib = sh.cell_value(i, 3)
+            ganta_name = sh.cell(i, 0)
+            ganta_num_i = sh.cell_value(i, 1)
             # print(ganta_attrib=='耐张'.decode('gbk'))
             if ganta_attrib == '耐张'.decode('gbk'):
                 # print(1)
@@ -383,8 +375,7 @@ class GenLayer:
             ganta_dic[ganta[i]] = ganta_num[i]
         return ganta_dic
 
-
-    def gen_naizhang_ganta_shp(self,daShapefile,out_shp):
+    def gen_naizhang_ganta_shp(self, daShapefile, out_shp):
 
         # daShapefile = this_root+'123_dwg_Annotation.shp'
 
@@ -404,10 +395,8 @@ class GenLayer:
             # print(name_gbk)
             if name_gbk in ganta:
                 # print(1)
-                out_list.append([x,y,name_gbk,ganta[name_gbk],'','',''])
-        point_to_shp(out_list,out_shp)
-
-
+                out_list.append([x, y, name_gbk, ganta[name_gbk], '', '', ''])
+        point_to_shp(out_list, out_shp)
 
     def gen_zhushangbianyaqi_excel(self):
         # f_excel = this_root + u'190714\\张桥所线路设备明细.xls'
@@ -435,10 +424,10 @@ class GenLayer:
             suoshuganta_dic[val1] = suoshuganta
             beizhu_dic[val1] = beizhu
 
-        return biandianzhan,xinghao_dic,refname,suoshuganta_dic,beizhu_dic
+        return biandianzhan, xinghao_dic, refname, suoshuganta_dic, beizhu_dic
 
-    def gen_zhushangbianyaqi_shp(self,daShapefile,out_shp):
-        biandianzhan,xinghao_dic,refname,suoshuganta_dic,beizhu_dic = self.gen_zhushangbianyaqi_excel()
+    def gen_zhushangbianyaqi_shp(self, daShapefile, out_shp):
+        biandianzhan, xinghao_dic, refname, suoshuganta_dic, beizhu_dic = self.gen_zhushangbianyaqi_excel()
         str_num = []
         for key in biandianzhan:
             # print key,len(key)
@@ -458,7 +447,7 @@ class GenLayer:
             geom = feature.GetGeometryRef()
             x = geom.GetX()
             y = geom.GetY()
-            xy_list.append([x,y])
+            xy_list.append([x, y])
             name = feature.GetField("RefName")
             name_gbk = name.decode('utf-8')
 
@@ -470,8 +459,8 @@ class GenLayer:
             selected_num = []
             for j in range(max(str_num)):
                 try:
-                    sum_str += name_list[i+j]
-                    selected_num.append(i+j)
+                    sum_str += name_list[i + j]
+                    selected_num.append(i + j)
                     # print(sum_str)
                     if sum_str in biandianzhan:
                         # print(sum_str)
@@ -485,7 +474,8 @@ class GenLayer:
                         out_dic[sum_str] = []
                         # print(xinghao_dic[sum_str])
                         # exit()
-                        out_list_biandianzhan.append([x,y,sum_str,xinghao_dic[sum_str],suoshuganta_dic[sum_str],beizhu_dic[sum_str]])
+                        out_list_biandianzhan.append(
+                            [x, y, sum_str, xinghao_dic[sum_str], suoshuganta_dic[sum_str], beizhu_dic[sum_str]])
                     str_num_ = len(sum_str)
                     if str_num_ > max(str_num):
                         break
@@ -493,7 +483,7 @@ class GenLayer:
                     pass
         for i in out_list_biandianzhan:
             name = i[2]
-            out_dic[name].append([i[0],i[1]])
+            out_dic[name].append([i[0], i[1]])
 
         out_list_biandianzhan = []
         for name in out_dic:
@@ -505,7 +495,8 @@ class GenLayer:
                 y.append(xy[1])
             x_mean = np.mean(x)
             y_mean = np.mean(y)
-            out_list_biandianzhan.append([x_mean,y_mean,refname[name],xinghao_dic[name],suoshuganta_dic[name],beizhu_dic[name],''])
+            out_list_biandianzhan.append(
+                [x_mean, y_mean, refname[name], xinghao_dic[name], suoshuganta_dic[name], beizhu_dic[name], ''])
             # print(x_mean)
             # print(y_mean)
             # for i in zhuanbian:
@@ -517,8 +508,7 @@ class GenLayer:
         #
         point_to_shp(out_list_biandianzhan, out_shp)
         # pass
-
-
+        return out_list_biandianzhan
 
     def gen_xiangshi_biandianzhan_excel(self):
         # f_excel = this_root + '190509\\民权线路cad\\民权台账 - 以此为准.xls'
@@ -529,18 +519,17 @@ class GenLayer:
         for i in range(nrows):
             biandianzhan_name = sh.cell_value(i, 0)
 
-            if len(sh.cell_value(i,3)) > 1:
-                biandianzhan_xinghao = sh.cell_value(i, 2)+' '+sh.cell_value(i,3)
+            if len(sh.cell_value(i, 3)) > 1:
+                biandianzhan_xinghao = sh.cell_value(i, 2) + ' ' + sh.cell_value(i, 3)
             else:
                 biandianzhan_xinghao = sh.cell_value(i, 2)
 
             bianyaqi_biaozhu = sh.cell_value(i, 1)
-            biandianzhan[biandianzhan_name] = [bianyaqi_biaozhu,biandianzhan_xinghao]
+            biandianzhan[biandianzhan_name] = [bianyaqi_biaozhu, biandianzhan_xinghao]
         return biandianzhan
         pass
 
-
-    def gen_xiangshi_biandianzhan_shp(self,daShapefile,out_shp):
+    def gen_xiangshi_biandianzhan_shp(self, daShapefile, out_shp):
         biandianzhan = self.gen_xiangshi_biandianzhan_excel()
         # daShapefile = this_root + '123_dwg_Annotation.shp'
         driver = ogr.GetDriverByName("ESRI Shapefile")
@@ -560,7 +549,6 @@ class GenLayer:
         # point_to_shp(out_list_zhuanbian, 'zhuanbian.shp')
         pass
 
-
     def gen_duanluqi_excel(self):
         # f_excel = this_root + '190509\\民权线路cad\\民权台账 - 以此为准.xls'
         bk = xlrd.open_workbook(self.f_excel)
@@ -576,19 +564,17 @@ class GenLayer:
             suoshuganta = sh.cell_value(i, 7)
             beizhu = sh.cell_value(i, 8)
 
-            rongduanqi[rongduanqi_name] = [rongduanqi_biaozhu,rongduanqi_attrib,changkaizhuangtai,suoshuganta,beizhu]
+            rongduanqi[rongduanqi_name] = [rongduanqi_biaozhu, rongduanqi_attrib, changkaizhuangtai, suoshuganta,
+                                           beizhu]
         return rongduanqi
         pass
 
-
-    def gen_duanluqi_shp(self,daShapefile,out_shp):
+    def gen_duanluqi_shp(self, daShapefile, out_shp):
         rongduanqi = self.gen_duanluqi_excel()
         # daShapefile = this_root + '123_dwg_Annotation.shp'
         driver = ogr.GetDriverByName("ESRI Shapefile")
         dataSource = driver.Open(daShapefile, 0)
         layer = dataSource.GetLayer()
-
-
 
         name_list = []
         xy_list = []
@@ -625,9 +611,11 @@ class GenLayer:
                         x = np.mean(selected_x)
                         y = np.mean(selected_y)
                         # out_dic[sum_str] = []
-                        rongduanqi_biaozhu, rongduanqi_attrib, changkaizhuangtai, suoshuganta, beizhu = rongduanqi[sum_str]
+                        rongduanqi_biaozhu, rongduanqi_attrib, changkaizhuangtai, suoshuganta, beizhu = rongduanqi[
+                            sum_str]
                         out_list_biandianzhan.append(
-                            [x, y, rongduanqi_biaozhu, rongduanqi_attrib, changkaizhuangtai, suoshuganta, beizhu,sum_str])
+                            [x, y, rongduanqi_biaozhu, rongduanqi_attrib, changkaizhuangtai, suoshuganta, beizhu,
+                             sum_str])
                         break
                     str_num_ = len(sum_str)
                     if str_num_ > max(str_num):
@@ -635,15 +623,14 @@ class GenLayer:
                 except:
                     pass
 
-
         changkai = []
         changbi = []
         for inlist in out_list_biandianzhan:
             x, y, rongduanqi_biaozhu, rongduanqi_attrib, changkaizhuangtai, suoshuganta, beizhu, sum_str = inlist
             if changkaizhuangtai == '常开'.decode('gbk') or changkaizhuangtai == '拉开'.decode('gbk'):
-                changkai.append([x,y,rongduanqi_biaozhu, rongduanqi_attrib, suoshuganta, beizhu,sum_str])
+                changkai.append([x, y, rongduanqi_biaozhu, rongduanqi_attrib, suoshuganta, beizhu, sum_str])
             elif changkaizhuangtai == '常闭'.decode('gbk') or changkaizhuangtai == '闭合'.decode('gbk'):
-                changbi.append([x, y, rongduanqi_biaozhu, rongduanqi_attrib, suoshuganta, beizhu,sum_str])
+                changbi.append([x, y, rongduanqi_biaozhu, rongduanqi_attrib, suoshuganta, beizhu, sum_str])
         # for feature in layer:
         #     geom = feature.GetGeometryRef()
         #     x = geom.GetX()
@@ -665,57 +652,52 @@ class GenLayer:
         #     #     out_list_biandianzhan.append([x, y, name_gbk, '',''])
         changkai = delete_repeat(changkai)
         changbi = delete_repeat(changbi)
-        point_to_shp(changkai, out_shp+'_changkai.shp')
-        point_to_shp(changbi, out_shp+'_changbi.shp')
+        point_to_shp(changkai, out_shp + '_changkai.shp')
+        point_to_shp(changbi, out_shp + '_changbi.shp')
 
         pass
 
-
-
-    def gen_gongbian_excel(self):
-        # f_excel = this_root + '190509\\民权线路cad\\民权台账 - 以此为准.xls'
-        bk = xlrd.open_workbook(self.f_excel)
-        sh = bk.sheet_by_name('柱上变压器'.decode('gbk'))
-        nrows = sh.nrows
-        gongbian = {}
-        for i in range(nrows):
-            bianyaqi_name = sh.cell_value(i, 0)
-            bianyaqi_xinghao = sh.cell_value(i, 4)
-            gongbian[bianyaqi_name] = bianyaqi_xinghao
-
-        # for i in gongbian:
-        #     print i,gongbian[i]
-
-        return gongbian
-        pass
-
-        pass
-
-
-
-    def gen_gongbian_shp(self,daShapefile,out_shp):
-        gongbian = self.gen_gongbian_excel()
-        # daShapefile = this_root + '123_dwg_Annotation.shp'
-        driver = ogr.GetDriverByName("ESRI Shapefile")
-        dataSource = driver.Open(daShapefile, 0)
-        layer = dataSource.GetLayer()
-        # ganta = gen_naizhang_ganta_excel()
-        out_list_gongbian = []
-
-        for feature in layer:
-            geom = feature.GetGeometryRef()
-            x = geom.GetX()
-            y = geom.GetY()
-            name = feature.GetField("RefName")
-            name_gbk = name.decode('utf-8')
-            if name_gbk in gongbian:
-                out_list_gongbian.append([x, y, name_gbk, gongbian[name_gbk],''])
-
-        point_to_shp(out_list_gongbian, out_shp)
-        pass
-
-
-
+    # def gen_gongbian_excel(self):
+    #     # f_excel = this_root + '190509\\民权线路cad\\民权台账 - 以此为准.xls'
+    #     bk = xlrd.open_workbook(self.f_excel)
+    #     sh = bk.sheet_by_name('柱上变压器'.decode('gbk'))
+    #     nrows = sh.nrows
+    #     gongbian = {}
+    #     for i in range(nrows):
+    #         bianyaqi_name = sh.cell_value(i, 0)
+    #         bianyaqi_xinghao = sh.cell_value(i, 4)
+    #         gongbian[bianyaqi_name] = bianyaqi_xinghao
+    #
+    #     # for i in gongbian:
+    #     #     print i,gongbian[i]
+    #
+    #     return gongbian
+    #     pass
+    #
+    #     pass
+    #
+    #
+    #
+    # def gen_gongbian_shp(self,daShapefile,out_shp):
+    #     gongbian = self.gen_gongbian_excel()
+    #     # daShapefile = this_root + '123_dwg_Annotation.shp'
+    #     driver = ogr.GetDriverByName("ESRI Shapefile")
+    #     dataSource = driver.Open(daShapefile, 0)
+    #     layer = dataSource.GetLayer()
+    #     # ganta = gen_naizhang_ganta_excel()
+    #     out_list_gongbian = []
+    #
+    #     for feature in layer:
+    #         geom = feature.GetGeometryRef()
+    #         x = geom.GetX()
+    #         y = geom.GetY()
+    #         name = feature.GetField("RefName")
+    #         name_gbk = name.decode('utf-8')
+    #         if name_gbk in gongbian:
+    #             out_list_gongbian.append([x, y, name_gbk, gongbian[name_gbk],''])
+    #
+    #     point_to_shp(out_list_gongbian, out_shp)
+    #     pass
 
     def gen_zhuanbian_excel(self):
         # f_excel = this_root + '190509\\民权线路cad\\民权台账 - 以此为准.xls'
@@ -724,24 +706,24 @@ class GenLayer:
         nrows = sh.nrows
         zhuanbian = {}
         for i in range(nrows):
-            if i+1 == nrows:
+            if i + 1 == nrows:
                 continue
-            bianyaqi_name = sh.cell_value(i+1, 1)
-            biaozhu = sh.cell_value(i+1, 6)
+            bianyaqi_name = sh.cell_value(i + 1, 1)
+            biaozhu = sh.cell_value(i + 1, 6)
             # bianyaqi_xinghao = sh.cell_value(i+1, 3)
-            bianyaqi_rongliang = sh.cell_value(i+1, 2)
+            bianyaqi_rongliang = sh.cell_value(i + 1, 2)
             bianyaqi_rongliang = unicode(bianyaqi_rongliang)
-            suoshuganta = sh.cell_value(i+1, 7)
-            beizhu = sh.cell_value(i+1, 8)
+            suoshuganta = sh.cell_value(i + 1, 7)
+            beizhu = sh.cell_value(i + 1, 8)
             # bianyaqi_rongliang = int(float(unicode(bianyaqi_rongliang)))
 
             # print(bianyaqi_rongliang)
             try:
                 bianyaqi_rongliang = int(float(bianyaqi_rongliang))
                 bianyaqi_rongliang = str(bianyaqi_rongliang)
-                zhuanbian[bianyaqi_name] = [biaozhu,bianyaqi_rongliang,suoshuganta,beizhu]
+                zhuanbian[bianyaqi_name] = [biaozhu, bianyaqi_rongliang, suoshuganta, beizhu]
             except:
-                zhuanbian[bianyaqi_name] = [biaozhu,bianyaqi_rongliang,suoshuganta,beizhu]
+                zhuanbian[bianyaqi_name] = [biaozhu, bianyaqi_rongliang, suoshuganta, beizhu]
 
         # for i in zhuanbian:
         #     print i,'\n',zhuanbian[i]
@@ -751,9 +733,7 @@ class GenLayer:
 
         pass
 
-
-
-    def gen_zhuanbian_shp(self,daShapefile,out_shp):
+    def gen_zhuanbian_shp(self, daShapefile, out_shp):
         zhuanbian = self.gen_zhuanbian_excel()
         # daShapefile = this_root + '123_dwg_Annotation.shp'
         driver = ogr.GetDriverByName("ESRI Shapefile")
@@ -770,10 +750,11 @@ class GenLayer:
             name_gbk = name.decode('utf-8')
             if name_gbk in zhuanbian:
                 biaozhu, bianyaqi_rongliang, suoshuganta, beizhu = zhuanbian[name_gbk]
-                out_list_gongbian.append([x, y, biaozhu, bianyaqi_rongliang, suoshuganta, beizhu,''])
+                out_list_gongbian.append([x, y, biaozhu, bianyaqi_rongliang, suoshuganta, beizhu, ''])
         point_to_shp(out_list_gongbian, out_shp)
-        pass
 
+        return out_list_gongbian
+        pass
 
     def gen_biandianzhan_excel(self):
         # f_excel = this_root + u'190714\\张桥所线路设备明细.xls'
@@ -786,7 +767,6 @@ class GenLayer:
                 continue
             dianzhan_type = sh.cell_value(i + 1, 0)
             if dianzhan_type == '变电站'.decode('gbk'):
-
                 biandiamzhan_name = sh.cell_value(i + 1, 2)
                 val1 = biandiamzhan_name
                 biaozhu_name = sh.cell_value(i + 1, 3)
@@ -795,11 +775,11 @@ class GenLayer:
                 biandiamzhan[val1] = [biaozhu_name, rongliang, beizhu]
         return biandiamzhan
 
-    def gen_biandianzhan_shp(self,daShapefile,out_shp):
+    def gen_biandianzhan_shp(self, daShapefile, out_shp):
         biandianzhan = self.gen_biandianzhan_excel()
         if len(biandianzhan) == 0:
             point_to_shp([], out_shp)
-            return None
+            return []
         str_num = []
         for key in biandianzhan:
             str_num.append(len(key))
@@ -815,7 +795,7 @@ class GenLayer:
             geom = feature.GetGeometryRef()
             x = geom.GetX()
             y = geom.GetY()
-            xy_list.append([x,y])
+            xy_list.append([x, y])
             name = feature.GetField("RefName")
             name_gbk = name.decode('utf-8')
 
@@ -827,8 +807,8 @@ class GenLayer:
             selected_num = []
             for j in range(max(str_num)):
                 try:
-                    sum_str += name_list[i+j]
-                    selected_num.append(i+j)
+                    sum_str += name_list[i + j]
+                    selected_num.append(i + j)
                     # print(sum_str)
                     if sum_str in biandianzhan:
                         # print(sum_str)
@@ -840,7 +820,9 @@ class GenLayer:
                         x = np.mean(selected_x)
                         y = np.mean(selected_y)
                         # out_dic[sum_str] = []
-                        out_list_biandianzhan.append([x, y, biandianzhan[sum_str][0],str(biandianzhan[sum_str][1]), biandianzhan[sum_str][2], '', ''])
+                        out_list_biandianzhan.append(
+                            [x, y, biandianzhan[sum_str][0], str(biandianzhan[sum_str][1]), biandianzhan[sum_str][2],
+                             '', ''])
                         break
                     str_num_ = len(sum_str)
                     if str_num_ > max(str_num):
@@ -850,6 +832,7 @@ class GenLayer:
         out_list_biandianzhan = delete_repeat(out_list_biandianzhan)
         # exit()
         point_to_shp(out_list_biandianzhan, out_shp)
+        return out_list_biandianzhan
 
     def gen_xiangbian_excel(self):
         # f_excel = this_root + u'190714\\张桥所线路设备明细.xls'
@@ -868,15 +851,15 @@ class GenLayer:
                 biaozhu_name = sh.cell_value(i + 1, 3)
                 rongliang = sh.cell_value(i + 1, 4)
                 beizhu = sh.cell_value(i + 1, 5)
-                biandiamzhan[val1] = [biaozhu_name, rongliang,beizhu]
+                biandiamzhan[val1] = [biaozhu_name, rongliang, beizhu]
 
         return biandiamzhan
 
-    def gen_xiangbian_shp(self,daShapefile,out_shp):
+    def gen_xiangbian_shp(self, daShapefile, out_shp):
         biandianzhan = self.gen_xiangbian_excel()
         if len(biandianzhan) == 0:
             point_to_shp([], out_shp)
-            return None
+            return []
         str_num = []
         for key in biandianzhan:
             str_num.append(len(key))
@@ -892,7 +875,7 @@ class GenLayer:
             geom = feature.GetGeometryRef()
             x = geom.GetX()
             y = geom.GetY()
-            xy_list.append([x,y])
+            xy_list.append([x, y])
             name = feature.GetField("RefName")
             name_gbk = name.decode('utf-8')
 
@@ -904,8 +887,8 @@ class GenLayer:
             selected_num = []
             for j in range(max(str_num)):
                 try:
-                    sum_str += name_list[i+j]
-                    selected_num.append(i+j)
+                    sum_str += name_list[i + j]
+                    selected_num.append(i + j)
                     # print(sum_str)
                     if sum_str in biandianzhan:
                         # print(sum_str)
@@ -918,7 +901,8 @@ class GenLayer:
                         y = np.mean(selected_y)
                         # out_dic[sum_str] = []
                         out_list_biandianzhan.append(
-                            [x, y, biandianzhan[sum_str][0], str(biandianzhan[sum_str][1]), biandianzhan[sum_str][2], '', ''])
+                            [x, y, biandianzhan[sum_str][0], str(biandianzhan[sum_str][1]), biandianzhan[sum_str][2],
+                             '', ''])
                         break
                     str_num_ = len(sum_str)
                     if str_num_ > max(str_num):
@@ -927,8 +911,7 @@ class GenLayer:
                     pass
         point_to_shp(out_list_biandianzhan, out_shp)
         # pass
-
-
+        return out_list_biandianzhan
 
     def gen_huanwang_excel(self):
         # f_excel = this_root + u'190714\\张桥所线路设备明细.xls'
@@ -947,15 +930,15 @@ class GenLayer:
                 biaozhu_name = sh.cell_value(i + 1, 3)
                 rongliang = sh.cell_value(i + 1, 4)
                 beizhu = sh.cell_value(i + 1, 5)
-                biandiamzhan[val1] = [biaozhu_name, rongliang,beizhu]
+                biandiamzhan[val1] = [biaozhu_name, rongliang, beizhu]
 
         return biandiamzhan
 
-    def gen_huanwang_shp(self,daShapefile,out_shp):
+    def gen_huanwang_shp(self, daShapefile, out_shp):
         biandianzhan = self.gen_huanwang_excel()
         if len(biandianzhan) == 0:
             point_to_shp([], out_shp)
-            return None
+            return []
         str_num = []
         for key in biandianzhan:
             str_num.append(len(key))
@@ -971,7 +954,7 @@ class GenLayer:
             geom = feature.GetGeometryRef()
             x = geom.GetX()
             y = geom.GetY()
-            xy_list.append([x,y])
+            xy_list.append([x, y])
             name = feature.GetField("RefName")
             name_gbk = name.decode('utf-8')
 
@@ -983,8 +966,8 @@ class GenLayer:
             selected_num = []
             for j in range(max(str_num)):
                 try:
-                    sum_str += name_list[i+j]
-                    selected_num.append(i+j)
+                    sum_str += name_list[i + j]
+                    selected_num.append(i + j)
                     # print(sum_str)
                     if sum_str in biandianzhan:
                         # print(sum_str)
@@ -997,7 +980,8 @@ class GenLayer:
                         y = np.mean(selected_y)
                         # out_dic[sum_str] = []
                         out_list_biandianzhan.append(
-                            [x, y, biandianzhan[sum_str][0] ,str(biandianzhan[sum_str][1]), biandianzhan[sum_str][2], '', ''])
+                            [x, y, biandianzhan[sum_str][0], str(biandianzhan[sum_str][1]), biandianzhan[sum_str][2],
+                             '', ''])
                         break
                     str_num_ = len(sum_str)
                     if str_num_ > max(str_num):
@@ -1005,7 +989,7 @@ class GenLayer:
                 except:
                     pass
         point_to_shp(out_list_biandianzhan, out_shp)
-
+        return out_list_biandianzhan
 
     def gen_peidian_excel(self):
         # f_excel = this_root + u'190714\\张桥所线路设备明细.xls'
@@ -1023,15 +1007,15 @@ class GenLayer:
                 biaozhu_name = sh.cell_value(i + 1, 3)
                 rongliang = sh.cell_value(i + 1, 4)
                 beizhu = sh.cell_value(i + 1, 5)
-                biandiamzhan[val1] = [biaozhu_name, rongliang,beizhu]
+                biandiamzhan[val1] = [biaozhu_name, rongliang, beizhu]
 
         return biandiamzhan
 
-    def gen_peidian_shp(self,daShapefile,out_shp):
+    def gen_peidian_shp(self, daShapefile, out_shp):
         biandianzhan = self.gen_peidian_excel()
         if len(biandianzhan) == 0:
             point_to_shp([], out_shp)
-            return None
+            return []
         str_num = []
         for key in biandianzhan:
             str_num.append(len(key))
@@ -1047,7 +1031,7 @@ class GenLayer:
             geom = feature.GetGeometryRef()
             x = geom.GetX()
             y = geom.GetY()
-            xy_list.append([x,y])
+            xy_list.append([x, y])
             name = feature.GetField("RefName")
             name_gbk = name.decode('utf-8')
 
@@ -1059,8 +1043,8 @@ class GenLayer:
             selected_num = []
             for j in range(max(str_num)):
                 try:
-                    sum_str += name_list[i+j]
-                    selected_num.append(i+j)
+                    sum_str += name_list[i + j]
+                    selected_num.append(i + j)
                     # print(sum_str)
                     if sum_str in biandianzhan:
                         # print(sum_str)
@@ -1073,7 +1057,8 @@ class GenLayer:
                         y = np.mean(selected_y)
                         # out_dic[sum_str] = []
                         out_list_biandianzhan.append(
-                            [x, y, biandianzhan[sum_str][0],str(biandianzhan[sum_str][1]), biandianzhan[sum_str][2], '', ''])
+                            [x, y, biandianzhan[sum_str][0], str(biandianzhan[sum_str][1]), biandianzhan[sum_str][2],
+                             '', ''])
                         break
                     str_num_ = len(sum_str)
                     if str_num_ > max(str_num):
@@ -1081,12 +1066,7 @@ class GenLayer:
                 except:
                     pass
         point_to_shp(out_list_biandianzhan, out_shp)
-
-
-
-
-
-
+        return out_list_biandianzhan
 
     def gen_line_annotation_excel(self):
         # f_excel = this_root + u'190714\\张桥所线路设备明细.xls'
@@ -1102,13 +1082,12 @@ class GenLayer:
             line_end = sh.cell_value(i + 1, 3)
             zhixianmingcheng = sh.cell_value(i + 1, 4)
             zhixianxinghao = sh.cell_value(i + 1, 5)
-            line_annotation[line_name] = [line_start,line_end,zhixianmingcheng,zhixianxinghao]
+            line_annotation[line_name] = [line_start, line_end, zhixianmingcheng, zhixianxinghao]
 
         return line_annotation
         pass
 
-
-    def gen_line_annotation_shp(self,daShapefile,out_shp):
+    def gen_line_annotation_shp(self, daShapefile, out_shp):
         # print(1)
         line_annotation = self.gen_line_annotation_excel()
         driver = ogr.GetDriverByName("ESRI Shapefile")
@@ -1125,7 +1104,7 @@ class GenLayer:
             y = geom.GetY()
             name = feature.GetField("RefName")
             name_gbk = name.decode('utf-8')
-            shp_pos_dic[name_gbk] = [x,y]
+            shp_pos_dic[name_gbk] = [x, y]
 
         in_list = []
         for name in line_annotation:
@@ -1138,22 +1117,20 @@ class GenLayer:
             try:
                 point1 = shp_pos_dic[start]
                 point2 = shp_pos_dic[end]
-                in_list.append([point1,point2,name,'',zhixianmingcheng,zhixianxinghao,''])
+                in_list.append([point1, point2, name, '', zhixianmingcheng, zhixianxinghao, ''])
             except:
                 pass
         line_to_shp(in_list, out_shp)
         # for i in in_list:
         #     print(i)
-            # if name_gbk in line_annotation:
-                # out_list.append([x, y, line_annotation[name_gbk][0], ''])
+        # if name_gbk in line_annotation:
+        # out_list.append([x, y, line_annotation[name_gbk][0], ''])
 
-                # out_list.append([start, end, val1, val2, val3, val4, ''])
+        # out_list.append([start, end, val1, val2, val3, val4, ''])
 
         pass
 
-
-
-    def gen_dianlan(self,line_fname,folder):
+    def gen_dianlan(self, line_fname, folder):
         daShapefile = line_fname
 
         # print(daShapefile)
@@ -1185,7 +1162,6 @@ class GenLayer:
                     x2, y2 = Points[i + 1]
                     daoxian_inlist.append([(x1, y1), (x2, y2), '', '', '', '', ''])
 
-
             # else:
 
         dianlan = folder + 'dianlan.shp'
@@ -1197,8 +1173,7 @@ class GenLayer:
         line_to_shp(daoxian_inlist, daoxian)
         pass
 
-
-    def gen_zoom_layer(self,daShapefile, out_shp):
+    def gen_zoom_layer(self, daShapefile, out_shp):
         '''
         生成zoom layer shp
         生成横竖config
@@ -1223,9 +1198,6 @@ class GenLayer:
         # ymin = min(y_list) - 0.0015
         # ymax = max(y_list) + 0.0015
 
-
-
-
         xmin = min(x_list)
         xmax = max(x_list)
         ymin = min(y_list)
@@ -1238,7 +1210,6 @@ class GenLayer:
         xmax = xmax + x_offset
         ymin = ymin - y_offset
         ymax = ymax + y_offset
-
 
         a = [xmin, ymin, '', '', '', '', '']
         b = [xmin, ymax, '', '', '', '', '']
@@ -1256,10 +1227,10 @@ class GenLayer:
         x_range = xmax - xmin
         y_range = ymax - ymin
 
-        point1 = [xmax,ymax]
-        point2 = [xmin,ymax]
+        point1 = [xmax, ymax]
+        point2 = [xmin, ymax]
 
-        real_distance = GetDistance(point1,point2) # meter
+        real_distance = GetDistance(point1, point2)  # meter
 
         if real_distance <= 2000:
             level = 18
@@ -1280,7 +1251,6 @@ class GenLayer:
         else:
             fw.write('error')
         pass
-
 
     # def gen_mapinfo_excel(self):
     #     bk = xlrd.open_workbook(self.f_excel)
@@ -1346,21 +1316,20 @@ class GenLayer:
             #     # shebeimingcheng = sh.cell_value(i + 1, 2)
         # #     print shebeimingcheng
         # exit()
-        return info_dic,col_dic
+        return info_dic, col_dic
 
-    def format_text(self,a,b):
+    def format_text(self, a, b):
         lena = len(a)
         lenb = len(b)
-        x = 40-lena-lenb
+        x = 40 - lena - lenb
         # format_t = '{:<'+' '*x+'}{:>}\n'
-        format_t = '{}'+' ' * x + '{}\n'
+        format_t = '{}' + ' ' * x + '{}\n'
         # format_t = '{}{}\n'
         return format_t
         pass
 
-
-    def gen_mapinfo(self,folder,out_txt):
-        info_dic,col_dic = self.gen_mapinfo_excel()
+    def gen_mapinfo(self, folder, out_txt):
+        info_dic, col_dic = self.gen_mapinfo_excel()
         if folder in info_dic:
             # print info_dic[folder]
             # print col_dic['线路名称'.decode('gbk')]
@@ -1376,9 +1345,8 @@ class GenLayer:
                 ind = col_dic[name]
                 if len(info[ind]) == 0:
                     continue
-                text_tuli += name+': '+info[ind]+'\n'
+                text_tuli += name + ': ' + info[ind] + '\n'
                 # text_tuli += '{:<20}{}\n'.format(name,info[ind])
-
 
                 # format_t = self.format_text(name,info[ind])
                 # # print format_t
@@ -1402,18 +1370,18 @@ class GenLayer:
             ind_huizhishijian = col_dic['绘制时间'.decode('gbk')]
             text_huizhishijian = info[ind_huizhishijian]
 
-            f_tuli = codecs.open(out_txt+'_tuli.txt', 'w',encoding='utf-8')
+            f_tuli = codecs.open(out_txt + '_tuli.txt', 'w', encoding='utf-8')
             f_tuli.write(text_tuli)
 
-            f_beizhu = codecs.open(out_txt+'_beizhu.txt', 'w',encoding='utf-8')
+            f_beizhu = codecs.open(out_txt + '_beizhu.txt', 'w', encoding='utf-8')
             f_beizhu.write(text_beizhu)
 
-            f_title = codecs.open(out_txt+'_title.txt', 'w',encoding='utf-8')
+            f_title = codecs.open(out_txt + '_title.txt', 'w', encoding='utf-8')
             f_title.write(text_title)
 
-            f_huizhi = codecs.open(out_txt+'_huizhi.txt', 'w',encoding='utf-8')
+            f_huizhi = codecs.open(out_txt + '_huizhi.txt', 'w', encoding='utf-8')
             # f_huizhi.write('{}__{}__{}'.format(text_huizhiren,text_shenherenyuan,text_huizhishijian))
-            f_huizhi.write(text_huizhiren+'__'+text_shenherenyuan+'__'+text_huizhishijian)
+            f_huizhi.write(text_huizhiren + '__' + text_shenherenyuan + '__' + text_huizhishijian)
 
         else:
             print folder
@@ -1442,8 +1410,7 @@ class GenLayer:
         #     f = codecs.open(out_txt, 'w',encoding='utf-8')
         #     f.close()
 
-
-    def gen_tuli_shp(self,folder,out_shp):
+    def gen_tuli_shp(self, folder, out_shp):
 
         info_dic, col_dic = self.gen_mapinfo_excel()
         if folder in info_dic:
@@ -1458,10 +1425,12 @@ class GenLayer:
                 ind = col_dic[name]
                 if len(info[ind]) == 0:
                     continue
-                inlist.append([0.,0.,name,info[ind],''])
+                inlist.append([0., 0., name, info[ind], ''])
                 # inlist.append(info[ind])
                 # text_tuli += name + ':' + info[ind] + '\n'
-            point_to_shp(inlist,out_shp)
+            point_to_shp(inlist, out_shp)
+
+
 class LineAnnotation:
 
     def __init__(self):
@@ -1482,10 +1451,10 @@ class LineAnnotation:
             time_start = time.time()
             folder = folder.decode('gbk')
             print(folder)
-            shp_list = os.listdir(fdir+folder)
+            shp_list = os.listdir(fdir + folder)
             for shp in shp_list:
                 if shp.endswith('Annotation.shp'):
-                    daShapefile = fdir+folder+'\\'+shp
+                    daShapefile = fdir + folder + '\\' + shp
                     print(daShapefile)
                     driver = ogr.GetDriverByName("ESRI Shapefile")
                     dataSource = driver.Open(daShapefile, 0)
@@ -1496,16 +1465,15 @@ class LineAnnotation:
                         y = geom.GetY()
                         name = feature.GetField("RefName")
                         name_gbk = name.decode('utf-8')
-                        shp_dic[name_gbk] = [x,y]
+                        shp_dic[name_gbk] = [x, y]
                         # print x,y,name_gbk
                         # time.sleep(0.5)
             time_end = time.time()
-            log_process.process_bar(flag,len(flist),time_init,time_start,time_end)
-            flag+=1
+            log_process.process_bar(flag, len(flist), time_init, time_start, time_end)
+            flag += 1
         print('saving shp dic...')
         # np.save(this_root+'190509\\民权线路cad\\shp_dic',shp_dic)
-        np.save(r'E:\cui\190905\shp_dic',shp_dic)
-
+        np.save(r'E:\cui\190905\shp_dic', shp_dic)
 
     def line_annotation(self):
         '''
@@ -1523,7 +1491,6 @@ class LineAnnotation:
         npy = r'E:\cui\190905\shp_dic.npy'
         shp_dic = np.load(npy).item()
         shp_dic = dict(shp_dic)
-
 
         # f_excel = this_root + '190509\\民权线路cad\\民权台账 - 以此为准.xls'
         bk = xlrd.open_workbook(f_excel)
@@ -1548,12 +1515,12 @@ class LineAnnotation:
         # 读excel 信息
         for i in range(nrows):
             shebei_name = sh.cell_value(i, 0)
-            suoshu_xianlu = sh.cell_value(i,2)
+            suoshu_xianlu = sh.cell_value(i, 2)
             zhixian_mingcheng = sh.cell_value(i, 5)
             daoxian_xinghao = sh.cell_value(i, 6)
             results = pattern.findall(shebei_name)
             hanzi_xian = ''.join(results)
-            xian_dic[hanzi_xian].append([shebei_name,suoshu_xianlu,zhixian_mingcheng,daoxian_xinghao])
+            xian_dic[hanzi_xian].append([shebei_name, suoshu_xianlu, zhixian_mingcheng, daoxian_xinghao])
 
         # sort 1-100
         error = 0
@@ -1562,15 +1529,15 @@ class LineAnnotation:
             for i in range(len(xian_dic[key])):
                 for j in range(len(xian_dic[key])):
                     # print(u'线#'+'%03d'%(i+1)+u'号')
-                    if u'线#'+'%03d'%(i+1)+u'号' in xian_dic[key][j][0] or \
-                        u'支#' + '%03d'%(i+1) + u'杆' in xian_dic[key][j][0] or \
-                            u'线#' + '%03d'%(i+1) in xian_dic[key][j][0]:
+                    if u'线#' + '%03d' % (i + 1) + u'号' in xian_dic[key][j][0] or \
+                            u'支#' + '%03d' % (i + 1) + u'杆' in xian_dic[key][j][0] or \
+                            u'线#' + '%03d' % (i + 1) in xian_dic[key][j][0]:
 
                         try:
                             a = shp_dic[xian_dic[key][j][0]]
                             xian_dic_sort[key].append(xian_dic[key][j])
                         except:
-                            error+=1
+                            error += 1
                             pass
 
         flag = 0
@@ -1580,30 +1547,29 @@ class LineAnnotation:
             time_start = time.time()
             inlist = []
             for i in range(len(xian_dic_sort[key])):
-                if i == len(xian_dic_sort[key])-1:
+                if i == len(xian_dic_sort[key]) - 1:
                     continue
                 x1 = shp_dic[xian_dic_sort[key][i][0]][0]
                 y1 = shp_dic[xian_dic_sort[key][i][0]][1]
 
-                x2 = shp_dic[xian_dic_sort[key][i+1][0]][0]
-                y2 = shp_dic[xian_dic_sort[key][i+1][0]][1]
+                x2 = shp_dic[xian_dic_sort[key][i + 1][0]][0]
+                y2 = shp_dic[xian_dic_sort[key][i + 1][0]][1]
 
-                start = [x1,y1]
-                end = [x2,y2]
+                start = [x1, y1]
+                end = [x2, y2]
                 # name_gbk = name.decode('utf-8')
-                val1 = xian_dic_sort[key][i][0].encode('utf-8')+'-'+xian_dic_sort[key][i+1][0].encode('utf-8')
+                val1 = xian_dic_sort[key][i][0].encode('utf-8') + '-' + xian_dic_sort[key][i + 1][0].encode('utf-8')
                 val2 = xian_dic_sort[key][i][1].encode('utf-8')
                 val3 = xian_dic_sort[key][i][2].encode('utf-8')
                 val4 = xian_dic_sort[key][i][3].encode('utf-8')
                 # print(val4)
-                inlist.append([start,end,val1,val2,val3,val4,''])
-
+                inlist.append([start, end, val1, val2, val3, val4, ''])
 
             # print(key.encode('utf-8'))
             # for i in inlist:
             #     print(i)
             try:
-                dwg_dir = this_dir+val2.decode('utf-8')+'\\annotation\\'
+                dwg_dir = this_dir + val2.decode('utf-8') + '\\annotation\\'
                 mk_dir(dwg_dir)
                 dwg_dir = dwg_dir.encode('utf-8')
                 try:
@@ -1616,7 +1582,7 @@ class LineAnnotation:
             # exit()
 
             time_end = time.time()
-            log_process.process_bar(flag,len(xian_dic_sort),time_init,time_start,time_end)
+            log_process.process_bar(flag, len(xian_dic_sort), time_init, time_start, time_end)
             flag += 1
 
         pass
@@ -1673,46 +1639,41 @@ class LineAnnotation:
         pass
 
 
-
-
 def foo():
     '''
     看shp_dic字典里是啥
     :return:
     '''
-    npy = this_root+'190509\\民权线路cad\\shp_dic.npy'
+    npy = this_root + '190509\\民权线路cad\\shp_dic.npy'
     shp_dic = np.load(npy).item()
     shp_dic = dict(shp_dic)
     # print(len(shp_dic))
     for i in shp_dic:
-        print i,shp_dic[i]
+        print i, shp_dic[i]
         time.sleep(0.5)
 
 
-
-
 def delete_shp():
-    fdir = this_root+'\\190509\\民权线路cad\\dwg_to_shp\\'
+    fdir = this_root + '\\190509\\民权线路cad\\dwg_to_shp\\'
     flist = os.listdir(fdir)
     for folder in flist:
         try:
-            for f in os.listdir(fdir+folder+'\\annotation\\'):
-                print(fdir.decode('gbk')+folder.decode('gbk')+'\\annotation\\'+f.decode('gbk'))
-            # print(folder.decode('gbk'))
+            for f in os.listdir(fdir + folder + '\\annotation\\'):
+                print(fdir.decode('gbk') + folder.decode('gbk') + '\\annotation\\' + f.decode('gbk'))
+                # print(folder.decode('gbk'))
                 # if 'line_annotation' in f:
                 #     print(f.decode('gbk'))
-                os.remove(fdir+folder+'\\annotation\\'+f)
+                os.remove(fdir + folder + '\\annotation\\' + f)
         except:
             pass
         # exit()
-
 
 
 class Merge:
     def __init__(self):
         pass
 
-    def merge_point_annotation_shp(self,indir,outdir):
+    def merge_point_annotation_shp(self, indir, outdir):
         '''
         composite shp
         将xian_dic_sort生成的shp合成为1个shp
@@ -1721,7 +1682,7 @@ class Merge:
         '''
         gdal.SetConfigOption("SHAPE_ENCODING", "GBK")
         # fdir = this_root + '\\190725\\dwg_to_shp\\'
-        fdir = indir+'/'
+        fdir = indir + '/'
         flist = os.listdir(fdir)
         time_init = time.time()
         time_i = 0
@@ -1731,7 +1692,7 @@ class Merge:
             # exit()
             time_start = time.time()
             # print(folder.decode('gbk'))
-            shp_dir = fdir+folder+'\\'
+            shp_dir = fdir + folder + '\\'
 
             shp_list = os.listdir(shp_dir)
 
@@ -1739,7 +1700,7 @@ class Merge:
                 # print(shp.decode('gbk'))
                 # print(shp_type+'.shp')
                 # exit()
-                if shp.endswith('Annotation'+'.shp'):
+                if shp.endswith('Annotation' + '.shp'):
                     # print(shp.decode('gbk'))
                     # print(1)
                     # exit()
@@ -1766,7 +1727,7 @@ class Merge:
                             for i in range(len(Points)):
                                 # if i == len(Points)-1:
                                 #     break
-                                inlist.append([Points[i][0],Points[i][1],val1,'','','',''])
+                                inlist.append([Points[i][0], Points[i][1], val1, '', '', '', ''])
                             # print(Points)
                             # print(inlist_i)
                         # exit()
@@ -1779,9 +1740,9 @@ class Merge:
 
             time_end = time.time()
             time_i += 1
-            log_process.process_bar(time_i,len(flist),time_init,time_start,time_end)
+            log_process.process_bar(time_i, len(flist), time_init, time_start, time_end)
         # output_fn = this_root + '190725\\shp\\'+shp_type+'_merge.shp'.decode('gbk').encode('utf-8')
-        output_fn = outdir+'\\merge_dwg_Annotation.shp'
+        output_fn = outdir + '\\merge_dwg_Annotation.shp'
         output_fn = output_fn.encode('gbk')
         print('exporting line shp...')
         # print(output_fn)
@@ -1789,9 +1750,6 @@ class Merge:
         point_to_shp1(inlist, output_fn)
 
         pass
-
-
-
 
     def merge_line_annotation_shp(self):
         '''
@@ -1813,7 +1771,7 @@ class Merge:
             # exit()
             time_start = time.time()
             # print(folder.decode('gbk'))
-            shp_dir = fdir+folder+'\\annotation\\'
+            shp_dir = fdir + folder + '\\annotation\\'
 
             try:
                 shp_list = os.listdir(shp_dir)
@@ -1843,9 +1801,9 @@ class Merge:
                         Points = geom.GetPoints()
                         if Points:
                             for i in range(len(Points)):
-                                if i == len(Points)-1:
+                                if i == len(Points) - 1:
                                     break
-                                inlist.append([Points[i],Points[i+1],val1,val2,val3,val4,''])
+                                inlist.append([Points[i], Points[i + 1], val1, val2, val3, val4, ''])
                             # print(Points)
                             # print(inlist_i)
                         # exit()
@@ -1855,15 +1813,14 @@ class Merge:
 
             time_end = time.time()
             time_i += 1
-            log_process.process_bar(time_i,len(flist),time_init,time_start,time_end)
+            log_process.process_bar(time_i, len(flist), time_init, time_start, time_end)
 
         print('exporting line shp...')
         line_to_shp(inlist, output_fn)
 
         pass
 
-
-    def merge_point_layer_shp(self,shp_type):
+    def merge_point_layer_shp(self, shp_type):
         '''
 
         :return:
@@ -1880,14 +1837,14 @@ class Merge:
             # exit()
             time_start = time.time()
             # print(folder.decode('gbk'))
-            shp_dir = fdir+folder+'\\'
+            shp_dir = fdir + folder + '\\'
 
             shp_list = os.listdir(shp_dir)
 
             for shp in shp_list:
                 # print(shp.decode('gbk'))
                 # exit()
-                if shp.endswith(shp_type+'.shp'):
+                if shp.endswith(shp_type + '.shp'):
                     # print(shp.decode('gbk'))
                     # exit()
                     daShapefile = shp_dir + shp
@@ -1911,7 +1868,7 @@ class Merge:
                             for i in range(len(Points)):
                                 # if i == len(Points)-1:
                                 #     break
-                                inlist.append([Points[i][0],Points[i][1],val1,val2,val3,'',''])
+                                inlist.append([Points[i][0], Points[i][1], val1, val2, val3, '', ''])
                             # print(Points)
                             # print(inlist_i)
                         # exit()
@@ -1924,8 +1881,8 @@ class Merge:
 
             time_end = time.time()
             time_i += 1
-            log_process.process_bar(time_i,len(flist),time_init,time_start,time_end)
-        output_fn = out_dir+shp_type+'_merge.shp'.decode('gbk').encode('utf-8')
+            log_process.process_bar(time_i, len(flist), time_init, time_start, time_end)
+        output_fn = out_dir + shp_type + '_merge.shp'.decode('gbk').encode('utf-8')
         print('exporting line shp...')
         # print(inlist)
         # exit()
@@ -1933,20 +1890,18 @@ class Merge:
 
         pass
 
+    def merge_daoxian(self, indir, outdir):
 
-
-    def merge_daoxian(self,indir,outdir):
-
-        fdir = indir+'\\'
-        output_fn = outdir+'\\merge_dwg_Polyline.shp'
+        fdir = indir + '\\'
+        output_fn = outdir + '\\merge_dwg_Polyline.shp'
         inlist = []
         for folder in os.listdir(fdir):
-            for f in os.listdir(fdir+folder):
+            for f in os.listdir(fdir + folder):
                 if f.endswith('_dwg_Polyline.shp'):
                     print(f.decode('gbk'))
                     # print(shp.decode('gbk'))
                     # exit()
-                    daShapefile = fdir+folder+'\\' + f
+                    daShapefile = fdir + folder + '\\' + f
                     print(daShapefile.decode('gbk'))
                     # print(daShapefile.decode('gbk'))
                     driver = ogr.GetDriverByName("ESRI Shapefile")
@@ -1966,7 +1921,6 @@ class Merge:
                                     break
                                 inlist.append([Points[i], Points[i + 1], '', '', '', '', ''])
 
-
         print('exporting line shp...')
         # print(inlist)
         # exit()
@@ -1974,30 +1928,25 @@ class Merge:
         line_to_shp(inlist, output_fn)
 
 
-
 class Cordinate_Transformation:
 
-    def __init__(self,indir,Transform=True):
+    def __init__(self, indir, Transform=True):
         # 直接转换annotation
         self.indir = indir
         self.Transform = Transform
         gdal.SetConfigOption("SHAPE_ENCODING", "GBK")
         pass
 
-
-    def transform(self,x,y):
-
+    def transform(self, x, y):
 
         [newx, newy] = cs.wgs84_to_bd09(x, y)
-        newx = newx - (116.271585 - 116.272903)# 加了微调
-        newy = newy - (34.119071 - 34.117548)# 加了微调
-        return newx,newy
+        newx = newx - (116.271585 - 116.272903)  # 加了微调
+        newy = newy - (34.119071 - 34.117548)  # 加了微调
+        return newx, newy
 
+    def kernel_point(self, params):
 
-
-    def kernel_point(self,params):
-
-        fdir,folder = params
+        fdir, folder = params
 
         shp_dir = fdir + folder + '\\'
 
@@ -2058,7 +2007,6 @@ class Cordinate_Transformation:
 
         pass
 
-
     def point(self):
         # gdal.SetConfigOption("SHAPE_ENCODING", "GBK")
         # fdir = this_root + '\\190725\\dwg_to_shp\\'
@@ -2067,13 +2015,12 @@ class Cordinate_Transformation:
         # inlist = []
         params = []
         for folder in flist:
-            params.append([fdir,folder])
-        MUTIPROCESS(self.kernel_point,params).run(process=20,process_or_thread='p')
+            params.append([fdir, folder])
+        MUTIPROCESS(self.kernel_point, params).run(process=20, process_or_thread='p')
 
+    def kernel_line(self, parmas):
 
-    def kernel_line(self,parmas):
-
-        fdir,folder = parmas
+        fdir, folder = parmas
 
         inlist = []
         try:
@@ -2116,14 +2063,165 @@ class Cordinate_Transformation:
         flist = os.listdir(fdir)
         parmas = []
         for folder in flist:
-            parmas.append([fdir,folder])
+            parmas.append([fdir, folder])
 
-        MUTIPROCESS(self.kernel_line,parmas).run(process=20,process_or_thread='p')
+        MUTIPROCESS(self.kernel_line, parmas).run(process=20, process_or_thread='p')
+
+
+class Split:
+
+    def __init__(self,shp_dir,**argv):
+
+        all_ = []
+        for args in argv:
+            vals = argv[args]
+            # all_.append(argv[args])
+            for val in vals:
+                val.insert(0,args)
+                all_.append(val)
+        self.all_items = all_
+        self.shp_dir = shp_dir
+        self.adj = 0.0003
+        self.gen_layers()
+        # exit()
+        pass
+
+
+    def get_clusters(self):
+        all_items = self.all_items
+
+        cluster = []
+        for i in range(len(all_items)):
+            cluster_i = []
+            for j in range(len(all_items)):
+                # if j <= i:
+                #     continue
+                point1 = [all_items[i][1],all_items[i][2]]
+                point2 = [all_items[j][1],all_items[j][2]]
+
+                if point1 == point2:
+                    continue
+                s = GetDistance(point1,point2)
+                if s <= 50:
+                    # pick.append([all_items[i],all_items[j]])
+                    a=[i,j]
+                    a.sort()
+                    cluster_i.append(tuple(a))
+                    # cluster_i = tuple(cluster_i)
+                else:
+                    continue
+                # cluster_i.sort()
+            if len(cluster_i) > 0:
+                cluster.append(tuple(cluster_i))
+        cluster = set(cluster)
+        return cluster
+        # for i in cluster:
+        #     for j in i:
+        #         for k in j:
+        #             print k
+        #         print '---'*6
+        #     print '*'*18
+        # pass
+
+        # print len(pick)
+
+    def cal_angle(self,p1, p2):
+        x1, y1 = p1
+        x2, y2 = p2
+        angle = 0.0
+        dx = x2 - x1
+        dy = y2 - y1
+        if x2 == x1:
+            angle = math.pi / 2.0
+            if y2 == y1:
+                angle = 0.0
+            elif y2 < y1:
+                angle = 3.0 * math.pi / 2.0
+        elif x2 > x1 and y2 > y1:
+            angle = math.atan(dx / dy)
+        elif x2 > x1 and y2 < y1:
+            angle = math.pi / 2 + math.atan(-dy / dx)
+        elif x2 < x1 and y2 < y1:
+            angle = math.pi + math.atan(dx / dy)
+        elif x2 < x1 and y2 > y1:
+            angle = 3.0 * math.pi / 2.0 + math.atan(dy / -dx)
+        return (angle * 180 / math.pi)
+
+
+    def split_clusters(self):
+        clusters = self.get_clusters()
+        all_items = self.all_items
+        # print clusters
+        # adj_all_items = []
+        for cluster in clusters:
+            lons = []
+            lats = []
+            for i in cluster:
+                for point in i:
+                    lon = all_items[point][1]
+                    lat = all_items[point][2]
+                    lons.append(lon)
+                    lats.append(lat)
+            # print lons
+            # print lats
+
+            mean_lon = np.mean(lons)
+            mean_lat = np.mean(lats)
+
+
+
+            flag = 0
+            for i in cluster:
+                for point in i:
+                    # lon = all_items[point][1]
+                    # lat = all_items[point][2]
+                    # angle = self.cal_angle([mean_lon,mean_lat],[lon,lat])
+                    flag += 1
+            angles = np.linspace(0, 360, flag+1)[1:]
+            # print angles
+
+            flag1 = 0
+            adj = self.adj
+            if len(cluster) > 3:
+                adj = 0.0005
+            for i in cluster:
+                for point in i:
+                    angle = angles[flag1]
+                    flag1 += 1
+
+                    # d * math.pi / 180
+                    lon = all_items[point][1]
+                    lat = all_items[point][2]
+                    lon_new = mean_lon + adj*np.cos(angle/180.*np.pi)
+                    lat_new = mean_lat + adj*np.sin(angle/180.*np.pi)
+
+                    all_items[point][1] = lon_new
+                    all_items[point][2] = lat_new
+        return all_items
+        pass
+
+    def gen_layers(self):
+
+        all_items = self.split_clusters()
+        layer_dic = {}
+        for i in all_items:
+            key = i[0]
+            layer_dic[key] = []
+        for i in all_items:
+            key = i[0]
+
+            layer_dic[key].append(i[1:])
+        for i in layer_dic:
+            # print i
+            # print layer_dic[i]
+            inlist = layer_dic[i]
+            # print self.shp_dir+i+'.shp'
+            # print inlist
+            point_to_shp(inlist,(self.shp_dir+i+'.shp').encode('utf-8'))
 
 
 def kernel_main(params):
-
-    fdir, folder, genlayer= params
+    fdir, folder, genlayer = params
 
     shp_dir = fdir + folder + '/'
     # print shp_dir.decode('gbk')
@@ -2139,39 +2237,32 @@ def kernel_main(params):
     genlayer.gen_naizhang_ganta_shp(fname.encode('utf-8'), (shp_dir + 'naizhang_ganta.shp').encode('utf-8'))
     genlayer.gen_line_annotation_shp(fname.encode('utf-8'), (shp_dir + 'line_annotation1.shp').encode('utf-8'))
     # gen_xiangshi_biandianzhan_shp(fname.encode('utf-8'),(shp_dir+'xiangshi_biandianzhan.shp').decode('gbk').encode('utf-8'))
-    genlayer.gen_zhushangbianyaqi_shp(fname.encode('utf-8'), (shp_dir + 'zhushangbianyaqi.shp').encode('utf-8'))
+    zhushangbianyaqi = genlayer.gen_zhushangbianyaqi_shp(fname.encode('utf-8'),
+                                                         (shp_dir + 'zhushangbianyaqi.shp').encode('utf-8'))
     genlayer.gen_duanluqi_shp(fname.encode('utf-8'), (shp_dir + 'duanluqi').encode('utf-8'))
     # genlayer.gen_gongbian_shp(fname.encode('utf-8'), (shp_dir + 'gongbian.shp').encode('utf-8'))
-    genlayer.gen_zhuanbian_shp(fname.encode('utf-8'), (shp_dir + 'zhuanbian.shp').encode('utf-8'))
+    zhuanbian = genlayer.gen_zhuanbian_shp(fname.encode('utf-8'), (shp_dir + 'zhuanbian.shp').encode('utf-8'))
     genlayer.gen_zoom_layer(fname.encode('utf-8'), (shp_dir + 'zoom_layer.shp').encode('utf-8'))
-    genlayer.gen_biandianzhan_shp(fname.encode('utf-8'), (shp_dir + 'biandianzhan.shp').encode('utf-8'))
-    genlayer.gen_xiangbian_shp(fname.encode('utf-8'), (shp_dir + 'xiangbian.shp').encode('utf-8'))
-    genlayer.gen_huanwang_shp(fname.encode('utf-8'), (shp_dir + 'huanwang.shp').encode('utf-8'))
-    genlayer.gen_peidian_shp(fname.encode('utf-8'), (shp_dir + 'peidian.shp').encode('utf-8'))
+    biandianzhan = genlayer.gen_biandianzhan_shp(fname.encode('utf-8'), (shp_dir + 'biandianzhan.shp').encode('utf-8'))
+    xiangbian = genlayer.gen_xiangbian_shp(fname.encode('utf-8'), (shp_dir + 'xiangbian.shp').encode('utf-8'))
+    gen_huanwang = genlayer.gen_huanwang_shp(fname.encode('utf-8'), (shp_dir + 'huanwang.shp').encode('utf-8'))
+    peidian = genlayer.gen_peidian_shp(fname.encode('utf-8'), (shp_dir + 'peidian.shp').encode('utf-8'))
+    print shp_dir
+    Split(shp_dir,zhushangbianyaqi=zhushangbianyaqi,zhuanbian =zhuanbian ,biandianzhan=biandianzhan,xiangbian=xiangbian,gen_huanwang=gen_huanwang,peidian=peidian)
 
-    # exit()
-
-def main(fdir,f_excel):
+def main(fdir, f_excel):
     # fdir = this_root+'190905\\dwg_to_shp\\jiang\\'
     flist = os.listdir(fdir)
     genlayer = GenLayer(f_excel)
     #
     CT = Cordinate_Transformation(fdir)
-    # try:
     CT.line()
-    # except:
-    #     pass
-    # try:
     CT.point()
-    # except:
-    #     pass
-    # exit()
     params = []
     for folder in flist:
         params.append([fdir, folder, genlayer])
         # kernel_main([fdir, folder, genlayer])
-
-    MUTIPROCESS(kernel_main,params).run(process=6)
+    MUTIPROCESS(kernel_main, params).run(process=6)
 
 
 def gui():
@@ -2199,7 +2290,7 @@ def gui():
                [sg_input_excel, sg.FileBrowse()],
                [sg.Text('定义目录文件'.decode('gbk'))],
                [sg_input_dir, sg.FolderBrowse()],
-               [sg.OK()] ]
+               [sg.OK()]]
     window1 = sg.Window('生成图层'.decode('gbk')).Layout(layout1)
 
     while 1:
@@ -2217,17 +2308,17 @@ def gui():
         config.write('f_excel=' + f_excel.encode('gbk') + '\n')
         config.close()
 
-        main(fdir+'/',f_excel)
+        main(fdir + '/', f_excel)
         sg.Popup('图层生成完毕！\n按OK结束'.decode('gbk'))
         # exit()
 
-if __name__ == '__main__':
 
-    #1 gendic
+if __name__ == '__main__':
+    # 1 gendic
     # gen_shp_dic()
-    #2 gen line annotation
+    # 2 gen line annotation
     # line_annotation()
-    #3 gen_line_annotation
+    # 3 gen_line_annotation
     # gen_line_annotation()
     # main()
     # merge_point_shp('Annotation')
