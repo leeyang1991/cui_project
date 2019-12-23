@@ -1448,12 +1448,25 @@ class GenLayer:
             'peidian':'配电',
             'zhuanbian':'柱上用户变压器',
         }
-        fw = open(shpdir+'count.txt','w')
+        fw = codecs.open(shpdir+'count.csv','w')
         for key in argvs:
-            # print name_dic[key],len(argvs[key])
-            fw.write(name_dic[key]+': {}'.format(len(argvs[key]))+'\n')
-        fw.close()
+            # print name_dic[key],argvs[key]
+            fw.write('*' * 80+'\n')
+            fw.write(name_dic[key] + ': {} 个'.format(len(argvs[key])) + '\n')
 
+            vals = argvs[key]
+            for val in vals:
+                text = []
+                for i in val:
+                    if type(i) == unicode:
+                        # continue
+                        text.append(i)
+                    else:
+                        text.append(str(i))
+                fw.write(','.join(text).encode('gbk')+'\n')
+            fw.write('*' * 80)
+        fw.close()
+        exit()
         pass
 
 
@@ -2283,14 +2296,14 @@ def main(fdir, f_excel):
     flist = os.listdir(fdir)
     genlayer = GenLayer(f_excel)
     #
-    CT = Cordinate_Transformation(fdir)
-    CT.line()
-    CT.point()
+    # CT = Cordinate_Transformation(fdir)
+    # CT.line()
+    # CT.point()
     params = []
     for folder in flist:
         params.append([fdir, folder, genlayer])
-        # kernel_main([fdir, folder, genlayer])
-    MUTIPROCESS(kernel_main, params).run(process=6)
+        kernel_main([fdir, folder, genlayer])
+    # MUTIPROCESS(kernel_main, params).run(process=6)
 
 
 def gui():
