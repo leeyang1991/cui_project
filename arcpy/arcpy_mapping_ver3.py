@@ -124,21 +124,21 @@ def mapping(dir,out_pic_dir,ditu_path):
         # mxd_file = r'E:\cui\190905\template_heng.mxd'
         mxd_file = sys.argv[4]
         if size == 'a0':
-            x_beizhu = 6.3783
-            x_tuli = 10.3992
+            x_beizhu = 8.1702
+            # x_tuli = 10.3992
         elif size == 'a3':
-            x_beizhu = 6.3783
-            x_tuli = 10.3992
+            x_beizhu = 7.6115
+            # x_tuli = 10.3992
     elif template == 'shu':
         # mxd_file = this_root + 'mxd\\template_shu.mxd'
         # mxd_file = r'E:\cui\190905\template_shu.mxd'
         mxd_file = sys.argv[5]
         if size == 'a0':
-            x_beizhu = 6.5629
-            x_tuli = 10.3164
+            x_beizhu = 8.1702
+            # x_tuli = 10.3164
         elif size == 'a3':
-            x_beizhu = 6.5629
-            x_tuli = 9.6794
+            x_beizhu = 6.5893
+            # x_tuli = 9.6794
     else:
         mxd_file = None
         x_beizhu = None
@@ -176,10 +176,10 @@ def mapping(dir,out_pic_dir,ditu_path):
     for textElement in arcpy.mapping.ListLayoutElements(mxd, "TEXT_ELEMENT"):
         if textElement.name == 'title':
             textElement.text = (title)
-        elif textElement.name == 'tuli':
-            textElement.text = (tuli)
-            textElement.elementPositionY = 1.7
-            textElement.elementPositionX = x_tuli
+        # elif textElement.name == 'tuli':
+        #     textElement.text = (tuli)
+        #     textElement.elementPositionY = 1.7
+        #     textElement.elementPositionX = x_tuli
         elif textElement.name == 'beizhu':
             textElement.text = (beizhu)
             textElement.elementPositionY = 1.7

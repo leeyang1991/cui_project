@@ -654,7 +654,7 @@ class GenLayer:
         changbi = delete_repeat(changbi)
         point_to_shp(changkai, out_shp + '_changkai.shp')
         point_to_shp(changbi, out_shp + '_changbi.shp')
-
+        return changkai,changbi
         pass
 
     # def gen_gongbian_excel(self):
@@ -1429,6 +1429,27 @@ class GenLayer:
                 # inlist.append(info[ind])
                 # text_tuli += name + ':' + info[ind] + '\n'
             point_to_shp(inlist, out_shp)
+
+
+    def count_shebei(self,shpdir,**argvs):
+
+        name_dic = {
+            'duanluqi_changkai':'常开断路器',
+            'duanluqi_changbi':'常闭断路器',
+            'zhushangbianyaqi':'柱上变压器',
+            'biandianzhan':'变电站',
+            'huanwang':'环网柜',
+            'xiangbian':'箱式变电站',
+            'peidian':'配电',
+            'zhuanbian':'柱上用户变压器',
+        }
+        fw = open(shpdir+'count.txt','w')
+        for key in argvs:
+            # print name_dic[key],len(argvs[key])
+            fw.write(name_dic[key]+': {}'.format(len(argvs[key]))+'\n')
+        fw.close()
+
+        pass
 
 
 class LineAnnotation:
@@ -2239,16 +2260,18 @@ def kernel_main(params):
     # gen_xiangshi_biandianzhan_shp(fname.encode('utf-8'),(shp_dir+'xiangshi_biandianzhan.shp').decode('gbk').encode('utf-8'))
     zhushangbianyaqi = genlayer.gen_zhushangbianyaqi_shp(fname.encode('utf-8'),
                                                          (shp_dir + 'zhushangbianyaqi.shp').encode('utf-8'))
-    genlayer.gen_duanluqi_shp(fname.encode('utf-8'), (shp_dir + 'duanluqi').encode('utf-8'))
+    duanluqi_changkai,duanluqi_changbi = genlayer.gen_duanluqi_shp(fname.encode('utf-8'), (shp_dir + 'duanluqi').encode('utf-8'))
     # genlayer.gen_gongbian_shp(fname.encode('utf-8'), (shp_dir + 'gongbian.shp').encode('utf-8'))
     zhuanbian = genlayer.gen_zhuanbian_shp(fname.encode('utf-8'), (shp_dir + 'zhuanbian.shp').encode('utf-8'))
     genlayer.gen_zoom_layer(fname.encode('utf-8'), (shp_dir + 'zoom_layer.shp').encode('utf-8'))
     biandianzhan = genlayer.gen_biandianzhan_shp(fname.encode('utf-8'), (shp_dir + 'biandianzhan.shp').encode('utf-8'))
     xiangbian = genlayer.gen_xiangbian_shp(fname.encode('utf-8'), (shp_dir + 'xiangbian.shp').encode('utf-8'))
-    gen_huanwang = genlayer.gen_huanwang_shp(fname.encode('utf-8'), (shp_dir + 'huanwang.shp').encode('utf-8'))
+    huanwang = genlayer.gen_huanwang_shp(fname.encode('utf-8'), (shp_dir + 'huanwang.shp').encode('utf-8'))
     peidian = genlayer.gen_peidian_shp(fname.encode('utf-8'), (shp_dir + 'peidian.shp').encode('utf-8'))
-    print shp_dir
-    Split(shp_dir,zhushangbianyaqi=zhushangbianyaqi,zhuanbian =zhuanbian ,biandianzhan=biandianzhan,xiangbian=xiangbian,gen_huanwang=gen_huanwang,peidian=peidian)
+    Split(shp_dir,zhushangbianyaqi=zhushangbianyaqi,zhuanbian =zhuanbian ,biandianzhan=biandianzhan,xiangbian=xiangbian,gen_huanwang=huanwang,peidian=peidian)
+    genlayer.count_shebei(shp_dir,duanluqi_changbi=duanluqi_changbi,duanluqi_changkai=duanluqi_changkai,
+                          zhushangbianyaqi=zhushangbianyaqi,zhuanbian =zhuanbian ,
+                          biandianzhan=biandianzhan,xiangbian=xiangbian,huanwang=huanwang,peidian=peidian)
 
 def main(fdir, f_excel):
     # fdir = this_root+'190905\\dwg_to_shp\\jiang\\'
