@@ -357,7 +357,7 @@ def merge():
                [sg.Text('输出目录'.decode('gbk'))],
                [sg_input_out_dir, sg.FolderBrowse()],
                [sg.OK()] ]
-    window1 = sg.Window('生成图层'.decode('gbk'),font=("Helvetica", 20)).Layout(layout1)
+    window1 = sg.Window('合并图层'.decode('gbk'),font=("Helvetica", 20)).Layout(layout1)
 
     while 1:
 

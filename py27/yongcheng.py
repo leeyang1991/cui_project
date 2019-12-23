@@ -397,6 +397,7 @@ class GenLayer:
                 # print(1)
                 out_list.append([x, y, name_gbk, ganta[name_gbk], '', '', ''])
         point_to_shp(out_list, out_shp)
+        return out_list
 
     def gen_zhushangbianyaqi_excel(self):
         # f_excel = this_root + u'190714\\张桥所线路设备明细.xls'
@@ -1121,6 +1122,7 @@ class GenLayer:
             except:
                 pass
         line_to_shp(in_list, out_shp)
+        return in_list
         # for i in in_list:
         #     print(i)
         # if name_gbk in line_annotation:
@@ -1171,6 +1173,8 @@ class GenLayer:
         daoxian = daoxian.encode('utf-8')
         line_to_shp(dianlan_inlist, dianlan)
         line_to_shp(daoxian_inlist, daoxian)
+        return daoxian_inlist,dianlan_inlist
+
         pass
 
     def gen_zoom_layer(self, daShapefile, out_shp):
@@ -1251,6 +1255,7 @@ class GenLayer:
         else:
             fw.write('error')
         pass
+        return inlist
 
     # def gen_mapinfo_excel(self):
     #     bk = xlrd.open_workbook(self.f_excel)
@@ -1764,7 +1769,7 @@ class Merge:
             log_process.process_bar(time_i, len(flist), time_init, time_start, time_end)
         # output_fn = this_root + '190725\\shp\\'+shp_type+'_merge.shp'.decode('gbk').encode('utf-8')
         output_fn = outdir + '\\merge_dwg_Annotation.shp'
-        output_fn = output_fn.encode('gbk')
+        # output_fn = output_fn.encode('gbk')
         print('exporting line shp...')
         # print(output_fn)
         # exit()
@@ -2254,16 +2259,16 @@ def kernel_main(params):
     # print((shp_dir+'naizhang_ganta.shp').decode('gbk'))
     genlayer.gen_mapinfo(folder, shp_dir + 'info')
     # genlayer.gen_tuli_shp(folder,(shp_dir+'tuli.shp').encode('utf-8'))
-    genlayer.gen_dianlan(line_fname, shp_dir)
-    genlayer.gen_naizhang_ganta_shp(fname.encode('utf-8'), (shp_dir + 'naizhang_ganta.shp').encode('utf-8'))
-    genlayer.gen_line_annotation_shp(fname.encode('utf-8'), (shp_dir + 'line_annotation1.shp').encode('utf-8'))
+    daoxian,dianlan = genlayer.gen_dianlan(line_fname, shp_dir)
+    naizhang_ganta = genlayer.gen_naizhang_ganta_shp(fname.encode('utf-8'), (shp_dir + 'naizhang_ganta.shp').encode('utf-8'))
+    line_annotation1 = genlayer.gen_line_annotation_shp(fname.encode('utf-8'), (shp_dir + 'line_annotation1.shp').encode('utf-8'))
     # gen_xiangshi_biandianzhan_shp(fname.encode('utf-8'),(shp_dir+'xiangshi_biandianzhan.shp').decode('gbk').encode('utf-8'))
     zhushangbianyaqi = genlayer.gen_zhushangbianyaqi_shp(fname.encode('utf-8'),
                                                          (shp_dir + 'zhushangbianyaqi.shp').encode('utf-8'))
     duanluqi_changkai,duanluqi_changbi = genlayer.gen_duanluqi_shp(fname.encode('utf-8'), (shp_dir + 'duanluqi').encode('utf-8'))
     # genlayer.gen_gongbian_shp(fname.encode('utf-8'), (shp_dir + 'gongbian.shp').encode('utf-8'))
     zhuanbian = genlayer.gen_zhuanbian_shp(fname.encode('utf-8'), (shp_dir + 'zhuanbian.shp').encode('utf-8'))
-    genlayer.gen_zoom_layer(fname.encode('utf-8'), (shp_dir + 'zoom_layer.shp').encode('utf-8'))
+    zoom_layer = genlayer.gen_zoom_layer(fname.encode('utf-8'), (shp_dir + 'zoom_layer.shp').encode('utf-8'))
     biandianzhan = genlayer.gen_biandianzhan_shp(fname.encode('utf-8'), (shp_dir + 'biandianzhan.shp').encode('utf-8'))
     xiangbian = genlayer.gen_xiangbian_shp(fname.encode('utf-8'), (shp_dir + 'xiangbian.shp').encode('utf-8'))
     huanwang = genlayer.gen_huanwang_shp(fname.encode('utf-8'), (shp_dir + 'huanwang.shp').encode('utf-8'))
