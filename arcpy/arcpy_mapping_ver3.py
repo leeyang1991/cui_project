@@ -265,6 +265,7 @@ def main():
     params = []
     for fdir in dir_list:
         params.append([dirs,fdir,out_pic_dir,ditu_path])
+        # kernel_main([dirs,fdir,out_pic_dir,ditu_path])
     MUTIPROCESS(kernel_main,params).run(10,'p')
     # print(sys.argv)
     # pass

@@ -1466,7 +1466,7 @@ class GenLayer:
                 fw.write(','.join(text).encode('gbk')+'\n')
             fw.write('*' * 80)
         fw.close()
-        exit()
+        # exit()
         pass
 
 
@@ -2296,14 +2296,14 @@ def main(fdir, f_excel):
     flist = os.listdir(fdir)
     genlayer = GenLayer(f_excel)
     #
-    # CT = Cordinate_Transformation(fdir)
-    # CT.line()
-    # CT.point()
+    CT = Cordinate_Transformation(fdir)
+    CT.line()
+    CT.point()
     params = []
     for folder in flist:
         params.append([fdir, folder, genlayer])
-        kernel_main([fdir, folder, genlayer])
-    # MUTIPROCESS(kernel_main, params).run(process=6)
+        # kernel_main([fdir, folder, genlayer])
+    MUTIPROCESS(kernel_main, params).run(process=6)
 
 
 def gui():
