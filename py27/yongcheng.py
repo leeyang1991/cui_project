@@ -2296,8 +2296,8 @@ def main(fdir, f_excel):
     flist = os.listdir(fdir)
     genlayer = GenLayer(f_excel)
     #
-    CT = Cordinate_Transformation(fdir)
-    CT.line()
+    CT = Cordinate_Transformation(fdir,Transform=False)
+    # CT.line()
     CT.point()
     params = []
     for folder in flist:

@@ -167,8 +167,11 @@ def mapping(dir,out_pic_dir,ditu_path):
         beizhu = ' '
 
     renyuan = open(dir+'\\'+'info_huizhi.txt','r').read()
-    renyuan_split = renyuan.split('__')
-    huizhiren,shenherenyuan,huizhishijian = renyuan_split
+    try:
+        renyuan_split = renyuan.split('__')
+        huizhiren,shenherenyuan,huizhishijian = renyuan_split
+    except:
+        huizhiren, shenherenyuan, huizhishijian = ' ',' ',' '
 
     beizhu = new_huanhang(beizhu.decode('utf-8'),30)
     if len(beizhu) == 0:
