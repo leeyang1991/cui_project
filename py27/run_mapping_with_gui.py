@@ -434,7 +434,7 @@ def main():
     #         pass
     #     elif input_num == '4':
     #         merge()
-    #         pass
+            pass
 
 
 if __name__ == '__main__':
