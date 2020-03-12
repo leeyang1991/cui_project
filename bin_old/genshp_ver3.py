@@ -40,7 +40,7 @@ def bianyaqi_shp(r,f_dir):
 #2生成电线杆shp点
 def dianxiangan_dian_shp(r,f_dir):
     if r.dianxiangan():
-        dianxiangan_lon, dianxiangan_lat, dianxiangan_name, dianxiangan_qianduan = r.dianxiangan()
+        dianxiangan_lon, dianxiangan_lat, dianxiangan_name, dianxiangan_qianduan,line_type_list = r.dianxiangan()
         directory = f_dir
         dianxiangan_coor_dic = {}
         for i in range(len(dianxiangan_lon)):
@@ -107,14 +107,14 @@ def jiliangxiang_shp(r,f_dir):
 def dianxiangan_line(r):
     # print(r)
     if r.dianxiangan():
-        lon_list,lat_list,name_list,qianduan_list = r.dianxiangan()
-        dianxiangan_coor_dic = {}
+        lon_list,lat_list,name_list,qianduan_list,line_type_list = r.dianxiangan()
+        dianxiangan_coor_dic = []
         for i in range(len(lon_list)):
-            dianxiangan_coor_dic[i] = lon_list[i],lat_list[i],name_list[i],qianduan_list[i]
+            dianxiangan_coor_dic.append([lon_list[i],lat_list[i],name_list[i],qianduan_list[i],line_type_list[i]])
         p1_list=[]
         p2_list=[]
 
-        for i in dianxiangan_coor_dic:
+        for i in range(len(dianxiangan_coor_dic)):
             if '配电箱'.decode('gbk') in dianxiangan_coor_dic[i][3]:
                 # print dianxiangan_coor_dic[i][3]
                 bianyaqi_lon, bianyaqi_lat, bianyaqi_label = r.didianyapeidianxiang()
@@ -136,14 +136,14 @@ def dianxiangan_line(r):
 
 
             p1_list.append(dianxiangan_coor_dic[i][:2])
-            for j in dianxiangan_coor_dic:
+            for j in range(len(dianxiangan_coor_dic)):
                 if dianxiangan_coor_dic[i][3] == dianxiangan_coor_dic[j][2]:
                     p2_list.append(dianxiangan_coor_dic[j][:2])
 
         temp_p1 = []
         temp_p2 = []
 
-        for i in dianxiangan_coor_dic:
+        for i in range(len(dianxiangan_coor_dic)):
             temp_p1.append(dianxiangan_coor_dic[i][2])
             temp_p2.append(dianxiangan_coor_dic[i][3])
         for i in temp_p2:
@@ -168,11 +168,11 @@ def dianxiangan_line(r):
         total_distance = round(sum(distance),2)
 
 
-        return p1_list,p2_list,distancestr,total_distance
+        return p1_list,p2_list,distancestr,total_distance,line_type_list
 #5.2生成电线杆线shp
 def dianxiangan_line_shp(r,f_dir):
     if dianxiangan_line(r):
-        p1_list,p2_list,distance,total_distance = dianxiangan_line(r)
+        p1_list,p2_list,distance,total_distance,line_type_list = dianxiangan_line(r)
 
         directory = f_dir
         if not os.path.isdir(directory):
@@ -181,7 +181,7 @@ def dianxiangan_line_shp(r,f_dir):
 
         lines = []
         for i in range(len(p2_list)):
-            lines.append([p1_list[i],p2_list[i],distance[i],'','','',''])
+            lines.append([p1_list[i],p2_list[i],distance[i],line_type_list[i],'','',''])
         wl.line_to_shp(lines,fname+'.shp')
 
 
@@ -189,7 +189,7 @@ def dianxiangan_line_shp(r,f_dir):
 #6.1生成墙支架与电线杆连线两点坐标
 def qiangzhijia_line(r):
     if r.dianxiangan():
-        dianxiangan_lon,dianxiangan_lat,dianxiangan_name,_ = r.dianxiangan()
+        dianxiangan_lon,dianxiangan_lat,dianxiangan_name,_,_ = r.dianxiangan()
         qiangzhijia_lon,qiangzhijia_lat,qianduan_name,_ = r.diyaqiangzhijia()
         dianxiangan_coor_dic = {}
         for i in range(len(dianxiangan_lon)):
@@ -320,7 +320,7 @@ def select_vertical_horizontal(r,f_dir):
     lon=[]
     lat=[]
     if r.dianxiangan():
-        lon_list,lat_list,name_list,qianduan_list = r.dianxiangan()
+        lon_list,lat_list,name_list,qianduan_list,_ = r.dianxiangan()
         for i in range(len(lon_list)):
             lon.append(lon_list[i])
             lat.append(lat_list[i])
@@ -368,7 +368,7 @@ def gen_text_info(r,f_dir):
 
     #线路长度
     if dianxiangan_line(r):
-        p1_list, p2_list, distancestr, distance1 = dianxiangan_line(r)
+        p1_list, p2_list, distancestr, distance1,_ = dianxiangan_line(r)
     else:
         distance1 = 0
 
