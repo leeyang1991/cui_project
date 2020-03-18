@@ -43,6 +43,10 @@ def mapping(dir,outjpgdir):
     #     dir = 'data\\'+dir
     # elif ver == 3:
     #     dir = dir
+    ### define projection
+    define_projection(dir)
+    ### calculate line length
+    # calculate_line_length(dir)
     f=open(dir+'\\'+'select.txt','r')
     line = f.readline()
     if line == 'heng':
@@ -123,24 +127,59 @@ def mapping(dir,outjpgdir):
     print 'done'
 
 
+def define_projection(fdir):
+    # prj_f = fdir + 'extent_lyr.prj'
+    prj_content = '''
+    GEOGCS["GCS_WGS_1984",DATUM["D_WGS_1984",SPHEROID["WGS_1984",6378137.0,298.257223563]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433],AUTHORITY["EPSG",4326]]
+    '''
+    fdir = fdir+'\\'
+    prj_f = fdir+'projection.prj'
+    if not os.path.isfile(prj_f):
+        fw = open(prj_f,'w')
+        fw.write(prj_content)
+        fw.close()
+    for f in os.listdir(fdir):
+        if f.endswith('.shp'):
+            print 'project '+f
+            sr = arcpy.SpatialReference(prj_f)
+            arcpy.DefineProjection_management(fdir+f, sr)
+            # exit()
+            pass
+
+    pass
+
+
+def calculate_line_length(fdir):
+
+    fdir = fdir+'\\'
+    for f in os.listdir(fdir):
+        if f.endswith('.shp'):
+            shp = fdir+f
+            print f
+            # print arcpy.Describe(shp).spatialReference
+            infeature = shp
+            geometry_property = 'LENGTH '
+            length_unit = 'METERS'
+            arcpy.AddGeometryAttributes(infeature,geometry_property,length_unit)
+            exit()
+    exit()
 
 
 if __name__ == '__main__':
     # dir = r'E:\cui\191007\1007第一批出图\1007第一批出图\翠翠--板木\第一批\0418-大李庄505-刘小强 张晓伟\shp\\'
     # outjpg = r'E:\cui\191007\\'
     # print('******')
-    fdir = args[1]
     # for i in args:
     #     print(i)
     # print(fdir)
     # exit()
+    # fdir = r'E:\cui\20200312\data\新村中台区\shp\\'
+    # define_projection(fdir)
+    #######################
+    fdir = args[1]
     out_pic_dir = args[2]+'\\'
-
     for dir in os.listdir(fdir):
         print(fdir+'\\'+dir).decode('gbk')
-        # try:
         mapping(fdir+'\\'+dir+'\\shp', out_pic_dir)
-        # except Exception as e:
-        #     print(e)
 
 
