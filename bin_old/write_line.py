@@ -28,7 +28,7 @@ def haversine(lon1, lat1, lon2, lat2):
 
 def rad(d):
     return d*math.pi/180
-def GetDistance(lat1,lng1,lat2,lng2):
+def GetDistance(lng1,lat1,lng2,lat2):
     radLat1=rad(lat1)
     radLat2=rad(lat2)
     a=radLat1-radLat2
@@ -37,6 +37,18 @@ def GetDistance(lat1,lng1,lat2,lng2):
     s = s *6378.137*1000
     distance=round(s,4)
     return distance
+
+    #### from https://kite.com/python/answers/how-to-find-the-distance-between-two-lat-long-coordinates-in-python
+    # R = 6373.0
+    # dlon = lng2 - lng1
+    # dlat = lat2 - lat1
+    # a = math.sin(dlat / 2) ** 2 + math.cos(lat1) * math.cos(lat2) * math.sin(dlon / 2) ** 2
+    # c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
+    # distance = R * c
+    # # print distance
+    # # exit()
+    # return distance
+    pass
 
 
 def line_to_shp(inputlist,outSHPfn):
