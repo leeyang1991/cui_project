@@ -40,18 +40,18 @@ def bianyaqi_shp(r,f_dir):
 #2生成电线杆shp点
 def dianxiangan_dian_shp(r,f_dir):
     if r.dianxiangan():
-        dianxiangan_lon, dianxiangan_lat, dianxiangan_name, dianxiangan_qianduan,line_type_list, distance_str_list = r.dianxiangan()
+        dianxiangan_lon, dianxiangan_lat, dianxiangan_name, dianxiangan_qianduan,line_type_list, distance_str_list, ganta_type_list = r.dianxiangan()
         directory = f_dir
         dianxiangan_coor_dic = {}
         for i in range(len(dianxiangan_lon)):
-            dianxiangan_coor_dic[i] = [dianxiangan_lon[i],dianxiangan_lat[i],dianxiangan_qianduan[i],dianxiangan_name[i]]
+            dianxiangan_coor_dic[i] = [dianxiangan_lon[i],dianxiangan_lat[i],dianxiangan_qianduan[i],dianxiangan_name[i],ganta_type_list[i]]
         if not os.path.isdir(directory):
             os.mkdir(directory)
         fname = directory+'\\dianxiangan'
 
         point=[]
         for i in dianxiangan_coor_dic:
-            point.append([dianxiangan_coor_dic[i][0],dianxiangan_coor_dic[i][1],dianxiangan_coor_dic[i][3],dianxiangan_coor_dic[i][2],'','',''])
+            point.append([dianxiangan_coor_dic[i][0],dianxiangan_coor_dic[i][1],dianxiangan_coor_dic[i][3],dianxiangan_coor_dic[i][2],dianxiangan_coor_dic[i][4],'',''])
         wp.point_to_shp(point,fname+'.shp')
 
 
@@ -107,7 +107,7 @@ def jiliangxiang_shp(r,f_dir):
 def dianxiangan_line(r):
     # print(r)
     if r.dianxiangan():
-        lon_list,lat_list,name_list,qianduan_list,line_type_list,distance_str_list = r.dianxiangan()
+        lon_list,lat_list,name_list,qianduan_list,line_type_list,distance_str_list, ganta_type_list = r.dianxiangan()
         dianxiangan_coor_dic = []
         for i in range(len(lon_list)):
             dianxiangan_coor_dic.append([lon_list[i],lat_list[i],name_list[i],qianduan_list[i],line_type_list[i]])
@@ -190,7 +190,7 @@ def dianxiangan_line_shp(r,f_dir):
 #6.1生成墙支架与电线杆连线两点坐标
 def qiangzhijia_line(r):
     if r.dianxiangan():
-        dianxiangan_lon,dianxiangan_lat,dianxiangan_name,_,_ = r.dianxiangan()
+        dianxiangan_lon,dianxiangan_lat,dianxiangan_name,_,_,_ ,_= r.dianxiangan()
         qiangzhijia_lon,qiangzhijia_lat,qianduan_name,_ = r.diyaqiangzhijia()
         dianxiangan_coor_dic = {}
         for i in range(len(dianxiangan_lon)):
@@ -321,7 +321,7 @@ def select_vertical_horizontal(r,f_dir):
     lon=[]
     lat=[]
     if r.dianxiangan():
-        lon_list,lat_list,name_list,qianduan_list,_ = r.dianxiangan()
+        lon_list,lat_list,name_list,qianduan_list,_,_,_ = r.dianxiangan()
         for i in range(len(lon_list)):
             lon.append(lon_list[i])
             lat.append(lat_list[i])
