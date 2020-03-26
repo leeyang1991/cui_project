@@ -40,7 +40,7 @@ def bianyaqi_shp(r,f_dir):
 #2生成电线杆shp点
 def dianxiangan_dian_shp(r,f_dir):
     if r.dianxiangan():
-        dianxiangan_lon, dianxiangan_lat, dianxiangan_name, dianxiangan_qianduan,line_type_list = r.dianxiangan()
+        dianxiangan_lon, dianxiangan_lat, dianxiangan_name, dianxiangan_qianduan,line_type_list, distance_str_list = r.dianxiangan()
         directory = f_dir
         dianxiangan_coor_dic = {}
         for i in range(len(dianxiangan_lon)):
@@ -107,7 +107,7 @@ def jiliangxiang_shp(r,f_dir):
 def dianxiangan_line(r):
     # print(r)
     if r.dianxiangan():
-        lon_list,lat_list,name_list,qianduan_list,line_type_list = r.dianxiangan()
+        lon_list,lat_list,name_list,qianduan_list,line_type_list,distance_str_list = r.dianxiangan()
         dianxiangan_coor_dic = []
         for i in range(len(lon_list)):
             dianxiangan_coor_dic.append([lon_list[i],lat_list[i],name_list[i],qianduan_list[i],line_type_list[i]])
@@ -150,25 +150,26 @@ def dianxiangan_line(r):
             if not i in temp_p1:
                 print '########',i,'########'
 
-
-        # print p1_list
-        # print p2_list
-        # print len(p1_list)
-        # print len(p2_list)
         distancestr = []
-        distance = []
-        # print p1_list
-        # print p2_list
-        # print len(p1_list)
-        # print len(p2_list)
         for i in range(len(p2_list)):
-
             distancestr.append(str(round(wl.GetDistance(p1_list[i][0],p1_list[i][1],p2_list[i][0],p2_list[i][1]),2)))
-            distance.append(wl.GetDistance(p1_list[i][0],p1_list[i][1],p2_list[i][0],p2_list[i][1]))
-        total_distance = round(sum(distance),2)
+
+        total_distance = []
+        new_distance_str = []
+        for i in range(len(distancestr)):
+            dist = distance_str_list[i]
+            if len(dist) > 0:
+                new_distance_str.append(dist)
+                total_distance.append(float(dist))
+            else:
+                new_distance_str.append(distancestr[i])
+                total_distance.append(float(distancestr[i]))
+
+        total_distance = round(sum(total_distance),2)
+
+        return p1_list,p2_list,new_distance_str,total_distance,line_type_list
 
 
-        return p1_list,p2_list,distancestr,total_distance,line_type_list
 #5.2生成电线杆线shp
 def dianxiangan_line_shp(r,f_dir):
     if dianxiangan_line(r):

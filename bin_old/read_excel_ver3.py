@@ -74,6 +74,7 @@ class ReadExcel:
         qianduan_list=[]
         name_list=[]
         line_type_list = []
+        distance_str_list = []
 
         for i in range(nrows):
             lon = float(sh.cell_value(i+3,9))
@@ -81,18 +82,20 @@ class ReadExcel:
             name = sh.cell_value(i+3,2)
             qianduan = sh.cell_value(i+3,12)
             line_type = sh.cell_value(i+3,1)
+            distance_str = str(sh.cell_value(i+3,3))
             lon_list.append(lon)
             lat_list.append(lat)
             qianduan_list.append(qianduan)
             name_list.append(name)
             line_type_list.append(line_type)
+            distance_str_list.append(distance_str)
             if i == nrows - 4:
                 break
         # print len(lon_list)
         # print len(lat_list)
         # print len(name_list)
         # print len(qianduan_list)
-        return lon_list,lat_list,name_list,qianduan_list,line_type_list
+        return lon_list,lat_list,name_list,qianduan_list,line_type_list,distance_str_list
 
 
     def jiliangxiang(self):
