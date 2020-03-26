@@ -44,7 +44,7 @@ def mapping(dir,outjpgdir):
     # elif ver == 3:
     #     dir = dir
     ### define projection
-    define_projection(dir)
+    # define_projection(dir)
     ### calculate line length
     # calculate_line_length(dir)
     f=open(dir+'\\'+'select.txt','r')
@@ -75,39 +75,49 @@ def mapping(dir,outjpgdir):
     extent_lyr = arcpy.mapping.ListLayers(mxd,output_mxd['extent_lyr'],df0)[0]
     df0.extent = extent_lyr.getSelectedExtent()
 
-    try:
-        info_text=codecs.open(dir+'\\'+'info.txt','r',encoding='utf-8')
-        info = info_text.readline()
-        info = info.split(',')
-        info1 = []
-        for i in info:
-            if i == '':
-                i = ' '
-            info1.append(i)
-        info = info1
-    except:
-        info = [' ']*100
+    # try:
+    #     info_text=codecs.open(dir+'\\'+'info.txt','r',encoding='utf-8')
+    #     info = info_text.readline()
+    #     info = info.split(',')
+    #     info1 = []
+    #     for i in info:
+    #         if i == '':
+    #             i = ' '
+    #         info1.append(i)
+    #     info = info1
+    # except:
+    #     info = [' ']*100
+    info_text = codecs.open(dir + '\\' + 'info.txt', 'r', encoding='utf-8')
+    name_text = codecs.open(dir + '\\' + 'name.txt', 'r', encoding='utf-8')
+    note = info_text.read()
+    name = name_text.read()
+    info_text.close()
+    name_text.close()
     for textElement in arcpy.mapping.ListLayoutElements(mxd,'TEXT_ELEMENT'):
         # try:
-            if textElement.name == '台区编号'.decode('gbk'):
-                textElement.text=(info[0].decode('gbk'))
-            if textElement.name == '台区名称'.decode('gbk'):
-                textElement.text=(info[1])
-            if textElement.name == '变压器型号'.decode('gbk'):
-                textElement.text=(info[2].decode('gbk'))
-            if textElement.name == '变压器容量'.decode('gbk'):
-                textElement.text=(info[3].decode('gbk'))
-            if textElement.name == '线路长度'.decode('gbk'):
-                textElement.text=(info[4].decode('gbk'))
-            if textElement.name == '主线导线型号'.decode('gbk'):
-                textElement.text=(info[5].decode('gbk'))
-            if textElement.name == '支线导线型号'.decode('gbk'):
-                textElement.text=(info[6].decode('gbk'))
-            if textElement.name == '计量箱表位'.decode('gbk'):
-                textElement.text=(info[7].decode('gbk'))
-            if textElement.name == '实际装表位数'.decode('gbk'):
-                textElement.text=(info[8].decode('gbk'))
-        # except Exception,e:
+        #     if textElement.name == '台区编号'.decode('gbk'):
+        #         textElement.text=(info[0].decode('gbk'))
+        #     if textElement.name == '台区名称'.decode('gbk'):
+        #         textElement.text=(info[1])
+        #     if textElement.name == '变压器型号'.decode('gbk'):
+        #         textElement.text=(info[2].decode('gbk'))
+        #     if textElement.name == '变压器容量'.decode('gbk'):
+        #         textElement.text=(info[3].decode('gbk'))
+        #     if textElement.name == '线路长度'.decode('gbk'):
+        #         textElement.text=(info[4].decode('gbk'))
+        #     if textElement.name == '主线导线型号'.decode('gbk'):
+        #         textElement.text=(info[5].decode('gbk'))
+        #     if textElement.name == '支线导线型号'.decode('gbk'):
+        #         textElement.text=(info[6].decode('gbk'))
+        #     if textElement.name == '计量箱表位'.decode('gbk'):
+        #         textElement.text=(info[7].decode('gbk'))
+        #     if textElement.name == '实际装表位数'.decode('gbk'):
+        #         textElement.text=(info[8].decode('gbk'))
+        if textElement.name == 'note':
+            textElement.text=(note)
+        if textElement.name == 'title':
+            textElement.text = (name)
+    # except Exception,e:
         #     print Exception,e
     # dir = dir
     print 'saving mxd to',(dir+'\\mxd.mxd').decode('gbk')
@@ -117,11 +127,14 @@ def mapping(dir,outjpgdir):
     mxd.saveACopy(dir+'\\mxd.mxd','9.2')
 
     # if ver == 3:
-    if info[1] == ' ':
-        outjpeg = outjpgdir+dir.split('\\')[-2]
-    else:
-        # print(info[1])
-        outjpeg = outjpgdir+info[1].encode('gbk')
+    # if info[1] == ' ':
+    #     outjpeg = outjpgdir+dir.split('\\')[-2]
+    # else:
+    #     # print(info[1])
+    #     outjpeg = outjpgdir+info[1].encode('gbk')
+
+    outjpeg = outjpgdir+name
+
 
     arcpy.mapping.ExportToJPEG(mxd,outjpeg,data_frame='PAGE_LAYOUT',df_export_width=mxd.pageSize.width,df_export_height=mxd.pageSize.height,color_mode='8-BIT_GRAYSCALE',resolution=300,jpeg_quality=100)
     print 'done'

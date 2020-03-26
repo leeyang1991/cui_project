@@ -395,17 +395,28 @@ def gen_text_info(r,f_dir):
             taiqu_code,taiqu_name,bianyaqi_type,bianyaqi_content,prime_line_type,branch_line_type = info_dic[i][1],info_dic[i][2],info_dic[i][3],info_dic[i][4],info_dic[i][5],info_dic[i][6]
             import codecs
             fw = codecs.open(f_dir+'\\info.txt','w','utf-8')
-            fw.write(taiqu_code+',')
-            fw.write(taiqu_name+',')
-            fw.write(str(bianyaqi_type)+',')
-            fw.write(str(bianyaqi_content)+',')
-            fw.write(str(round(total_distance/1000,2))+' KM,')
-            fw.write(str(prime_line_type)+',')
-            fw.write(str(branch_line_type)+',')
-            fw.write(str(total)+',')
-            fw.write(str(installed))
+            content = '说明：台区编号：{}，台区名称：{}，变压器类型：{}，变压器容量：{}，导线总长度：{}，主线导线类型：{}，支线导线类型：{}，计量箱表位：{}，实际装表位数：{}'.decode('gbk').format(taiqu_code,taiqu_name,bianyaqi_type,bianyaqi_content,str(round(total_distance/1000,2))+' KM',prime_line_type,branch_line_type,total,installed)
+
+            content_warp = ''
+            for i in range(len(content)):
+                content_warp += content[i]
+                if i % 47 == 0 and i > 5:
+                    content_warp += '\n'
+            fw.write(content_warp)
+            # fw.write(taiqu_code+',')
+            # fw.write(taiqu_name+',')
+            # fw.write(str(bianyaqi_type)+',')
+            # fw.write(str(bianyaqi_content)+',')
+            # fw.write(str(round(total_distance/1000,2))+' KM,')
+            # fw.write(str(prime_line_type)+',')
+            # fw.write(str(branch_line_type)+',')
+            # fw.write(str(total)+',')
+            # fw.write(str(installed))
             fw.close()
 
+            fw_name = codecs.open(f_dir+'\\name.txt','w','utf-8')
+            fw_name.write('10kV{}台区低压沿布图'.decode('gbk').format(taiqu_name))
+            fw_name.close()
 
 
 def yonghujierudian_line(r):

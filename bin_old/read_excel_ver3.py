@@ -85,7 +85,6 @@ class ReadExcel:
             line_type = sh.cell_value(i+3,1)
             distance_str = str(sh.cell_value(i+3,3))
             ganta_type = sh.cell_value(i+3,4)
-            print ganta_type
             lon_list.append(lon)
             lat_list.append(lat)
             qianduan_list.append(qianduan)
