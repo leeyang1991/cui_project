@@ -6,7 +6,14 @@ import os
 import sys
 import codecs
 import genshp_ver3
-#
+from multiprocessing.pool import ThreadPool as TPool
+import multiprocessing
+
+
+def kernel_gen_layer(fdir, f_excel, additional_excel):
+    genshp_ver3.gen_layer(fdir, f_excel, additional_excel)
+    sg.Popup('图层生成完毕！\n按OK结束'.decode('gbk'))
+    pass
 
 def gen_layer():
 
@@ -57,10 +64,25 @@ def gen_layer():
         config.write('f_excel=' + f_excel + '\n')
         config.close()
 
-        genshp_ver3.gen_layer(fdir,f_excel,additional_excel)
-        sg.Popup('图层生成完毕！\n按OK结束'.decode('gbk'))
+        p = multiprocessing.Process(target=kernel_gen_layer, args=(fdir, f_excel, additional_excel))
+        p.start()
         window1.Close()
+
         break
+
+
+def kernel_mapping(params):
+    arcgis_python,mapping_script,fdir,out_pic_dir,heng_template,shu_template = params
+    os.system(
+        arcgis_python.encode('gbk') + ' ' +
+        mapping_script.encode('gbk') + ' ' +
+        fdir.encode('gbk') + ' ' +
+        out_pic_dir.encode('gbk') + ' ' +
+        heng_template.encode('gbk') + ' ' +
+        shu_template.encode('gbk')
+    )
+    sg.Popup('制图完毕！\n按OK结束'.decode('gbk'))
+    pass
 
 
 def mapping():
@@ -140,15 +162,11 @@ def mapping():
         # print(arcgis_python+' '+mapping_script)
         fdir = fdir.replace('/','\\')
         out_pic_dir = out_pic_dir.replace('/','\\')
-        os.system(
-                arcgis_python.encode('gbk')+' '+
-                mapping_script.encode('gbk')+' '+
-                fdir.encode('gbk')+' '+
-                out_pic_dir.encode('gbk')+' '+
-                heng_template.encode('gbk')+' '+
-                shu_template.encode('gbk')
-        )
-        sg.Popup('制图完毕！\n按OK结束'.decode('gbk'))
+        params = [arcgis_python,mapping_script,fdir,out_pic_dir,heng_template,shu_template]
+        p = multiprocessing.Process(target=kernel_mapping, args=[params])
+        p.start()
+
+
         window1.Close()
         break
     pass
