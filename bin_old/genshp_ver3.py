@@ -88,8 +88,21 @@ def jiliangxiang_shp(r,f_dir):
     point_red = []
     point_black = []
 
+
     for i in transparent:
-        point_trans.append([transparent[i][0],transparent[i][1],' '.join(transparent[i][2]),i,'','','',''])
+        # ĞÕÃû»»ĞĞ
+        new_name = ''
+        # print '***'.join(transparent[i][2])
+        break_point = int(len(transparent[i][2]) / 2)
+        if break_point == 0:
+            break_point = 1
+        for ii,name in enumerate(transparent[i][2]):
+            new_name += name + ' '
+            if (ii + 1) % break_point == 0 and not ii == 0:
+                new_name += '\n'
+        # point_trans.append([transparent[56i][0],transparent[i][1],' '.join(transparent[i][2]),i,'','','',''])
+        point_trans.append([transparent[i][0],transparent[i][1],new_name,i,'','','',''])
+    # exit()
     for i in range(len(red)):
         point_red.append([red[i][1],red[i][2],'',red[i][0],red[i][3],'',''])
     for i in range(len(black)):
