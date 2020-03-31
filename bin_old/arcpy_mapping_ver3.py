@@ -133,7 +133,7 @@ def mapping(dir,outjpgdir):
     #     # print(info[1])
     #     outjpeg = outjpgdir+info[1].encode('gbk')
 
-    outjpeg = outjpgdir+name
+    outjpeg = outjpgdir.decode('gbk')+name
 
 
     arcpy.mapping.ExportToJPEG(mxd,outjpeg,data_frame='PAGE_LAYOUT',df_export_width=mxd.pageSize.width,df_export_height=mxd.pageSize.height,color_mode='8-BIT_GRAYSCALE',resolution=300,jpeg_quality=100)
