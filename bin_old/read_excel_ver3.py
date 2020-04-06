@@ -47,20 +47,23 @@ class ReadExcel:
             return None
         lon_list=[]
         lat_list=[]
-        value_list=[]
+        qianduan_list=[]
         name_list=[]
+        types_list=[]
         for i in range(nrows):
             lon = float(sh.cell_value(i+3,6))
             lat = float(sh.cell_value(i+3,7))
-            value = sh.cell_value(i+3,10)
+            types = sh.cell_value(i+3,1)
+            qianduan = sh.cell_value(i+3,10)
             name = sh.cell_value(i+3,2)
             lon_list.append(lon)
             lat_list.append(lat)
-            value_list.append(value)
+            qianduan_list.append(qianduan)
             name_list.append(name)
+            types_list.append(types)
             if i == nrows - 4:
                 break
-        return lon_list,lat_list,value_list,name_list
+        return lon_list,lat_list,qianduan_list,name_list,types_list
 
 
     def dianxiangan(self):

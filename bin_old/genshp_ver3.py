@@ -58,19 +58,20 @@ def dianxiangan_dian_shp(r,f_dir):
 #3生成墙支架shp点
 def qiangzhijia_shp(r,f_dir):
     if r.diyaqiangzhijia():
-        lon_list,lat_list,qianduan,_ = r.diyaqiangzhijia()
+        # lon_list, lat_list, qianduan_list, name_list, types_list
+        lon_list,lat_list,qianduan,name,types = r.diyaqiangzhijia()
         directory = f_dir
         if not os.path.isdir(directory):
             os.mkdir(directory)
         qiangzhijia_coor_dic={}
         for i in range(len(lon_list)):
-            qiangzhijia_coor_dic[i] = [lon_list[i],lat_list[i],qianduan[i]]
+            qiangzhijia_coor_dic[i] = [lon_list[i],lat_list[i],qianduan[i],name[i],types[i]]
         fname = directory+'\\qiangzhijia'
 
         point=[]
         for i in qiangzhijia_coor_dic:
 
-            point.append([qiangzhijia_coor_dic[i][0],qiangzhijia_coor_dic[i][1],qiangzhijia_coor_dic[i][2],'','','',''])
+            point.append([qiangzhijia_coor_dic[i][0],qiangzhijia_coor_dic[i][1],qiangzhijia_coor_dic[i][2],qiangzhijia_coor_dic[i][3],qiangzhijia_coor_dic[i][4],'',''])
 
         wp.point_to_shp(point,fname+'.shp')
 
@@ -204,72 +205,75 @@ def dianxiangan_line_shp(r,f_dir):
 def qiangzhijia_line(r):
     if r.dianxiangan():
         dianxiangan_lon,dianxiangan_lat,dianxiangan_name,_,_,_ ,_= r.dianxiangan()
-        qiangzhijia_lon,qiangzhijia_lat,qianduan_name,_ = r.diyaqiangzhijia()
+        qiangzhijia_lon,qiangzhijia_lat,qianduan_name,name_list,types_list = r.diyaqiangzhijia()
         dianxiangan_coor_dic = {}
         for i in range(len(dianxiangan_lon)):
             dianxiangan_coor_dic[i] = [dianxiangan_lon[i],dianxiangan_lat[i],dianxiangan_name[i]]
         qiangzhijia_coor_dic ={}
         for i in range(len(qiangzhijia_lon)):
-            qiangzhijia_coor_dic[i] = [qiangzhijia_lon[i],qiangzhijia_lat[i],qianduan_name[i]]
+            qiangzhijia_coor_dic[i] = [qiangzhijia_lon[i],qiangzhijia_lat[i],qianduan_name[i],types_list[i]]
 
         p1_list=[];p2_list=[]
         for i in qiangzhijia_coor_dic:
             for j in dianxiangan_coor_dic:
                 if qiangzhijia_coor_dic[i][2] == dianxiangan_coor_dic[j][2]:
-                    p1_list.append([qiangzhijia_coor_dic[i][0],qiangzhijia_coor_dic[i][1]])
+                    p1_list.append([qiangzhijia_coor_dic[i][0],qiangzhijia_coor_dic[i][1],qiangzhijia_coor_dic[i][3]])
                     p2_list.append([dianxiangan_coor_dic[j][0],dianxiangan_coor_dic[j][1]])
 
         distancestr = []
         distance = []
+        type_str = []
         for i in range(len(p1_list)):
 
             distancestr.append(str(round(wl.GetDistance(p1_list[i][0],p1_list[i][1],p2_list[i][0],p2_list[i][1]),2)))
             distance.append(wl.GetDistance(p1_list[i][0],p1_list[i][1],p2_list[i][0],p2_list[i][1]))
+            type_str.append(p1_list[i][2])
         total_distance = round(sum(distance),2)
-        return p1_list,p2_list,total_distance,distancestr
+        return p1_list,p2_list,total_distance,distancestr,type_str
 
 #6.2画墙支架与电线杆连线shp
 def qiangzhijia_line_shp(r,f_dir):
     if qiangzhijia_line(r):
-        p1_list,p2_list,total_distance,distancestr = qiangzhijia_line(r)
+        p1_list,p2_list,total_distance,distancestr,type_str = qiangzhijia_line(r)
         directory = f_dir
         if not os.path.isdir(directory):
             os.mkdir(directory)
         fname = directory+'\\qiangzhijia_line.shp'
         lines = []
         for i in range(len(p1_list)):
-            lines.append([p1_list[i],p2_list[i],distancestr[i],'','','',''])
+            lines.append([p1_list[i],p2_list[i],distancestr[i],type_str[i],'','',''])
         wl.line_to_shp(lines,fname)
 
 
 #6.2生成墙支架之间连线两点坐标
 def qiangzhijia_line2(r):
     if r.diyaqiangzhijia():
-        qiangzhijia_lon,qiangzhijia_lat,qianduan_name,name = r.diyaqiangzhijia()
+        qiangzhijia_lon,qiangzhijia_lat,qianduan_name,name,types_list= r.diyaqiangzhijia()
         qiangzhijia_coor_dic = {}
         for i in range(len(qiangzhijia_lon)):
-            qiangzhijia_coor_dic[i] = [qiangzhijia_lon[i],qiangzhijia_lat[i],qianduan_name[i],name[i]]
+            qiangzhijia_coor_dic[i] = [qiangzhijia_lon[i],qiangzhijia_lat[i],qianduan_name[i],name[i],types_list[i]]
         p1_list=[];p2_list=[]
         for i in qiangzhijia_coor_dic:
             for j in qiangzhijia_coor_dic:
                 if qiangzhijia_coor_dic[i][2] == qiangzhijia_coor_dic[j][3]:
-                    p1_list.append([qiangzhijia_coor_dic[i][0],qiangzhijia_coor_dic[i][1]])
+                    p1_list.append([qiangzhijia_coor_dic[i][0],qiangzhijia_coor_dic[i][1],qiangzhijia_coor_dic[i][4]])
                     p2_list.append([qiangzhijia_coor_dic[j][0],qiangzhijia_coor_dic[j][1]])
 
         distancestr = []
         distance = []
+        types = []
         for i in range(len(p1_list)):
-
+            types.append(p1_list[i][2])
             distancestr.append(str(round(wl.GetDistance(p1_list[i][0],p1_list[i][1],p2_list[i][0],p2_list[i][1]),2)))
             distance.append(wl.GetDistance(p1_list[i][0],p1_list[i][1],p2_list[i][0],p2_list[i][1]))
         total_distance = round(sum(distance),2)
 
-        return p1_list,p2_list,total_distance,distancestr
+        return p1_list,p2_list,total_distance,distancestr,types
 
 #6.3生成墙支架之间连线shp
 def qiangzhijia_line2_shp(r,f_dir):
     if qiangzhijia_line2(r):
-        p1_list,p2_list,_,distancestr = qiangzhijia_line2(r)
+        p1_list,p2_list,_,distancestr,types = qiangzhijia_line2(r)
         # print p1_list
         # print p2_list
         directory = f_dir
@@ -278,7 +282,7 @@ def qiangzhijia_line2_shp(r,f_dir):
         fname = directory+'\\qiangzhijia_line2.shp'
         lines = []
         for i in range(len(p1_list)):
-            lines.append([p1_list[i],p2_list[i],distancestr[i],'','','',''])
+            lines.append([p1_list[i],p2_list[i],distancestr[i],types[i],'','',''])
         wl.line_to_shp(lines,fname)
 
 
@@ -387,12 +391,12 @@ def gen_text_info(r,f_dir):
         distance1 = 0
 
     if qiangzhijia_line2(r):
-        p1_list,p2_list,distance2,_ = qiangzhijia_line2(r)
+        p1_list,p2_list,distance2,_,_ = qiangzhijia_line2(r)
     else:
         distance2 = 0
 
     if qiangzhijia_line(r):
-        p1_list,p2_list,distance3,_ = qiangzhijia_line(r)
+        p1_list,p2_list,distance3,_,_ = qiangzhijia_line(r)
     else:
         distance3 = 0
 
