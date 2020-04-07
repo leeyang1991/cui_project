@@ -401,7 +401,8 @@ def gen_text_info(r,f_dir):
         distance3 = 0
 
     distance4 = dianlanian_line_distance(r)
-    total_distance = distance1 + distance2 + distance3 + distance4
+    # total_distance = distance1 + distance2 + distance3 + distance4
+    total_distance = distance1
 
     #PMS_ID
     info_dic = r.info()
