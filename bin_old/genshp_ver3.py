@@ -433,7 +433,7 @@ def gen_text_info(r,f_dir):
             fw.close()
 
             fw_name = codecs.open(f_dir+'\\name.txt','w','utf-8')
-            fw_name.write('10kV{}台区低压沿布图'.decode('gbk').format(taiqu_name))
+            fw_name.write('{}台区低压沿布图'.decode('gbk').format(taiqu_name))
             fw_name.close()
 
 

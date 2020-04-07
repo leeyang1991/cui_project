@@ -311,7 +311,11 @@ class ReadExcel:
             taiqu_code.append(sh.cell_value(i+1,0))
             taiqu_name.append(sh.cell_value(i+1,1))
             bianyaqi_type.append(sh.cell_value(i+1,3))
-            bianyaqi_content.append(int(sh.cell_value(i+1,4)))
+            try:
+                bianyaqi_content.append(int(sh.cell_value(i+1,4)))
+            except:
+                bianyaqi_content.append(0)
+
             prime_line_type.append(sh.cell_value(i+1,5))
             branch_line_type.append(sh.cell_value(i+1,6))
         info_dic = {}
