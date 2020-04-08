@@ -362,12 +362,14 @@ class ReadExcel:
         lon_list = []
         lat_list = []
         num_list = []
+        type_list = []
         for i in range(nrows):
             if i == nrows - 3:
                 break
             lon_list.append(float(sh.cell_value(i+3,15)))
             lat_list.append(float(sh.cell_value(i+3,16)))
             num_list.append(int(sh.cell_value(i+3,0)))
+            type_list.append(sh.cell_value(i+3,2))
         #获取列表中重复元素的索引
         s = num_list
         d = defaultdict(list)
@@ -381,7 +383,7 @@ class ReadExcel:
         for i in d:
             temp = []
             for j in d[i]:
-                temp.append([lon_list[j],lat_list[j]])
+                temp.append([lon_list[j],lat_list[j],type_list[j]])
             lines.append(temp)
         p1_list = []
         p2_list = []

@@ -298,7 +298,7 @@ def dianlanxian_line_shp(r,f_dir):
     lines = []
     for i in range(len(p1_list)):
         distancestr = (str(round(wl.GetDistance(p1_list[i][0],p1_list[i][1],p2_list[i][0],p2_list[i][1]),2)))
-        lines.append([p1_list[i],p2_list[i],distancestr,'','','',''])
+        lines.append([p1_list[i],p2_list[i],distancestr,p1_list[i][2],'','',''])
     wl.line_to_shp(lines,fname)
 
 def dianlanian_line_distance(r):
