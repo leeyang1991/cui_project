@@ -135,7 +135,7 @@ def dianxiangan_line(r):
                 # print 'peidianxiang',bianyaqi_lon, bianyaqi_lat
                 p2_list.append((bianyaqi_lon, bianyaqi_lat))
             elif 'Ç½Ö§¼Ü'.decode('gbk') in dianxiangan_coor_dic[i][3]:
-                lon_list,lat_list,qianduan,qiangzhijia_name = r.diyaqiangzhijia()
+                lon_list,lat_list,qianduan,qiangzhijia_name,qiangzhijia_types= r.diyaqiangzhijia()
                 qiangzhijia_coor_dic={}
                 for j in range(len(lon_list)):
                     qiangzhijia_coor_dic[j] = [lon_list[j],lat_list[j],qiangzhijia_name[j]]
