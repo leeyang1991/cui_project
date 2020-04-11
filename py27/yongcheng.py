@@ -458,6 +458,8 @@ class GenLayer:
         for i in range(len(name_list)):
             sum_str = ''
             selected_num = []
+            if len(str_num) == 0:
+                continue
             for j in range(max(str_num)):
                 try:
                     sum_str += name_list[i + j]
@@ -2297,7 +2299,7 @@ def main(fdir, f_excel):
     genlayer = GenLayer(f_excel)
     #
     CT = Cordinate_Transformation(fdir,Transform=False)
-    # CT.line()
+    CT.line()
     CT.point()
     params = []
     for folder in flist:
