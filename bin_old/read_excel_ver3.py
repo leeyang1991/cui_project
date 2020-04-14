@@ -50,20 +50,23 @@ class ReadExcel:
         qianduan_list=[]
         name_list=[]
         types_list=[]
+        length_list = []
         for i in range(nrows):
             lon = float(sh.cell_value(i+3,6))
             lat = float(sh.cell_value(i+3,7))
             types = sh.cell_value(i+3,1)
             qianduan = sh.cell_value(i+3,10)
             name = sh.cell_value(i+3,2)
+            length = sh.cell_value(i+3,3)
             lon_list.append(lon)
             lat_list.append(lat)
             qianduan_list.append(qianduan)
             name_list.append(name)
             types_list.append(types)
+            length_list.append(length)
             if i == nrows - 4:
                 break
-        return lon_list,lat_list,qianduan_list,name_list,types_list
+        return lon_list,lat_list,qianduan_list,name_list,types_list,length_list
 
 
     def dianxiangan(self):

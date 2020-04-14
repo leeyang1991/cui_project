@@ -59,7 +59,7 @@ def dianxiangan_dian_shp(r,f_dir):
 def qiangzhijia_shp(r,f_dir):
     if r.diyaqiangzhijia():
         # lon_list, lat_list, qianduan_list, name_list, types_list
-        lon_list,lat_list,qianduan,name,types = r.diyaqiangzhijia()
+        lon_list,lat_list,qianduan,name,types,_ = r.diyaqiangzhijia()
         directory = f_dir
         if not os.path.isdir(directory):
             os.mkdir(directory)
@@ -135,7 +135,7 @@ def dianxiangan_line(r):
                 # print 'peidianxiang',bianyaqi_lon, bianyaqi_lat
                 p2_list.append((bianyaqi_lon, bianyaqi_lat))
             elif '墙支架'.decode('gbk') in dianxiangan_coor_dic[i][3]:
-                lon_list,lat_list,qianduan,qiangzhijia_name,qiangzhijia_types= r.diyaqiangzhijia()
+                lon_list,lat_list,qianduan,qiangzhijia_name,qiangzhijia_types,_= r.diyaqiangzhijia()
                 qiangzhijia_coor_dic={}
                 for j in range(len(lon_list)):
                     qiangzhijia_coor_dic[j] = [lon_list[j],lat_list[j],qiangzhijia_name[j]]
@@ -205,28 +205,31 @@ def dianxiangan_line_shp(r,f_dir):
 def qiangzhijia_line(r):
     if r.dianxiangan():
         dianxiangan_lon,dianxiangan_lat,dianxiangan_name,_,_,_ ,_= r.dianxiangan()
-        qiangzhijia_lon,qiangzhijia_lat,qianduan_name,name_list,types_list = r.diyaqiangzhijia()
+        qiangzhijia_lon,qiangzhijia_lat,qianduan_name,name_list,types_list,length_list = r.diyaqiangzhijia()
         dianxiangan_coor_dic = {}
         for i in range(len(dianxiangan_lon)):
             dianxiangan_coor_dic[i] = [dianxiangan_lon[i],dianxiangan_lat[i],dianxiangan_name[i]]
         qiangzhijia_coor_dic ={}
         for i in range(len(qiangzhijia_lon)):
-            qiangzhijia_coor_dic[i] = [qiangzhijia_lon[i],qiangzhijia_lat[i],qianduan_name[i],types_list[i]]
+            qiangzhijia_coor_dic[i] = [qiangzhijia_lon[i],qiangzhijia_lat[i],qianduan_name[i],types_list[i],length_list[i]]
 
         p1_list=[];p2_list=[]
         for i in qiangzhijia_coor_dic:
             for j in dianxiangan_coor_dic:
                 if qiangzhijia_coor_dic[i][2] == dianxiangan_coor_dic[j][2]:
-                    p1_list.append([qiangzhijia_coor_dic[i][0],qiangzhijia_coor_dic[i][1],qiangzhijia_coor_dic[i][3]])
+                    p1_list.append([qiangzhijia_coor_dic[i][0],qiangzhijia_coor_dic[i][1],qiangzhijia_coor_dic[i][3],qiangzhijia_coor_dic[i][4]])
                     p2_list.append([dianxiangan_coor_dic[j][0],dianxiangan_coor_dic[j][1]])
 
         distancestr = []
         distance = []
         type_str = []
         for i in range(len(p1_list)):
-
-            distancestr.append(str(round(wl.GetDistance(p1_list[i][0],p1_list[i][1],p2_list[i][0],p2_list[i][1]),2)))
-            distance.append(wl.GetDistance(p1_list[i][0],p1_list[i][1],p2_list[i][0],p2_list[i][1]))
+            if len(p1_list[i][3]) == 0:
+                distancestr.append(str(round(wl.GetDistance(p1_list[i][0],p1_list[i][1],p2_list[i][0],p2_list[i][1]),2)))
+                distance.append(wl.GetDistance(p1_list[i][0],p1_list[i][1],p2_list[i][0],p2_list[i][1]))
+            else:
+                distancestr.append(p1_list[i][3])
+                distance.append(float(p1_list[i][3]))
             type_str.append(p1_list[i][2])
         total_distance = round(sum(distance),2)
         return p1_list,p2_list,total_distance,distancestr,type_str
@@ -248,15 +251,15 @@ def qiangzhijia_line_shp(r,f_dir):
 #6.2生成墙支架之间连线两点坐标
 def qiangzhijia_line2(r):
     if r.diyaqiangzhijia():
-        qiangzhijia_lon,qiangzhijia_lat,qianduan_name,name,types_list= r.diyaqiangzhijia()
+        qiangzhijia_lon,qiangzhijia_lat,qianduan_name,name,types_list,length_list= r.diyaqiangzhijia()
         qiangzhijia_coor_dic = {}
         for i in range(len(qiangzhijia_lon)):
-            qiangzhijia_coor_dic[i] = [qiangzhijia_lon[i],qiangzhijia_lat[i],qianduan_name[i],name[i],types_list[i]]
+            qiangzhijia_coor_dic[i] = [qiangzhijia_lon[i],qiangzhijia_lat[i],qianduan_name[i],name[i],types_list[i],length_list[i]]
         p1_list=[];p2_list=[]
         for i in qiangzhijia_coor_dic:
             for j in qiangzhijia_coor_dic:
                 if qiangzhijia_coor_dic[i][2] == qiangzhijia_coor_dic[j][3]:
-                    p1_list.append([qiangzhijia_coor_dic[i][0],qiangzhijia_coor_dic[i][1],qiangzhijia_coor_dic[i][4]])
+                    p1_list.append([qiangzhijia_coor_dic[i][0],qiangzhijia_coor_dic[i][1],qiangzhijia_coor_dic[i][4],qiangzhijia_coor_dic[i][5]])
                     p2_list.append([qiangzhijia_coor_dic[j][0],qiangzhijia_coor_dic[j][1]])
 
         distancestr = []
@@ -264,8 +267,12 @@ def qiangzhijia_line2(r):
         types = []
         for i in range(len(p1_list)):
             types.append(p1_list[i][2])
-            distancestr.append(str(round(wl.GetDistance(p1_list[i][0],p1_list[i][1],p2_list[i][0],p2_list[i][1]),2)))
-            distance.append(wl.GetDistance(p1_list[i][0],p1_list[i][1],p2_list[i][0],p2_list[i][1]))
+            if len(p1_list[i][3]) == 0:
+                distancestr.append(str(round(wl.GetDistance(p1_list[i][0],p1_list[i][1],p2_list[i][0],p2_list[i][1]),2)))
+                distance.append(wl.GetDistance(p1_list[i][0],p1_list[i][1],p2_list[i][0],p2_list[i][1]))
+            else:
+                distancestr.append(p1_list[i][3])
+                distance.append(float(p1_list[i][3]))
         total_distance = round(sum(distance),2)
 
         return p1_list,p2_list,total_distance,distancestr,types
