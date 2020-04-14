@@ -396,7 +396,8 @@ def gen_text_info(r,f_dir):
     #计量箱表位和安装数量
     total = r.count_total_jiliangxiang()
     installed = r.count_intalled_jiliangxiang()
-
+    _, red, black = r.full_and_spare_and_transparent_jiliangxiang()
+    jiliangxiang_num = len(red + black)
     #线路长度
     if dianxiangan_line(r):
         p1_list, p2_list, distancestr, distance1,_ = dianxiangan_line(r)
@@ -422,11 +423,13 @@ def gen_text_info(r,f_dir):
     PMS_ID = r.legend_info()
 
     for i in info_dic:
+        # print PMS_ID,info_dic[i][0]
         if PMS_ID == info_dic[i][0]:
-            taiqu_code,taiqu_name,bianyaqi_type,bianyaqi_content,prime_line_type,branch_line_type = info_dic[i][1],info_dic[i][2],info_dic[i][3],info_dic[i][4],info_dic[i][5],info_dic[i][6]
+            bianyaqi_type,bianyaqi_content,tuzhi_name = info_dic[i][1],info_dic[i][2],info_dic[i][3]
             import codecs
+            hujunrongliang = bianyaqi_content/float(installed)
             fw = codecs.open(f_dir+'\\info.txt','w','utf-8')
-            content = '说明：台区编号：{}，台区名称：{}，变压器类型：{}，变压器容量：{}，导线总长度：{}，主线导线类型：{}，支线导线类型：{}，计量箱表位：{}，实际装表位数：{}'.decode('gbk').format(taiqu_code,taiqu_name,bianyaqi_type,bianyaqi_content,str(round(total_distance/1000,2))+' KM',prime_line_type,branch_line_type,total,installed)
+            content = '说明：变压器类型：{}，变压器容量：{}，导线总长度：{}，计量箱数量： {}，计量箱表位：{}，实际装表位数：{}，户均容量：{}'.decode('gbk').format(bianyaqi_type,bianyaqi_content,str(round(total_distance,2))+' 米'.decode('gbk'),jiliangxiang_num,total,installed,'%0.2f'%hujunrongliang)
 
             content_warp = ''
             for i in range(len(content)):
@@ -446,7 +449,7 @@ def gen_text_info(r,f_dir):
             fw.close()
 
             fw_name = codecs.open(f_dir+'\\name.txt','w','utf-8')
-            fw_name.write('{}台区低压沿布图'.decode('gbk').format(taiqu_name))
+            fw_name.write('{}台区低压沿布图'.decode('gbk').format(tuzhi_name))
             fw_name.close()
 
 

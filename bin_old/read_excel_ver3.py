@@ -3,6 +3,7 @@
 import xlrd
 import xlwt
 from collections import defaultdict
+import pandas as pd
 
 
 class ReadExcel:
@@ -295,35 +296,19 @@ class ReadExcel:
 
     def info(self):
         # sh = self.bk4.sheet_by_name(self.legend.decode('gbk'))
-        sh = self.bk4.sheet_by_index(0)
-        nrows = sh.nrows
-        PMS = []
-        taiqu_code = []
-        taiqu_name = []
-        bianyaqi_type = []
-        bianyaqi_content = []
-        prime_line_type = []
-        branch_line_type = []
-        for i in range(nrows):
-            if i == nrows - 1:
-                break
-            if len(sh.cell_value(i+1,2))==0:
-                continue
-            PMS.append(sh.cell_value(i+1,2))
-            # taiqu_code.append(sh.cell_value(i+1,2))
-            taiqu_code.append(sh.cell_value(i+1,0))
-            taiqu_name.append(sh.cell_value(i+1,1))
-            bianyaqi_type.append(sh.cell_value(i+1,3))
-            try:
-                bianyaqi_content.append(int(sh.cell_value(i+1,4)))
-            except:
-                bianyaqi_content.append(0)
-
-            prime_line_type.append(sh.cell_value(i+1,5))
-            branch_line_type.append(sh.cell_value(i+1,6))
+        # sh = self.bk4.sheet_by_index(0)
+        df = pd.read_excel(self.fname4)
+        # print df[u'变压器名称']
         info_dic = {}
-        for i in range(len(PMS)):
-            info_dic[i] = [PMS[i],taiqu_code[i],taiqu_name[i],bianyaqi_type[i],bianyaqi_content[i],prime_line_type[i],branch_line_type[i]]
+        # for i in range(len(df[u'变压器名称'])):
+        #     info_dic[i] = [PMS[i],taiqu_code[i],taiqu_name[i],bianyaqi_type[i],bianyaqi_content[i],prime_line_type[i],branch_line_type[i]]
+        for i in range(len(df[u'变压器名称'])):
+            info_dic[i] = [
+                df[u'变压器名称'][i],
+               df[u'变压器型号'][i],
+               df[u'变压器容量'][i],
+               df[u'图纸名称'][i],
+                           ]
         return info_dic
 
 
