@@ -220,22 +220,21 @@ class ReadExcel:
         bk_w = xlwt.Workbook()
         sheet1 = bk_w.add_sheet('sheet 1')
         for i in range(nrows):
-            if nrows - 3 == i:
+            if nrows - 2 == i:
                 break
-            jiliangxiang = sh.cell_value(i+3,1)
-            dianbiao = sh.cell_value(i+3,3)
-            # print(user_name_dic[dianbiao])
-            try:
-                if len(user_name_dic[dianbiao])>0:
-                    sheet1.write(i+2,6,user_name_dic[dianbiao])
-                    sheet1.write(i + 2, 1, jiliangxiang)
-                    sheet1.write(i + 2, 3, dianbiao)
-            except:
+            jiliangxiang = sh.cell_value(i + 2, 1)
+            dianbiao = sh.cell_value(i + 2, 3)
+            # try:
+            if len(user_name_dic[dianbiao]) > 0:
+                sheet1.write(i + 2, 6, user_name_dic[dianbiao])
+                sheet1.write(i + 2, 1, jiliangxiang)
+                sheet1.write(i + 2, 3, dianbiao)
+                # except:
                 # sheet1.write(i+2,6,'')
                 pass
-        # fname2 = 'D:\project13\input\data\北村农改台区\台账\计量箱与电能表的关系.xls'
-        bk_w.save((self.fname2+'_new.xls'))
         # exit()
+        # fname2 = 'D:\project13\input\data\北村农改台区\台账\计量箱与电能表的关系.xls'
+        bk_w.save((self.fname2 + '_new.xls'))
 
 
     def full_and_spare_and_transparent_jiliangxiang(self):
