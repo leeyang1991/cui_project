@@ -58,7 +58,7 @@ class ReadExcel:
             types = sh.cell_value(i+3,1)
             qianduan = sh.cell_value(i+3,10)
             name = sh.cell_value(i+3,2)
-            length = sh.cell_value(i+3,3)
+            length = str(sh.cell_value(i+3,3))
             lon_list.append(lon)
             lat_list.append(lat)
             qianduan_list.append(qianduan)
@@ -358,7 +358,7 @@ class ReadExcel:
             lat_list.append(float(sh.cell_value(i+3,16)))
             num_list.append(int(sh.cell_value(i+3,0)))
             type_list.append(sh.cell_value(i+3,2))
-            length_list.append(sh.cell_value(i+3,4))
+            length_list.append(str(sh.cell_value(i+3,4)))
         #获取列表中重复元素的索引
         s = num_list
         d = defaultdict(list)
