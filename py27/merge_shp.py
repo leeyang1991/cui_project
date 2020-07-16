@@ -131,11 +131,21 @@ class Merge:
 
     def run(self):
 
-        indir = r'E:\cui\20200512\北关供电所1\data\\'
-        outdir = ur'E:\cui\20200512\北关供电所1\data_merge\\'
+        # indir = r'E:\cui\20200516\单条线shp\\'
+        # outdir = ur'E:\cui\20200516\data_merge\\'
+        # self.merge(indir,outdir)
 
-        # self.merge_point_annotation_shp(indir,outdir)
-        self.merge(indir,outdir)
+        father = r'E:\cui\20200613\data\\'
+        father_out_dir = ur'E:\cui\20200613\merge\\'
+        for folder in os.listdir(father):
+            print folder
+            for indir in os.listdir(father+folder):
+                indir_ = father+folder+'\\'+indir.decode('gbk').encode('gbk')+'\\'
+                outdir =father_out_dir + folder.decode('gbk') + '\\'+indir.decode('gbk')+'\\'
+                self.merge(indir_,outdir)
+
+
+
         pass
 
 
@@ -212,21 +222,23 @@ class Merge:
                         if not is_line:
                             if Points:
                                 for i in range(len(Points)):
-                                    point_inlist.append([Points[i][0], Points[i][1], val1, val2, val3, val4, ''])
+                                    point_inlist.append((Points[i][0], Points[i][1], val1, val2, val3, val4, ''))
                         if is_line:
                             if Points:
                                 for i in range(len(Points)):
                                     if i == len(Points) - 1:
                                         break
-                                    line_inlist.append([Points[i], Points[i + 1], val1, val2, val3, val4, ''])
+                                    line_inlist.append((Points[i], Points[i + 1], val1, val2, val3, val4, ''))
                 if is_line:
                     outfn = outdir + shp
                     outfn = outfn.encode('utf-8')
+                    line_inlist = list(set(line_inlist))
                     line_to_shp(line_inlist,outfn)
                 if not is_line:
                     # print outdir+shp
                     outfn = outdir+shp
                     outfn = outfn.encode('utf-8')
+                    point_inlist = list(set(point_inlist))
                     point_to_shp(point_inlist,outfn)
 
         pass
