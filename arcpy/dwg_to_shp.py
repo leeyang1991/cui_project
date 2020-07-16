@@ -32,11 +32,32 @@ def check():
             print(folder)
     pass
 
+def define_projection(fdir):
+    # prj_f = fdir + 'extent_lyr.prj'
+    prj_content = '''
+    GEOGCS["GCS_WGS_1984",DATUM["D_WGS_1984",SPHEROID["WGS_1984",6378137.0,298.257223563]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433],AUTHORITY["EPSG",4326]]
+    '''
+    prj_f = fdir+'\\projection.prj'
+    if not os.path.isfile(prj_f):
+        fw = open(prj_f,'w')
+        fw.write(prj_content)
+        fw.close()
+    for f in os.listdir(fdir):
+        if f.endswith('.shp'):
+            print 'project '+f
+            sr = arcpy.SpatialReference(prj_f)
+            arcpy.DefineProjection_management(fdir+'\\'+f, sr)
+            # exit()
+            pass
+
+    pass
+
+
+
 def run_dwg_to_shp(fdir,out_dir_):
-    log = log_process.Logger('log.log')
+    # log = log_process.Logger('log.log')
     # fdir = this_root+'190905\\сюЁг\\'
     flist = os.listdir(fdir)
-
     init_time = time.time()
     flag = 0
     for f in flist:
@@ -58,15 +79,13 @@ def run_dwg_to_shp(fdir,out_dir_):
         # exit()
         dwg_to_shp(fdir+f+'\\Annotation',out_dir)
         dwg_to_shp(fdir+f+'\\Polyline',out_dir)
-        log.logger.info('\\Annotation')
-        log.logger.info('\\Polyline')
+        # log.logger.info('\\Annotation')
+        # log.logger.info('\\Polyline')
         # except Exception as e:
         # log.logger.error(e)
         end = time.time()
         log_process.process_bar(flag,len(flist),init_time,start,end,str(flag+1)+'/'+str(len(flist))+'\n')
         flag += 1
-        # print(fdir+f)
-    # dwg_to_shp(in_features_line,this_root)
 
 
 def rename(fdir):

@@ -111,6 +111,29 @@ def new_huanhang(txt,n):
     return new_text
 
 
+def define_projection(fdir):
+    # prj_f = fdir + 'extent_lyr.prj'
+    prj_content = '''
+    GEOGCS["GCS_WGS_1984",DATUM["D_WGS_1984",SPHEROID["WGS_1984",6378137.0,298.257223563]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433],AUTHORITY["EPSG",4326]]
+    '''
+    fdir = fdir+'\\'
+    prj_f = fdir+'projection.prj'
+    if not os.path.isfile(prj_f):
+        fw = open(prj_f,'w')
+        fw.write(prj_content)
+        fw.close()
+    for f in os.listdir(fdir):
+        if f.endswith('.shp'):
+            print 'project '+f
+            sr = arcpy.SpatialReference(prj_f)
+            arcpy.DefineProjection_management(fdir+f, sr)
+            # exit()
+            pass
+
+    pass
+
+
+
 def mapping(dir,out_pic_dir,ditu_path):
     # ∫· ˙—°‘Ò
     size = sys.argv[6]
@@ -244,6 +267,7 @@ def kernel_main(params):
     # dir = dirs+'\\'+dir.decode('gbk')+'\\'
     dir = dirs + '\\' + fdir + '\\'
     # print(dir.decode('gbk'))
+    define_projection(dir)
     mapping(dir, out_pic_dir, ditu_path)
 
     pass
