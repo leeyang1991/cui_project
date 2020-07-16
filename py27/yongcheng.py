@@ -1296,7 +1296,7 @@ class GenLayer:
             name = sh.cell_value(0, c)
             # if name == ''
             col_dic[name] = c
-        # print col_dic['线路名称'.decode('gbk')]
+        # print col_dic['备注'.decode('gbk')]
         # exit()
         info_dic = {}
         for i in range(nrows):
@@ -2043,7 +2043,8 @@ class Cordinate_Transformation:
             # print(output_fn)
             # exit()
             point_to_shp1(inlist, output_fn)
-        except:
+        except Exception as e:
+            print e
             pass
 
         pass
@@ -2094,7 +2095,8 @@ class Cordinate_Transformation:
                     output_fn = fdir + folder + '\\' + f.split('.')[0] + '_Transform.shp'
                     output_fn = output_fn.encode('utf-8')
                     line_to_shp1(inlist, output_fn)
-        except:
+        except Exception as e:
+            print e
             pass
 
         pass
@@ -2298,14 +2300,14 @@ def main(fdir, f_excel):
     flist = os.listdir(fdir)
     genlayer = GenLayer(f_excel)
     #
-    CT = Cordinate_Transformation(fdir,Transform=False)
+    CT = Cordinate_Transformation(fdir,Transform=True)
     CT.line()
     CT.point()
     params = []
     for folder in flist:
         params.append([fdir, folder, genlayer])
-        # kernel_main([fdir, folder, genlayer])
-    MUTIPROCESS(kernel_main, params).run(process=6)
+        kernel_main([fdir, folder, genlayer])
+    # MUTIPROCESS(kernel_main, params).run(process=6)
 
 
 def gui():
