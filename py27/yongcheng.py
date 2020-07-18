@@ -2264,36 +2264,42 @@ class Split:
 
 
 def kernel_main(params):
+    success = 1
     fdir, folder, genlayer = params
+    try:
+        shp_dir = fdir + folder + '/'
+        # print shp_dir.decode('gbk')
 
-    shp_dir = fdir + folder + '/'
-    # print shp_dir.decode('gbk')
-
-    # shp_list = os.listdir(shp_dir)
-    # print(shp_dir)
-    fname = shp_dir + 'dwg_Annotation_Transformed.shp'
-    line_fname = shp_dir + folder + '_dwg_Polyline_Transform.shp'
-    # print((shp_dir+'naizhang_ganta.shp').decode('gbk'))
-    genlayer.gen_mapinfo(folder, shp_dir + 'info')
-    # genlayer.gen_tuli_shp(folder,(shp_dir+'tuli.shp').encode('utf-8'))
-    daoxian,dianlan = genlayer.gen_dianlan(line_fname, shp_dir)
-    naizhang_ganta = genlayer.gen_naizhang_ganta_shp(fname.encode('utf-8'), (shp_dir + 'naizhang_ganta.shp').encode('utf-8'))
-    line_annotation1 = genlayer.gen_line_annotation_shp(fname.encode('utf-8'), (shp_dir + 'line_annotation1.shp').encode('utf-8'))
-    # gen_xiangshi_biandianzhan_shp(fname.encode('utf-8'),(shp_dir+'xiangshi_biandianzhan.shp').decode('gbk').encode('utf-8'))
-    zhushangbianyaqi = genlayer.gen_zhushangbianyaqi_shp(fname.encode('utf-8'),
-                                                         (shp_dir + 'zhushangbianyaqi.shp').encode('utf-8'))
-    duanluqi_changkai,duanluqi_changbi = genlayer.gen_duanluqi_shp(fname.encode('utf-8'), (shp_dir + 'duanluqi').encode('utf-8'))
-    # genlayer.gen_gongbian_shp(fname.encode('utf-8'), (shp_dir + 'gongbian.shp').encode('utf-8'))
-    zhuanbian = genlayer.gen_zhuanbian_shp(fname.encode('utf-8'), (shp_dir + 'zhuanbian.shp').encode('utf-8'))
-    zoom_layer = genlayer.gen_zoom_layer(fname.encode('utf-8'), (shp_dir + 'zoom_layer.shp').encode('utf-8'))
-    biandianzhan = genlayer.gen_biandianzhan_shp(fname.encode('utf-8'), (shp_dir + 'biandianzhan.shp').encode('utf-8'))
-    xiangbian = genlayer.gen_xiangbian_shp(fname.encode('utf-8'), (shp_dir + 'xiangbian.shp').encode('utf-8'))
-    huanwang = genlayer.gen_huanwang_shp(fname.encode('utf-8'), (shp_dir + 'huanwang.shp').encode('utf-8'))
-    peidian = genlayer.gen_peidian_shp(fname.encode('utf-8'), (shp_dir + 'peidian.shp').encode('utf-8'))
-    Split(shp_dir,zhushangbianyaqi=zhushangbianyaqi,zhuanbian =zhuanbian ,biandianzhan=biandianzhan,xiangbian=xiangbian,gen_huanwang=huanwang,peidian=peidian)
-    genlayer.count_shebei(shp_dir,duanluqi_changbi=duanluqi_changbi,duanluqi_changkai=duanluqi_changkai,
-                          zhushangbianyaqi=zhushangbianyaqi,zhuanbian =zhuanbian ,
-                          biandianzhan=biandianzhan,xiangbian=xiangbian,huanwang=huanwang,peidian=peidian)
+        # shp_list = os.listdir(shp_dir)
+        # print(shp_dir)
+        fname = shp_dir + 'dwg_Annotation_Transformed.shp'
+        line_fname = shp_dir + folder + '_dwg_Polyline_Transform.shp'
+        # print((shp_dir+'naizhang_ganta.shp').decode('gbk'))
+        genlayer.gen_mapinfo(folder, shp_dir + 'info')
+        # genlayer.gen_tuli_shp(folder,(shp_dir+'tuli.shp').encode('utf-8'))
+        daoxian,dianlan = genlayer.gen_dianlan(line_fname, shp_dir)
+        naizhang_ganta = genlayer.gen_naizhang_ganta_shp(fname.encode('utf-8'), (shp_dir + 'naizhang_ganta.shp').encode('utf-8'))
+        line_annotation1 = genlayer.gen_line_annotation_shp(fname.encode('utf-8'), (shp_dir + 'line_annotation1.shp').encode('utf-8'))
+        # gen_xiangshi_biandianzhan_shp(fname.encode('utf-8'),(shp_dir+'xiangshi_biandianzhan.shp').decode('gbk').encode('utf-8'))
+        zhushangbianyaqi = genlayer.gen_zhushangbianyaqi_shp(fname.encode('utf-8'),
+                                                             (shp_dir + 'zhushangbianyaqi.shp').encode('utf-8'))
+        duanluqi_changkai,duanluqi_changbi = genlayer.gen_duanluqi_shp(fname.encode('utf-8'), (shp_dir + 'duanluqi').encode('utf-8'))
+        # genlayer.gen_gongbian_shp(fname.encode('utf-8'), (shp_dir + 'gongbian.shp').encode('utf-8'))
+        zhuanbian = genlayer.gen_zhuanbian_shp(fname.encode('utf-8'), (shp_dir + 'zhuanbian.shp').encode('utf-8'))
+        zoom_layer = genlayer.gen_zoom_layer(fname.encode('utf-8'), (shp_dir + 'zoom_layer.shp').encode('utf-8'))
+        biandianzhan = genlayer.gen_biandianzhan_shp(fname.encode('utf-8'), (shp_dir + 'biandianzhan.shp').encode('utf-8'))
+        xiangbian = genlayer.gen_xiangbian_shp(fname.encode('utf-8'), (shp_dir + 'xiangbian.shp').encode('utf-8'))
+        huanwang = genlayer.gen_huanwang_shp(fname.encode('utf-8'), (shp_dir + 'huanwang.shp').encode('utf-8'))
+        peidian = genlayer.gen_peidian_shp(fname.encode('utf-8'), (shp_dir + 'peidian.shp').encode('utf-8'))
+        Split(shp_dir,zhushangbianyaqi=zhushangbianyaqi,zhuanbian =zhuanbian ,biandianzhan=biandianzhan,xiangbian=xiangbian,gen_huanwang=huanwang,peidian=peidian)
+        genlayer.count_shebei(shp_dir,duanluqi_changbi=duanluqi_changbi,duanluqi_changkai=duanluqi_changkai,
+                              zhushangbianyaqi=zhushangbianyaqi,zhuanbian =zhuanbian ,
+                              biandianzhan=biandianzhan,xiangbian=xiangbian,huanwang=huanwang,peidian=peidian)
+    except Exception as e:
+        success = 0
+        print e
+        print fdir
+        print folder
 
 def main(fdir, f_excel):
     # fdir = this_root+'190905\\dwg_to_shp\\jiang\\'
@@ -2306,8 +2312,8 @@ def main(fdir, f_excel):
     params = []
     for folder in flist:
         params.append([fdir, folder, genlayer])
-        kernel_main([fdir, folder, genlayer])
-    # MUTIPROCESS(kernel_main, params).run(process=6)
+        # kernel_main([fdir, folder, genlayer])
+    MUTIPROCESS(kernel_main, params).run(process=6)
 
 
 def gui():
