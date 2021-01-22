@@ -135,12 +135,13 @@ class Merge:
         # outdir = ur'E:\cui\20200516\data_merge\\'
         # self.merge(indir,outdir)
 
-        father = r'E:\cui\20200613\data\\'
-        father_out_dir = ur'E:\cui\20200613\merge\\'
+        # father = r'E:\cui\20200613\data\\'
+        father = r'E:\cui\20201010\data\\'
+        father_out_dir = ur'E:\cui\20201010\shp_merge\\'
         for folder in os.listdir(father):
-            print folder
+            print folder.decode('gbk')
             for indir in os.listdir(father+folder):
-                indir_ = father+folder+'\\'+indir.decode('gbk').encode('gbk')+'\\'
+                indir_ = father.encode('gbk')+folder+'\\'+indir.decode('gbk').encode('gbk')+'\\'
                 outdir =father_out_dir + folder.decode('gbk') + '\\'+indir.decode('gbk')+'\\'
                 self.merge(indir_,outdir)
 
