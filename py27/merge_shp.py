@@ -149,6 +149,8 @@ class Merge:
 
         pass
 
+    def run_gui(self,in_dir,out_dir):
+        self.merge(in_dir,out_dir)
 
     def filter_val(self,val):
 
@@ -192,7 +194,7 @@ class Merge:
         for shp in shp_dic:
             if len(shp_dic[shp]) > 1:
                 print shp
-                is_line = self.is_line(shp)
+                # is_line = self.is_line(shp)
                 shp_paths = shp_dic[shp]
                 point_inlist = []
                 line_inlist = []
@@ -213,35 +215,41 @@ class Merge:
                         val1 = feature.GetField("val1")
                         val2 = feature.GetField("val2")
                         val3 = feature.GetField("val3")
-                        val4 = feature.GetField("val4")
+                        # val4 = feature.GetField("val4")
 
                         val1 = self.filter_val(val1)
                         val2 = self.filter_val(val2)
                         val3 = self.filter_val(val3)
-                        val4 = self.filter_val(val4)
+                        # val4 = self.filter_val(val4)
+                        # if np.shape(Points) == (1,2):
+                        #     print Points
+                        if np.shape(Points) == (1,2):
+                            # if Points:
+                            for i in range(len(Points)):
+                                point_inlist.append((Points[i][0], Points[i][1], val1, val2, val3, '', ''))
+                        if np.shape(Points) == (2,2):
+                            # if Points:
+                            for i in range(len(Points)):
+                                if i == len(Points) - 1:
+                                    break
+                                line_inlist.append((Points[i], Points[i + 1], val1, val2, val3, '', ''))
 
-                        if not is_line:
-                            if Points:
-                                for i in range(len(Points)):
-                                    point_inlist.append((Points[i][0], Points[i][1], val1, val2, val3, val4, ''))
-                        if is_line:
-                            if Points:
-                                for i in range(len(Points)):
-                                    if i == len(Points) - 1:
-                                        break
-                                    line_inlist.append((Points[i], Points[i + 1], val1, val2, val3, val4, ''))
-                if is_line:
-                    outfn = outdir + shp
-                    outfn = outfn.encode('utf-8')
+                outfn = os.path.join(outdir,shp)
+                outfn = outfn.decode('gbk').encode('utf-8')
+                if len(line_inlist) > 0:
+                    # outfn = outdir + shp
+                    # outfn = outfn.encode('utf-8')
                     line_inlist = list(set(line_inlist))
+                    print line_inlist
                     line_to_shp(line_inlist,outfn)
-                if not is_line:
+                if len(point_inlist) > 0:
                     # print outdir+shp
-                    outfn = outdir+shp
-                    outfn = outfn.encode('utf-8')
+                    # outfn = outdir+shp
+                    # outfn = outfn.encode('utf-8')
                     point_inlist = list(set(point_inlist))
+                    # print point_inlist
                     point_to_shp(point_inlist,outfn)
-
+            # exit()
         pass
 
     def merge_point_annotation_shp(self, indir, outdir):

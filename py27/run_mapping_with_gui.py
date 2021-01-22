@@ -10,7 +10,7 @@ import multiprocessing
 import copy_reg
 import types
 from tqdm import tqdm
-
+import merge_shp
 
 class MUTIPROCESS:
     '''
@@ -376,8 +376,9 @@ def merge():
         config.close()
         indir = indir.encode('gbk')
         outdir = outdir.encode('gbk')
-        yongcheng.Merge().merge_point_annotation_shp(indir,outdir)
-        yongcheng.Merge().merge_daoxian(indir,outdir)
+        merge_shp.Merge().merge(indir,outdir)
+        # yongcheng.Merge().merge_point_annotation_shp(indir,outdir)
+        # yongcheng.Merge().merge_daoxian(indir,outdir)
         # yongcheng.main(fdir+'/',f_excel)
         sg.Popup('图层生成完毕！\n按OK结束'.decode('gbk'))
         window1.Close()
