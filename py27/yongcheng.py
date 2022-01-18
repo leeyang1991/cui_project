@@ -1494,7 +1494,7 @@ class LineAnnotation:
             print(folder)
             shp_list = os.listdir(fdir + folder)
             for shp in shp_list:
-                if shp.endswith('Annotation_1.shp'):
+                if shp.endswith('Annotation.shp'):
                     daShapefile = fdir + folder + '\\' + shp
                     print(daShapefile)
                     driver = ogr.GetDriverByName("ESRI Shapefile")
@@ -1741,7 +1741,7 @@ class Merge:
                 # print(shp.decode('gbk'))
                 # print(shp_type+'.shp')
                 # exit()
-                if shp.endswith('Annotation_1' + '.shp'):
+                if shp.endswith('Annotation' + '.shp'):
                     # print(shp.decode('gbk'))
                     # print(1)
                     # exit()
@@ -1938,7 +1938,7 @@ class Merge:
         inlist = []
         for folder in os.listdir(fdir):
             for f in os.listdir(fdir + folder):
-                if f.endswith('_dwg_Polyline_1.shp'):
+                if f.endswith('_dwg_Polyline.shp'):
                     print(f.decode('gbk'))
                     # print(shp.decode('gbk'))
                     # exit()
@@ -1998,7 +1998,7 @@ class Cordinate_Transformation:
                 # print(shp.decode('gbk'))
                 # print(shp_type+'.shp')
                 # exit()
-                if shp.endswith('Annotation_1' + '.shp'):
+                if shp.endswith('Annotation' + '.shp'):
                     # print(shp.decode('gbk'))
                     # print(1)
                     # exit()
@@ -2067,7 +2067,7 @@ class Cordinate_Transformation:
         inlist = []
         try:
             for f in os.listdir(fdir + folder):
-                if f.endswith('_dwg_Polyline_1.shp'):
+                if f.endswith('_dwg_Polyline.shp'):
                     daShapefile = fdir + folder + '\\' + f
 
                     driver = ogr.GetDriverByName("ESRI Shapefile")

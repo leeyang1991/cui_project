@@ -99,29 +99,12 @@ def rename(fdir):
         # f_new = f_new.replace('_','.')
         os.rename(fdir+f,fdir+f_new)
 
-
-def do_convert_utf8(fdir):
-    for folder in os.listdir(fdir):
-        for f in os.listdir(os.path.join(fdir,folder)):
-            fpath = os.path.join(fdir,folder,f)
-            if f.endswith('_dwg_Polyline.shp'):
-                convert_utf8(fpath,os.path.join(fdir,folder))
-            if f.endswith('_dwg_Annotation.shp'):
-                convert_utf8(fpath,os.path.join(fdir,folder))
-    pass
-
-def convert_utf8(inshp,outdir):
-    print 'convert ', inshp
-    arcpy.FeatureClassToShapefile_conversion(inshp,outdir)
-    pass
-
 def main():
     # rename()
     fdir = sys.argv[1]+'\\'
-    out_dir = sys.argv[2]+'\\'
     rename(fdir)
+    out_dir = sys.argv[2]+'\\'
     run_dwg_to_shp(fdir,out_dir)
-    do_convert_utf8(out_dir)
 
 if __name__ == '__main__':
     main()
