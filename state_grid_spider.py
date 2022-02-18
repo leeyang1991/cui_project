@@ -3,16 +3,16 @@ import pandas as pd
 from selenium import webdriver
 import time
 import re
-import pickle
 import numpy as np
 from bs4 import BeautifulSoup
 import hashlib
-# from tqdm import tqdm
 from os.path import *
 import os
 
 url = "http://b.esgcc.com.cn/SearchMaterial/showSearchPage?m=TlRBd01UUXdOalU0&chanel=13&isIndex=false&record=true&mSite=MjEwMDY=&first_category=&second_category=&third_category=&title=5rKz5Y2X56uZLeWKnuWFrOeUqOWTgeWPiumdnueUtee9kembtuaYn+eJqei1hOmAiei0reS4k+WMug==&$isHot=false"
 chrome_drive_path = '/Users/liyang/Downloads/chromedriver'
+cookie_f = 'cookies'
+silent = False
 
 def pause():
     # ANSI colors: https://gist.github.com/rene-d/9e584a7dd2935d0f461904b9f2950007
@@ -31,16 +31,14 @@ def hash_key(str_in):
     return readable_hash
 
 def get_cookie():
-    f = 'cookies'
+    f = cookie_f
     if isfile(f):
-        with open(f, 'rb') as handle:
-            cookie = pickle.load(handle)
-            return cookie
+        cookie = read_cookie(f)
+        return cookie
     else:
         get_new_cookie()
-        with open(f, 'rb') as handle:
-            cookie = pickle.load(handle)
-            return cookie
+        cookie = read_cookie(f)
+        return cookie
 
 def dic_to_df(dic, key_col_str='__key__'):
     '''
@@ -170,8 +168,14 @@ def start_spder(driver,product_number):
             i.clear()
             i.send_keys(product_number)
             driver.find_element_by_class_name("searchBtn").click()
-
     html = driver.page_source
+    if 'login-box' in html:
+        print('cookie is expired')
+        os.remove(cookie_f)
+        driver.quit()
+        driver = init_driver(silent)
+        html = driver.page_source
+
     df = parse_html(html,product_number)
 
     all_page = get_all_page(html)
@@ -191,22 +195,43 @@ def start_spder(driver,product_number):
 def get_new_cookie():
     driver = webdriver.Chrome(chrome_drive_path)
     driver.get(url)
-    pause()
-    cookies = driver.get_cookies()
-    new_cookies = []
-    for dic_i in cookies:
-        new_dic_i = {}
-        for key in dic_i:
-            val = dic_i[key]
-            try:
-                if 'esgcc.com.cn' in val:
-                    val = '.esgcc.com.cn'
-            except:
-                pass
-            new_dic_i[key] = val
-        new_cookies.append(new_dic_i)
-    with open('cookies','wb') as handle:
-        pickle.dump(new_cookies,handle)
+    # pause()
+    while 1:
+        status = get_status(driver)
+        time.sleep(1)
+        if status == 'Dead':
+            return
+
+def get_status(driver):
+    try:
+        cookies = driver.get_cookies()
+        new_cookies = []
+        for dic_i in cookies:
+            new_dic_i = {}
+            for key in dic_i:
+                val = dic_i[key]
+                try:
+                    if 'esgcc.com.cn' in val:
+                        val = '.esgcc.com.cn'
+                except:
+                    pass
+                new_dic_i[key] = val
+            new_cookies.append(new_dic_i)
+        save_cookie_to_txt(new_cookies, cookie_f)
+        return "Alive"
+    except:
+        return 'Dead'
+
+def save_cookie_to_txt(cookie, outf):
+    fw = outf
+    fw = open(fw, 'w')
+    fw.write(str(cookie))
+    fw.close()
+
+def read_cookie(f):
+    fr = open(f).read()
+    dic = eval(fr)
+    return dic
 
 
 def init_driver(silent=True):
@@ -223,10 +248,10 @@ def init_driver(silent=True):
     return driver
 
 def main():
-    driver = init_driver()
+    driver = init_driver(silent=silent)
     # product_number = '500140592'
     # product_number = '500140658'
-    product_list = ['500140592','500140658']
+    product_list = ['500140592','500140658'][::-1]
     for product in product_list:
         start_spder(driver,product)
 
