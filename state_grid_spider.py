@@ -13,6 +13,16 @@ url = "http://b.esgcc.com.cn/SearchMaterial/showSearchPage?m=TlRBd01UUXdOalU0&ch
 chrome_drive_path = '/Users/liyang/Downloads/chromedriver'
 cookie_f = 'cookies'
 silent = False
+outdir = '爬虫结果'
+
+
+def mk_dir(dir, force=False):
+    if not os.path.isdir(dir):
+        if force == True:
+            os.makedirs(dir)
+        else:
+            os.mkdir(dir)
+
 
 def pause():
     # ANSI colors: https://gist.github.com/rene-d/9e584a7dd2935d0f461904b9f2950007
@@ -157,7 +167,7 @@ def parse_html(html,product_number):
     df = dic_to_df(result_dic,'唯一编码')
     return df
 
-def start_spder(driver,product_number):
+def start_spder(driver,product_number,outf):
 
     # product_number = '500140592'
     # product_number = '500140658'
@@ -190,7 +200,7 @@ def start_spder(driver,product_number):
         df_next_page = parse_html(html, product_number)
         df = df.append(df_next_page)
     df = df.drop_duplicates(subset=['唯一编码'])
-    df_to_excel(df,product_number)
+    df_to_excel(df,outf)
 
 def get_new_cookie():
     driver = webdriver.Chrome(chrome_drive_path)
@@ -198,7 +208,7 @@ def get_new_cookie():
     # pause()
     while 1:
         status = get_status(driver)
-        time.sleep(1)
+        time.sleep(0.2)
         if status == 'Dead':
             return
 
@@ -237,7 +247,6 @@ def read_cookie(f):
 def init_driver(silent=True):
     cookie = get_cookie()
     opts = webdriver.ChromeOptions()
-    # opts.headless = True
     opts.headless = silent
     driver = webdriver.Chrome(chrome_drive_path, options=opts)
     driver.get(url)
@@ -247,13 +256,25 @@ def init_driver(silent=True):
     driver.get(url)
     return driver
 
+
+def read_excel():
+    f = '物料编码.xlsx'
+    df = pd.read_excel(f)
+    product_number_list = df['物料编码'].tolist()
+    return product_number_list
+
 def main():
+    product_number_list = read_excel()
+    mk_dir(outdir)
     driver = init_driver(silent=silent)
-    # product_number = '500140592'
-    # product_number = '500140658'
-    product_list = ['500140592','500140658'][::-1]
-    for product in product_list:
-        start_spder(driver,product)
+    # product_list = ['500140658']
+    for product in product_number_list:
+        print(product)
+        outf = join(outdir, f'{product}')
+        if isfile(outf):
+            print(f'{outf} is already exsited')
+            continue
+        start_spder(driver,product,outf)
 
 
 
