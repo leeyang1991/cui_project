@@ -94,14 +94,14 @@ def dic_to_df(dic, key_col_str='__key__'):
 
 def df_to_excel(df, dff, n=None, random=False):
     if n == None:
-        df.to_excel('{}.xlsx'.format(dff))
+        df.to_excel('{}'.format(dff))
     else:
         if random:
             df = df.sample(n=n, random_state=1)
-            df.to_excel('{}.xlsx'.format(dff))
+            df.to_excel('{}'.format(dff))
         else:
             df = df.head(n)
-            df.to_excel('{}.xlsx'.format(dff))
+            df.to_excel('{}'.format(dff))
 
 def str_strip(in_str):
     in_str = str(in_str)
@@ -171,7 +171,6 @@ def start_spder(driver,product_number,outf):
 
     # product_number = '500140592'
     # product_number = '500140658'
-
     input = driver.find_elements_by_id("to_seach_id")
     for i in input:
         if i.get_attribute("class") == "searchInput":
@@ -185,6 +184,10 @@ def start_spder(driver,product_number,outf):
         driver.quit()
         driver = init_driver(silent)
         html = driver.page_source
+
+    if '”没有搜到相关结果' in html:
+        print('no results')
+        return
 
     df = parse_html(html,product_number)
 
@@ -264,13 +267,14 @@ def read_excel():
     return product_number_list
 
 def main():
-    product_number_list = read_excel()
+    product_list = read_excel()
     mk_dir(outdir)
     driver = init_driver(silent=silent)
     # product_list = ['500140658']
-    for product in product_number_list:
+    # product_list = ['50014022658']
+    for product in product_list:
         print(product)
-        outf = join(outdir, f'{product}')
+        outf = join(outdir, f'{product}.xlsx')
         if isfile(outf):
             print(f'{outf} is already exsited')
             continue
